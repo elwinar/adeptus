@@ -1,4 +1,5 @@
 var character = require('./character.js');
+var libs = require('./lib.js');
 
 var Paola = new character.make("Paola", [
 	"offence", 
@@ -10,7 +11,7 @@ var Paola = new character.make("Paola", [
 	"leadership", 
 	"social",
 	"general",
-]);
+], libs.config);
 
 Paola.enhance({id: "WS", value: 36, cost: 0, isMisc: true});
 Paola.enhance({id: "BS", value: 28, cost: 0, isMisc: true});

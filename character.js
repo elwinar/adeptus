@@ -1,25 +1,4 @@
-function include(filename, type) {
-
-	var data = require(filename).data;
-	
-	if(typeof(type) != "undefined") {
-		for(key in data) {
-			data[key].type = type;
-		}
-	}
-
-	return data;
-}
-
-var characteristics = include('./characteristics', "characteristic");
-var skills = include('./skills', "skill");
-var talents = include('./talents', "talent");
-
-var config = {};
-config.types = include('./types');
-config.enhancements = characteristics.concat(skills).concat(talents);
-
-exports.make = function(name, aptitudes) {
+exports.make = function(name, aptitudes, config) {
 	var self = this;
 	self.name = name;
 	self.aptitudes = aptitudes;
