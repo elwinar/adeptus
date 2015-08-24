@@ -1,34 +1,55 @@
-var config = require('./config');
+function include(filename, type) {
+
+	var data = require(filename).data;
+	
+	if(typeof(type) != "undefined") {
+		for(key in data) {
+			data[key].type = type;
+		}
+	}
+
+	return data;
+}
+
+var characteristics = include('./characteristics', "characteristic");
+var skills = include('./skills', "skill");
+var talents = include('./talents', "talent");
+
+var config = {};
+config.types = include('./types');
+config.enhancements = characteristics.concat(skills).concat(talents);
 
 exports.make = function(name, aptitudes) {
 	var self = this;
 	self.name = name;
 	self.aptitudes = aptitudes;
 	
-	self.caracteristics = [];
+	self.characteristics = [];
+	self.skills = [];
+	self.talents = [];
 	self.custom = [];
 	
 	self.upgrades = [];
 	self.experience = 0;
 	
-	function defineTier(id) {
-		var ups = 1;
-		for(var it = 0; it < self.upgrades.length; it++) {
-			if(self.upgrades[it].id != id) {
+	function defineTier(upgrade, history) {
+		var tier = 1;
+		for(var it = 0; it < history.length; it++) {
+			if(self.upgrades[it].id != upgrade.id) {
 				continue;
 			}
 			if(self.upgrades[it].isMisc) {
 				continue;
 			}
-			ups++;
+			tier++;
 		}
-		return ups;
+		return tier;
 	}
 	
-	function countAptitudes(aptitudes) {
+	function countAptitudes(enhancement, aptitudes) {
 		var count = 0;
-		for(var it = 0; it < aptitudes.length; it++) {
-			if(self.aptitudes.indexOf(aptitudes[it]) == -1) {
+		for(var it = 0; it < enhancement.aptitudes.length; it++) {
+			if(aptitudes.indexOf(enhancement.aptitudes[it]) == -1) {
 				continue;
 			}
 			count++;
@@ -36,59 +57,62 @@ exports.make = function(name, aptitudes) {
 		return count;
 	}
 	
-	function findEnhancement(id) {
-		for(var it = 0; it < config.enhancements.length; it++) {
-			if(config.enhancements[it].id == id) {
-				return config.enhancements[it];
+	function findEnhancement(upgrade, enhancements) {
+		for(var it = 0; it < enhancements.length; it++) {
+			if(enhancements[it].id == upgrade.id) {
+				return enhancements[it];
 			}
 		}
+		return {type:"custom", id: upgrade.id, aptitudes: [], cost: 0};
+	}
+	
+	function defineValue(upgrade) {
+		if(typeof(upgrade.value) == "undefined") {
+			return 1;
+		}
+		return upgrade.value;
+	}
+	
+	function defineType(enhancement) {
+		if(['talent', 'characteristic', 'skill'].indexOf(enhancement.type) != -1) {
+			return enhancement.type + "s";
+		}
+		return "custom";
+	}
+	
+	function defineCost(enhancement, upgrade, match, tier) {
+		if(typeof(upgrade.cost) != "undefined") {
+			return upgrade.cost;
+		}		
+		return config.types[enhancement.type][tier][match];
 	}
 	
 	self.enhance = function(upgrade) {
-		var enhancement = findEnhancement(upgrade.id);
+		var enhancement = findEnhancement(upgrade, config.enhancements);
+		var type = defineType(enhancement);
+		if(typeof(self[type][enhancement.id]) == "undefined") {
+			self[type][enhancement.id] = 0;
+		}
+		self[type][enhancement.id] += defineValue(upgrade);
+		var match = countAptitudes(enhancement, self.aptitudes);
+		var tier = defineTier(upgrade, self.upgrades);
 		
-		if(typeof(enhancement) == "undefined") {		
-			var cost = 0;
-			if(typeof(upgrade.cost) != "undefined") {
-				cost = upgrade.cost;
-			}
-			self.custom[upgrade.id] = upgrade.value;
-			self.experience += cost;
-			self.upgrades.push(upgrade);
-			return;
-		}
-		
-		// defined tier
-		var tier = defineTier(upgrade.id);
-		if(typeof(config.types[enhancement.type][tier]) == "undefined") {
-			console.error("Undefined tier for upgrade: " + enhancement.id + "[" + tier + "]");
-			return;
-		}
-		
-		// define cost
-		if(typeof(upgrade.cost) != "undefined") {
-			self.experience += upgrade.cost;
-		}
-		else {
-			var match = countAptitudes(enhancement.aptitudes);
-			self.experience += config.types.caracteristic[tier][match];
-		}
-		
-		// improves value
-		var id = enhancement.id;
-		var attribute;
-		switch(enhancement.type) {
-			case "caracteristic":
-				attribute = self.caracteristics;
-				break;
-		}
-		if(typeof(attribute[id]) == "undefined") {
-			attribute[id] = 0;
-		}
-		attribute[id] += upgrade.value;
-		
-		// save upgrade
+		self.experience += defineCost(enhancement, upgrade, match, tier);
 		self.upgrades.push(upgrade);
+	}
+	
+	self.log = function() {
+		for(key in self.upgrades) {
+			var history = self.upgrades.slice(0, key);
+			var upgrade = self.upgrades[key];
+			var enhancement = findEnhancement(upgrade, config.enhancements);
+			var value = defineValue(upgrade);
+			var match = countAptitudes(enhancement, self.aptitudes);
+			var tier = defineTier(upgrade, history);
+			
+			var cost = defineCost(enhancement, upgrade, match, tier);
+			console.log(key + " - " + cost + " " + upgrade.id + " " + value);
+		}
 	}
 	
 	self.display = function() {
@@ -98,6 +122,16 @@ exports.make = function(name, aptitudes) {
 		console.log("Caracteristics");
 		for(id in self.caracteristics){
 			console.log(id + ": " + self.caracteristics[id]);
+		}
+		console.log("----");
+		console.log("Skills");
+		for(id in self.skills){
+			console.log(id + ": " + self.skills[id]);
+		}
+		console.log("----");
+		console.log("Talents");
+		for(id in self.talents){
+			console.log(id + ": " + self.talents[id]);
 		}
 		console.log("----");
 		console.log("Custom");
