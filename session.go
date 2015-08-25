@@ -17,14 +17,14 @@ func init() {
 
 // adds a label and a date to the session
 // raw: <date> <label>
-(s Session) func addLabel(raw string) (err error) {
-	var err error
+(s Session) func addLabel(raw string) error {
 	splits := strings.Split(raw, " ")
 	
 	// don't know if this may happend
 	date, f := splits[0]
 	if !f {
-		return
+		err := fmt.Errorf("Incorrect format for raw. Expected \" \" in string")
+		return err
 	}
 	
 	for k, f := range formats {
@@ -37,7 +37,7 @@ func init() {
 		}
 	}
 	if err != nil {
-		return
+		return err
 	}
 	s.date = d
 	
@@ -45,6 +45,7 @@ func init() {
 	if f {
 		s.label = strings.join(splits[1:])
 	}
+	return nil
 }
 
 // adds a reward to the session
@@ -55,13 +56,12 @@ func init() {
 }
 
 // adds an upgrade to the session
-(s Session) func addUpgrade(raw string) (err error) {
-	var err error
-	var u Upgrade
+(s Session) func addUpgrade(raw string) error {
 	
 	u, err := NewUpgrade(raw)
 	if err != nil {
-		return
+		return err
 	}
 	s.upgrades.push(u)
+	return nil
 }

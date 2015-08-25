@@ -7,12 +7,11 @@ type Header struct {
 
 // adds a metadata to the header
 // raw: <pair>:<value>
-(h Header) func addMetadata(raw string) (err error) {
-	var err error
+(h Header) func addMetadata(raw string) error {
 	pair := strings.SplitN(raw, ":", 2)
 	if len(pair) < 2 {
-		err = fmt.Errorf("Error in parsing of header. Expected pair key:value, having pair without value")
-		return
+		err := fmt.Errorf("Error in parsing of header. Expected pair key:value, having pair without value")
+		return err
 	}
 	key := pair[0]
 	value := strings.TrimSpace(pair[1])
@@ -26,6 +25,8 @@ type Header struct {
 		case "role":
 			h.role = value
 		default:
-			err = fmt.Errorf("Undefined key: %s in header.", key)
+			err := fmt.Errorf("Undefined key: %s in header.", key)
+			return err
 	}
+	return nil
 }

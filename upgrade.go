@@ -70,27 +70,24 @@ func chunkValue(raw string) (*int, string, error) {
 }
 
 // Transform the given line into an upgrade
-func NewUpgrade(line string) (u Upgrade, err error) {
-	var u Upgrade
-	var err error
-	
+func NewUpgrade(line string) (Upgrade, error) {
 	raw := strings.TrimSpace(line)
 	mark, raw, err := chunkMark(raw)
 	if err != nil {
 		err = fmt.Errorf("Incorrect upgrade in session.")
-		return 
+		return nil, err
 	}
 	
 	xp, raw, err := chunkXp(raw)
 	if err != nil {
 		err = fmt.Errorf("Incorrect upgrade in session.")
-		return
+		return nil, err
 	}
 	
 	value, raw, err := chunkValue(raw)
 	if err != nil {
 		err = fmt.Errorf("Incorrect upgrade in session.")
-		return
+		return nil, err
 	}
 	
 	name := strings.TrimSpace(raw)
@@ -101,4 +98,6 @@ func NewUpgrade(line string) (u Upgrade, err error) {
 	else {
 		type = a.type
 	}
+	
+	return nil, nil
 }
