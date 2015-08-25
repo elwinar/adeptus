@@ -1,78 +1,88 @@
 const(	
-	REWARD_REGEX = ^( )*\+ (\d)* xp$
-	DATE_LABEL_REGEX = ^(\d){2}[/-](\d){2}[/-](\d){4} (.)*$
+	REWARD_REGEX = ^( )*\+( )*(\d)*( )*xp$
 )
 
-func Parse(filename string) (Character, error) {
+func Parse(filename string) (c Character, err error) {
+	var c Character
+	var err error
+
 	f, err := os.Open(filename)
 	if err != nil {
-		// ... error
+		err = fmt.Errorf("Unable to open character: \"%s.\"", filename)
+		return
 	}
 	scanner := bufio.NewScanner(f)
 	
-	Header, err = scanHeader(&scanner)
-	Session, err = scanSession(&scanner)
+	h, err = scanHeader(scanner)
+	if err != nil {
+		err = fmt.Errorf("Incorrect formating in header: \"%s.\"", filename)
+		return
+	}
+	c.AddHeader(h)
+	
+	it := 0;
+	for scanner.Scan() {
+		it++;
+		s, err := scanSession(scanner)
+		if err != nil {
+			err = fmt.Errorf("Incorrect formating in session %d: \"%s.\"", it, filename)
+			return
+		}
+		c.AddSession(s)
+	}
 	
 	err = scanner.Err()
 	if err != nil {
-		// ... error
+		err = fmt.Errorf("Error during scan: \"%s.\"", filename)
+		return
 	}
 }
 
-// Reads line until the header_end token is reached and returns the header
+// Scans the pairs key:value in the lines and returns the header
 func scanHeader(scanner *bufio.Scanner) (h Header, err error) {
-	h := Header{}
-	err := nil
+	var h Header
+	var err error
 	
 	for scanner.Scan() {
-		text := scanner.Text()
+		text := strings.TrimSpace(scanner.Text())
 		if text == "\n" {
 			return
 		}
 		err = h.addMetadata(text)
 		if err != nil {
-			// ... error
+			return
 		}
 	}
 }
 
 // Reads line until the session_end token is reached and returns the session
 func scanSession(scanner *bufio.Scanner) (s Session, err error) {
-	s := Session{}
-	err := nil
+	var s Session
+	var err error
 	
 	// scan label
-	text := scanner.Text()
-	if regexp.Match(DATE_LABEL_REGEX, text) {
-		err = s.addLabel(text)
-		if err != nil {
-			// ... error
-		}
-	}
-	else {
-		err = errors.New("A label is required")
-		// ... error (no label, generate error)
+	text := strings.TrimSpace(scanner.Text())
+	err = s.addLabel(text)
+	if err != nil {
+		return
 	}
 	
 	// scan potential reward
-	text = scanner.Text()
+	text := strings.TrimSpace(scanner.Text())
 	if regexp.Match(REWARD_REGEX, text) {
-		err = s.addReward(text)
-		if err != nil {
-			// ... error
-		}
-		text = scanner.Text()
+		s.addReward(text)
+		text := nextLine(scanner)
 	}
 	
 	// scan upgrades
 	for scanner.Scan() {
-		text = scanner.Text()
+		text := strings.TrimSpace(scanner.Text())
 		if text == "\n" {
-			return s, nil
+			return 
 		}
 		err = s.addUpgrade(text)
 		if err != nil {
-			// ... error
+			return
 		}
 	}
 }

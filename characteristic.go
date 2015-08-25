@@ -6,5 +6,7 @@ struct Characteristic {
 }
 
 // Transform the given line into an characteristic
-func NewCharacteristic(line string) (Characteristic, error) {
+func NewCharacteristic(line string) (c Characteristic, err error) {
+	var c Characteristic
+	var err error
 }
