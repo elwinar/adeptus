@@ -1,7 +1,0 @@
-2015/04/07 The Kingslayer 250xp
-	* FEL	15
-	* WP	+5
-	* STR 	+5
-	+ TOU 	-2 	(0xp)
-	* Dodge
-	* Wonderful special rule that roxes some poney +  40 250xp
