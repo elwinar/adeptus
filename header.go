@@ -20,7 +20,7 @@ func (h Header) addMetadata(raw string) error {
 		err := fmt.Errorf("Error in parsing of header. Expected pair key:value, having pair without value")
 		return err
 	}
-	key := pair[0]
+	key := strings.TrimSpace(pair[0])
 	value := strings.TrimSpace(pair[1])
 	switch key {
 	case "name":
@@ -32,7 +32,7 @@ func (h Header) addMetadata(raw string) error {
 	case "role":
 		h.role = value
 	default:
-		err := fmt.Errorf("Undefined key: %s in header.", key)
+		err := fmt.Errorf(`Undefined key: "%s" in header.`, key)
 		return err
 	}
 	return nil
