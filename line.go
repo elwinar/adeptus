@@ -1,21 +1,21 @@
 package main
 
-import(
+import (
 	"regexp"
 	"strings"
 )
 
-const(
-	regex_date = `^[\t ]*\d{4}[-/\.]\d{2}[-/\.]\d{2}`
-	regex_xp = `\(?\d*xp\)?`
-	regex_mark = `[\*\+\-]`
-	regex_value = `([\+\-])?\d{1,2}`
-	regex_date_separator = `[/-\.]`
-	date_format = `2006/02/03`
+const (
+	regex_date           = `^[\t ]*\d{4}[-/\.]\d{2}[-/\.]\d{2}`
+	regex_xp             = `\(?\d*xp\)?`
+	regex_mark           = `[\*\+\-]`
+	regex_value          = `([\+\-] *)?\d+`
+	regex_date_separator = `[/\-\.]`
+	date_format          = `2006/02/03`
 )
 
 type Line struct {
-	raw	string
+	raw string
 }
 
 // creates a new line given a raw value
@@ -26,49 +26,51 @@ func NewLine(raw string) *Line {
 }
 
 // returns true if the line contains a date
-func (l *line) HasDate() (m bool) {
-	m, _ regexp.MatchString(regex_date, l.raw)
+func (l *Line) HasDate() (m bool) {
+	m, _ = regexp.MatchString(regex_date, l.raw)
 	return
 }
 
 // returns the date within the line and removes it
-func (l *line) GetDate() (s string) {
+func (l *Line) GetDate() (s string) {
 	if !l.HasDate() {
 		return
 	}
 	r := regexp.MustCompile(regex_date)
 	s = r.FindString(l.raw)
-	r := regexp.MustCompile(regex_date_separator)
+	r = regexp.MustCompile(regex_date_separator)
 	l.raw = strings.Replace(l.raw, s, "", 1)
 	s = r.ReplaceAllString(s, "/")
 	s = strings.TrimSpace(s)
+	return
 }
 
 // returns true if the line contains xp
-func (l *line) HasXp() (m bool) {
-	m, _ regexp.MatchString(regex_xp, l.raw)
+func (l *Line) HasXp() (m bool) {
+	m, _ = regexp.MatchString(regex_xp, l.raw)
 	return
 }
 
 // returns the xp within the line and removes it
-func (l *line) GetXp() (s string) {
+func (l *Line) GetXp() (s string) {
 	if !l.HasXp() {
 		return
 	}
 	r := regexp.MustCompile(regex_xp)
 	s = r.FindString(l.raw)
 	l.raw = strings.Replace(l.raw, s, "", 1)
-	s = regexp.MustCompile(`\d*`).FindString(s)
+	s = regexp.MustCompile(`\d+`).FindString(s)
+	return
 }
 
 // returns true if the line contains mark
-func (l *line) HasMark() (m bool) {
-	m, _ regexp.MatchString(regex_mark, l.raw)
+func (l *Line) HasMark() (m bool) {
+	m, _ = regexp.MatchString(regex_mark, l.raw)
 	return
 }
 
 // returns the mark within the line and removes it
-func (l *line) GetMark() (s string) {
+func (l *Line) GetMark() (s string) {
 	if !l.HasMark() {
 		return
 	}
@@ -76,31 +78,39 @@ func (l *line) GetMark() (s string) {
 	s = r.FindString(l.raw)
 	l.raw = strings.Replace(l.raw, s, "", 1)
 	s = strings.TrimSpace(s)
+	return
 }
 
 // returns true if the line contains value
-func (l *line) HasValue() (m bool) {
-	m, _ regexp.MatchString(regex_value, l.raw)
+func (l *Line) HasValue() (m bool) {
+	m, _ = regexp.MatchString(regex_value, l.raw)
+	if !m {
+		return
+	}
+	s := regexp.MustCompile(`\d+`).FindString(l.raw)
+	m = len(s) <= 2
 	return
 }
 
 // returns the value within the line and removes it
-func (l *line) GetValue() (s string) {
+func (l *Line) GetValue() (s string) {
 	if !l.HasValue() {
 		return
 	}
-	r = regexp.MustCompile(regex_value)
+	r := regexp.MustCompile(regex_value)
 	s = r.FindString(l.raw)
 	l.raw = strings.Replace(l.raw, s, "", 1)
+	s = regexp.MustCompile(`[\t ]+`).ReplaceAllString(s, "")
+	return
 }
 
 // returns true if the line contains an label
-func (l *line) HasKey() bool {
+func (l *Line) HasKey() bool {
 	return strings.Contains(l.raw, ":")
 }
 
 // returns the key within the line and removes it
-func (l *line) GetKey() (s string) {
+func (l *Line) GetKey() (s string) {
 	if !l.HasKey() {
 		return
 	}
@@ -112,6 +122,6 @@ func (l *line) GetKey() (s string) {
 }
 
 // returns the label within the line and removes it
-func (l *line) GetLabel() (s string) {
+func (l *Line) GetLabel() (s string) {
 	return strings.TrimSpace(l.raw)
 }
