@@ -4,17 +4,11 @@ import(
 	"regexp"
 )
 
-var formats []string{
-	"2006/02/03",
-	"2006-02-03",
-	"2006.02.03",
-}
-
 const(
 	regex_date = `\d{4}[-/\.]\d{2}[-/\.]\d{2}`
 	regex_xp = `\(?\d*xp\)?`
 	regex_mark = `[\*\+\-]`
-	regex_value = `([\+\-])?\d+`
+	regex_value = `([\+\-])?\d{1,2}`
 	regex_blank = `[\t ]*`
 	regex_date_separator = `[/-\.]`
 	date_format = `2006/02/03`
@@ -44,6 +38,7 @@ func (l *line) GetDate() (s string) {
 	}
 	r := regexp.MustCompile(`^` + regex_blank + regex_date)
 	s = r.FindString(l.raw)
+	r := regexp.MustCompile(regex_date_separator)
 	l.raw = strings.Replace(l.raw, s, "", 1)
 	s = r.ReplaceAllString(s, "/")
 	s = strings.TrimSpace(s)
