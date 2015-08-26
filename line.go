@@ -5,11 +5,10 @@ import(
 )
 
 const(
-	regex_date = `\d{4}[-/\.]\d{2}[-/\.]\d{2}`
+	regex_date = `^[\t ]*\d{4}[-/\.]\d{2}[-/\.]\d{2}`
 	regex_xp = `\(?\d*xp\)?`
 	regex_mark = `[\*\+\-]`
 	regex_value = `([\+\-])?\d{1,2}`
-	regex_blank = `[\t ]*`
 	regex_date_separator = `[/-\.]`
 	date_format = `2006/02/03`
 )
@@ -27,7 +26,7 @@ func NewLine(raw string) *Line {
 
 // returns true if the line contains a date
 func (l *line) HasDate() (m bool) {
-	m, _ regexp.MatchString(`^` + regex_blank + regex_date, l.raw)
+	m, _ regexp.MatchString(regex_date, l.raw)
 	return
 }
 
@@ -36,7 +35,7 @@ func (l *line) GetDate() (s string) {
 	if !l.HasDate() {
 		return
 	}
-	r := regexp.MustCompile(`^` + regex_blank + regex_date)
+	r := regexp.MustCompile(regex_date)
 	s = r.FindString(l.raw)
 	r := regexp.MustCompile(regex_date_separator)
 	l.raw = strings.Replace(l.raw, s, "", 1)
