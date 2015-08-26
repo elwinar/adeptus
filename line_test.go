@@ -565,6 +565,11 @@ func Test_Line_GetKey(t *testing.T) {
 			out: "a",
 			raw: "\sb",
 		},
+		{
+			line: "A:b",
+			out: "a",
+			raw: "b",
+		},
 	}
 	
 	for k, c := range cases {		

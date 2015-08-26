@@ -2,6 +2,7 @@ package main
 
 import(
 	"regexp"
+	"strings"
 )
 
 const(
@@ -104,7 +105,7 @@ func (l *line) GetKey() (s string) {
 		return
 	}
 	split := strings.SplitN(l.raw, ":", 2)
-	s = split[0]
+	s = strings.ToLower(split[0])
 	l.raw = split[1]
 	s = strings.TrimSpace(s)
 	return
