@@ -14,30 +14,19 @@ type Session struct {
 	upgrades []Upgrade
 }
 
-var formats []string
-
-func init() {
-	formats = append(formats, "2006/02/03")
-	formats = append(formats, "2006-02-03")
-	formats = append(formats, "2006_02_03")
-	formats = append(formats, "2006.02.03")
-	formats = append(formats, "20060203")
-}
-
 // adds a label and a date to the session
-// raw: <date> <label>
-func (s Session) addLabel(raw string) error {
-	splits := strings.Split(raw, " ")
+// raw: <date>(<separator><label>)?(<separator><xp>)?
+func (s Session) addLabel(raw string) (err error) {
+	splits := strings.SplitN(strings.TrimSpace(raw), " ", 2)
 	var err error
 	var t time.Time
 
-	// don't know if this may happend
 	if splits == nil {
-		err := fmt.Errorf("Incorrect format for raw. Expected \" \" in string")
-		return err
+		err = fmt.Errorf("Incorrect format for raw. Expected \" \" in string")
+		return
 	}
 
-	date := splits[0]
+	date := strings.TrimSpace(splits[0])
 	for k, f := range formats {
 		t, err = time.Parse(f, date)
 		if err == nil {
@@ -48,14 +37,14 @@ func (s Session) addLabel(raw string) error {
 		}
 	}
 	if err != nil {
-		return err
+		return
 	}
 	s.date = t
 
-	if len(splits) >= 2 {
-		s.label = strings.Join(splits[1:], " ")
+	if len(splits) == 2 {
+		s.label = strings.TrimSpace(splits[1])
 	}
-	return nil
+	return
 }
 
 // adds a reward to the session
