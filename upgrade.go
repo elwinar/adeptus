@@ -46,7 +46,7 @@ func ParseUpgrade(line int, raw string) (RawUpgrade, error) {
 		if strings.HasPrefix(field, "[") || strings.HasSuffix(field, "]") {
 		
 			// Check that the field has both brackets. If only one bracket is present, there is an error
-			if strings.HasPrefix(field, "[") == strings.HasSuffix(field, "]") {
+			if strings.HasPrefix(field, "[") != strings.HasSuffix(field, "]") {
 				return upgrade, fmt.Errorf("Error on line %d: brackets [] must open-close and contain no blank.", line)
 			}
 		
