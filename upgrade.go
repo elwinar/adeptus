@@ -2,6 +2,7 @@ package adeptus
 
 import (
 	"fmt"
+	"strconv"
 	"strings"
 )
 
@@ -42,25 +43,26 @@ func ParseUpgrade(line int, raw string) (RawUpgrade, error) {
 	var cost string
 	for i, field := range fields {
 		
-		// matches (250xp)
-		if strings.HasPrefix(field, "(") && strings.HasSuffix(field, "xp)") {
-			cost = strings.TrimSuffix(strings.TrimPrefix(field, "("), "xp)")
-			// TODO: should be integer
-			if len(cost) == 0 {
-				return upgrade, fmt.Errorf("Error on line %d: xp has no value. Expected number.", line)
-			}
-		}
+		if strings.HasPrefix(field, "[") || strings.HasSuffix(field, "]") {
 		
-		// matches 250xp
-		if strings.HasPrefix(field, "xp") {
-			cost = strings.TrimSuffix(field, "xp")
-			// TODO: should be integer
-			if len(cost) == 0 {
-				return upgrade, fmt.Errorf("Error on line %d: xp has no value. Expected number.", line)
+			// Check that the field has both brackets. If only one bracket is present, there is an error
+			if strings.HasPrefix(field, "[") == strings.HasSuffix(field, "]") {
+				return upgrade, fmt.Errorf("Error on line %d: brackets [] must open-close and contain no blank.", line)
 			}
-		}
 		
-		if len(cost) != 0 {
+			// Check position of xp
+			if i == 0 || i == len(fields) - 1 {
+				return upgrade, fmt.Errorf("Error on line %d: experience must be after mark or at the end of line.", line)
+			}
+			
+			// Check value of xp
+			cost = strings.TrimSuffix(strings.TrimPrefix(field, "["), "]")
+			_, err := strconv.Atoi(cost)
+			if err || len(cost) == 0 {
+				return upgrade, fmt.Errorf("Error on line %d: expected number, \"%s\" is no numeric value.", line, cost)
+			}
+			
+			// remove xp from field slice
 			fields = append(fields[:i], fields[i+1:]...)
 			break
 		}

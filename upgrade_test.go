@@ -30,19 +30,25 @@ func Test_ParseUpgrade(t *testing.T) {
 			err:  true,
 		},
 		{
-			in:   "fail",
+			in: "fail",
 			line: 1,
 			out:  RawUpgrade{line: 1},
 			err:  true,
 		},
 		{
-			in:   "x fail",
+			in: "x fail",
 			line: 1,
 			out:  RawUpgrade{line: 1},
 			err:  true,
 		},
 		{
-			in:   "* 250xp",
+			in: "*",
+			line: 1,
+			out:  RawUpgrade{line: 1},
+			err:  true,
+		},
+		{
+			in: "* [250]",
 			line: 1,
 			out: RawUpgrade{
 				line: 1,
@@ -50,7 +56,47 @@ func Test_ParseUpgrade(t *testing.T) {
 			err: true,
 		},
 		{
-			in:   "* success",
+			in: "* fail [250] fail",
+			line: 1,
+			out: RawUpgrade{
+				line: 1,
+			},
+			err: true,
+		},
+		{
+			in: "* fail [ 250]",
+			line: 1,
+			out: RawUpgrade{
+				line: 1,
+			},
+			err: true,
+		},
+		{
+			in: "* fail [abba250]",
+			line: 1,
+			out: RawUpgrade{
+				line: 1,
+			},
+			err: true,
+		},
+		{
+			in: "* fail 250]",
+			line: 1,
+			out: RawUpgrade{
+				line: 1,
+			},
+			err: true,
+		},
+		{
+			in: "* fail [250",
+			line: 1,
+			out: RawUpgrade{
+				line: 1,
+			},
+			err: true,
+		},
+		{
+			in: "* success",
 			line: 1,
 			out: RawUpgrade{
 				line: 1,
@@ -60,61 +106,17 @@ func Test_ParseUpgrade(t *testing.T) {
 			err: false,
 		},
 		{
-			in:   "* experience success",
-			line: 1,
-			out: RawUpgrade{
-				line: 1,
-				mark: "*",
-				name: "experience success",
-			},
-			err: false,
-		},
-		{
-			in:   "* 250XP success",
+			in: "* [250] success",
 			line: 1,
 			out: RawUpgrade{
 				line: 1,
 				mark: "*",
 				name: "success",
-				cost: "250",
 			},
 			err: false,
 		},
 		{
-			in:   "* 250xp success",
-			line: 1,
-			out: RawUpgrade{
-				line: 1,
-				mark: "*",
-				name: "success",
-				cost: "250",
-			},
-			err: false,
-		},
-		{
-			in: "	* 250xp success",
-			line: 1,
-			out: RawUpgrade{
-				line: 1,
-				mark: "*",
-				name: "success",
-				cost: "250",
-			},
-			err: false,
-		},
-		{
-			in:   "* success 250xp",
-			line: 1,
-			out: RawUpgrade{
-				line: 1,
-				mark: "*",
-				name: "success",
-				cost: "250",
-			},
-			err: false,
-		},
-		{
-			in:   "* success (250xp)",
+			in: "* success [250]",
 			line: 1,
 			out: RawUpgrade{
 				line: 1,
@@ -125,7 +127,29 @@ func Test_ParseUpgrade(t *testing.T) {
 			err: false,
 		},
 		{
-			in:   "* success +4 (250xp)",
+			in: "  * [250] success",
+			line: 1,
+			out: RawUpgrade{
+				line: 1,
+				mark: "*",
+				name: "success",
+				cost: "250",
+			},
+			err: false,
+		},
+		{
+			in: "	* [250] success",
+			line: 1,
+			out: RawUpgrade{
+				line: 1,
+				mark: "*",
+				name: "success",
+				cost: "250",
+			},
+			err: false,
+		},
+		{
+			in: "* success +4 [250]",
 			line: 1,
 			out: RawUpgrade{
 				line: 1,
@@ -136,7 +160,7 @@ func Test_ParseUpgrade(t *testing.T) {
 			err: false,
 		},
 		{
-			in: "* success	+4	(250xp)",
+			in: "* success	+4	[250]",
 			line: 1,
 			out: RawUpgrade{
 				line: 1,
@@ -147,7 +171,7 @@ func Test_ParseUpgrade(t *testing.T) {
 			err: false,
 		},
 		{
-			in: "* success: confirmed	(250xp)",
+			in: "* success: confirmed [250]",
 			line: 1,
 			out: RawUpgrade{
 				line: 1,
@@ -158,7 +182,7 @@ func Test_ParseUpgrade(t *testing.T) {
 			err: false,
 		},
 		{
-			in: " * success - confirmed	(250xp)",
+			in: " * success - confirmed	[250]",
 			line: 1,
 			out: RawUpgrade{
 				line: 1,
@@ -169,7 +193,7 @@ func Test_ParseUpgrade(t *testing.T) {
 			err: false,
 		},
 		{
-			in: "* success (confirmed)	(250xp)",
+			in: "* success (confirmed) [250]",
 			line: 1,
 			out: RawUpgrade{
 				line: 1,
@@ -180,7 +204,7 @@ func Test_ParseUpgrade(t *testing.T) {
 			err: false,
 		},
 		{
-			in: " *	success	(confirmed)	(250xp)",
+			in: " *	success	(confirmed) [250]",
 			line: 1,
 			out: RawUpgrade{
 				line: 1,
