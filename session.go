@@ -1,9 +1,11 @@
 package adeptus
 
+import "time"
+
 type Session struct {
-	Date time.Time
-	Title string
-	Reward int
+	Date     time.Time
+	Title    string
+	Reward   int
 	Upgrades []Upgrade
 }
 

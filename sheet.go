@@ -1,7 +1,9 @@
 package adeptus
 
+import "io"
+
 type Sheet struct {
-	Header map[string]string
+	Header   map[string]string
 	Sessions []Session
 }
 

@@ -1,34 +1,34 @@
 package adeptus
 
-import(
+import (
 	"testing"
 )
 
 func Test_in(t *testing.T) {
-	cases := []struct{
-		in 		string
-		slice	[]string
-		out bool
+	cases := []struct {
+		in    string
+		slice []string
+		out   bool
 	}{
 		{
-			in: "",
-			slice: []string{}
-			out: false
+			in:    "",
+			slice: []string{},
+			out:   false,
 		},
 		{
-			in: "a",
-			slice: []string{"b", "c"}
-			out: false
+			in:    "a",
+			slice: []string{"b", "c"},
+			out:   false,
 		},
 		{
-			in: "a",
-			slice: []string{"a", "b", "c"}
-			out: true
+			in:    "a",
+			slice: []string{"a", "b", "c"},
+			out:   true,
 		},
 	}
-	
+
 	for i, c := range cases {
-		out := in(c.slice, c.in)
+		out := in(c.in, c.slice)
 		if out != c.out {
 			t.Logf("Unexpected output on case %d:", i+1)
 			t.Logf("Expected %t", c.out)

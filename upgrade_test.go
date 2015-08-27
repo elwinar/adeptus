@@ -1,68 +1,66 @@
 package adeptus
 
-import(
+import (
 	"testing"
 )
 
 func Test_ParseUpgrade(t *testing.T) {
-	cases := []struct{
-		in string
+	cases := []struct {
+		in   string
 		line int
-		out RawUpgrade
-		err	bool
+		out  RawUpgrade
+		err  bool
 	}{
 		{
-			in: "",
+			in:   "",
 			line: 1,
-			out: RawUpgrade{line: 1},
-			err: true,
+			out:  RawUpgrade{line: 1},
+			err:  true,
 		},
 		{
 			in: "	",
 			line: 1,
-			out: RawUpgrade{line: 1},
-			err: true,
+			out:  RawUpgrade{line: 1},
+			err:  true,
 		},
 		{
 			in: " 	 ",
 			line: 1,
-			out: RawUpgrade{line: 1},
-			err: true,
+			out:  RawUpgrade{line: 1},
+			err:  true,
 		},
 		{
-			in: "fail",
+			in:   "fail",
 			line: 1,
-			out: RawUpgrade{line: 1},
-			err: true,
+			out:  RawUpgrade{line: 1},
+			err:  true,
 		},
 		{
-			in: "x fail",
+			in:   "x fail",
 			line: 1,
-			out: RawUpgrade{line: 1},
-			err: true,
+			out:  RawUpgrade{line: 1},
+			err:  true,
 		},
 		{
-			in: "* 250xp",
+			in:   "* 250xp",
 			line: 1,
 			out: RawUpgrade{
 				line: 1,
-				
 			},
 			err: true,
 		},
 		{
-			in: "* success",
+			in:   "* success",
 			line: 1,
 			out: RawUpgrade{
 				line: 1,
 				mark: "*",
 				name: "success",
-				
 			},
 			err: false,
 		},
 		{
-			in: "* experience success",
+			in:   "* experience success",
 			line: 1,
 			out: RawUpgrade{
 				line: 1,
@@ -72,24 +70,24 @@ func Test_ParseUpgrade(t *testing.T) {
 			err: false,
 		},
 		{
-			in: "* 250XP success",
+			in:   "* 250XP success",
 			line: 1,
 			out: RawUpgrade{
 				line: 1,
 				mark: "*",
 				name: "success",
-				cost: "250"
+				cost: "250",
 			},
 			err: false,
 		},
 		{
-			in: "* 250xp success",
+			in:   "* 250xp success",
 			line: 1,
 			out: RawUpgrade{
 				line: 1,
 				mark: "*",
 				name: "success",
-				cost: "250"
+				cost: "250",
 			},
 			err: false,
 		},
@@ -100,40 +98,40 @@ func Test_ParseUpgrade(t *testing.T) {
 				line: 1,
 				mark: "*",
 				name: "success",
-				cost: "250"
+				cost: "250",
 			},
 			err: false,
 		},
 		{
-			in: "* success 250xp",
+			in:   "* success 250xp",
 			line: 1,
 			out: RawUpgrade{
 				line: 1,
 				mark: "*",
 				name: "success",
-				cost: "250"
+				cost: "250",
 			},
 			err: false,
 		},
 		{
-			in: "* success (250xp)",
+			in:   "* success (250xp)",
 			line: 1,
 			out: RawUpgrade{
 				line: 1,
 				mark: "*",
 				name: "success",
-				cost: "250"
+				cost: "250",
 			},
 			err: false,
 		},
 		{
-			in: "* success +4 (250xp)",
+			in:   "* success +4 (250xp)",
 			line: 1,
 			out: RawUpgrade{
 				line: 1,
 				mark: "*",
 				name: "success +4",
-				cost: "250"
+				cost: "250",
 			},
 			err: false,
 		},
@@ -144,7 +142,7 @@ func Test_ParseUpgrade(t *testing.T) {
 				line: 1,
 				mark: "*",
 				name: "success +4",
-				cost: "250"
+				cost: "250",
 			},
 			err: false,
 		},
@@ -155,7 +153,7 @@ func Test_ParseUpgrade(t *testing.T) {
 				line: 1,
 				mark: "*",
 				name: "success: confirmed",
-				cost: "250"
+				cost: "250",
 			},
 			err: false,
 		},
@@ -166,7 +164,7 @@ func Test_ParseUpgrade(t *testing.T) {
 				line: 1,
 				mark: "*",
 				name: "success - confirmed",
-				cost: "250"
+				cost: "250",
 			},
 			err: false,
 		},
@@ -177,7 +175,7 @@ func Test_ParseUpgrade(t *testing.T) {
 				line: 1,
 				mark: "*",
 				name: "success (confirmed)",
-				cost: "250"
+				cost: "250",
 			},
 			err: false,
 		},
@@ -187,15 +185,15 @@ func Test_ParseUpgrade(t *testing.T) {
 			out: RawUpgrade{
 				line: 1,
 				mark: "*",
-				name: "success	(confirmed)",
-				cost: "250"
+				name: "success (confirmed)",
+				cost: "250",
 			},
 			err: false,
 		},
 	}
-	
+
 	for i, c := range cases {
-		out, err := ParseUpgrade(c.in, c.line)
+		out, err := ParseUpgrade(c.line, c.in)
 		if (err != nil) != c.err {
 			t.Logf("Unexpected error on case %d:", i+1)
 			t.Logf("	Having %s", err)
