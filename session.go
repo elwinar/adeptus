@@ -3,7 +3,6 @@ package adeptus
 import "time"
 
 type Session struct {
-	Line	 line
 	Date     time.Time
 	Title    string
 	Reward   int
@@ -16,17 +15,16 @@ formats := []string{
 	"2006.02.01",
 }
 
-func ParseSession(line int, raw string) (Session, error) {
-	session := Session{
-		line: line,
-	}
+func ParseSession(line Line) (Session, error) {
+
+	session := Session{}
 
 	// Get the fields of the line
-	fields := strings.Fields(raw)
+	fields := strings.Fields(line.Text)
 
 	// The minimum number of fields is 1
 	if len(fields) < 1 {
-		return session, fmt.Errorf("Error on line %d: expected at least a date.", line)
+		return session, fmt.Errorf("Error on line %d: expected at least a date.", line.Number)
 	}
 
 	// Retrieve the date
@@ -43,7 +41,7 @@ func ParseSession(line int, raw string) (Session, error) {
 		formats[i] = swap
 	}
 	if err != nil {
-		return session, fmt.Errorf("Error on line %d: invalid date format. Expecting \"YYYY/MM/DD\", \"YYYY.MM.DD\" or \"YYY-MM-DD."\", line)
+		return session, fmt.Errorf("Error on line %d: invalid date format. Expecting \"YYYY/MM/DD\", \"YYYY.MM.DD\" or \"YYY-MM-DD."\", line.Number)
 	}
 	fields = fields[1:]
 
@@ -55,19 +53,19 @@ func ParseSession(line int, raw string) (Session, error) {
 		
 			// Check that the field has both brackets. If only one bracket is present, there is an error
 			if strings.HasPrefix(field, "[") != strings.HasSuffix(field, "]") {
-				return session, fmt.Errorf("Error on line %d: brackets [] must open-close and contain no blank.", line)
+				return session, fmt.Errorf("Error on line %d: brackets [] must open-close and contain no blank.", line.Number)
 			}
 		
 			// Check position of xp
 			if i == 0 || i == len(fields) - 1 {
-				return session, fmt.Errorf("Error on line %d: experience must be after mark or at the end of line.", line)
+				return session, fmt.Errorf("Error on line %d: experience must be after mark or at the end of line.", line.Number)
 			}
 			
 			// Check value of xp
 			reward = strings.TrimSuffix(strings.TrimPrefix(field, "["), "]")
 			_, err := strconv.Atoi(reward)
 			if err || len(reward) == 0 {
-				return session, fmt.Errorf("Error on line %d: expected number, \"%s\" is no numeric value.", line, reward)
+				return session, fmt.Errorf("Error on line %d: expected number, \"%s\" is no numeric value.", line.Number, reward)
 			}
 			
 			// remove xp from field slice

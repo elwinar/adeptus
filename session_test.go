@@ -7,69 +7,57 @@ import (
 func Test_ParseSession(t *testing.T) {
 	cases := []struct {
 		in   string
-		line int
 		out  Session
 		err  bool
 	}{
 		{
 			in:   "",
-			line: 1,
-			out:  Session{line: 1},
+			out:  Session{},
 			err:  true,
 		},
 		{
 			in: "	",
-			line: 1,
-			out:  Session{line: 1},
+			out:  Session{},
 			err:  true,
 		},
 		{
 			in: " 	 ",
-			line: 1,
-			out:  Session{line: 1},
+			out:  Session{},
 			err:  true,
 		},
 		{
 			in: "fail",
-			line: 1,
-			out:  Session{line: 1},
+			out:  Session{},
 			err:  true,
 		},
 		{
 			in: "200 01 01",
-			line: 1,
-			out:  Session{line: 1},
+			out:  Session{},
 			err:  true,
 		},
 		{
 			in: "2001 04 28",
-			line: 1,
-			out:  Session{line: 1},
+			out:  Session{},
 			err:  true,
 		},
 		{
 			in: "2001_04_28",
-			line: 1,
-			out:  Session{line: 1},
+			out:  Session{},
 			err:  true,
 		},
 		{
 			in: "2001.04.28 [250",
-			line: 1,
-			out:  Session{Line: 1},
+			out:  Session{},
 			err:  true,
 		},
 		{
 			in: "2001.04.28 250]",
-			line: 1,
-			out:  Session{Line: 1},
+			out:  Session{},
 			err:  true,
 		},
 		{
 			in: "2001/04/28 success",
-			line: 1,
 			out:  Session{
-				Line: 1,
 				Date: time.Parse("2006/01/02", "2001/04/28"),
 				Title: "success",
 			},
@@ -77,9 +65,7 @@ func Test_ParseSession(t *testing.T) {
 		},
 		{
 			in: "2001-04-28 success",
-			line: 1,
 			out:  Session{
-				Line: 1,
 				Date: time.Parse("2006/01/02", "2001/04/28"),
 				Title: "success",
 			},
@@ -87,9 +73,7 @@ func Test_ParseSession(t *testing.T) {
 		},
 		{
 			in: "2001.04.28 success",
-			line: 1,
 			out:  Session{
-				Line: 1,
 				Date: time.Parse("2006/01/02", "2001/04/28"),
 				Title: "success",
 			},
@@ -97,9 +81,7 @@ func Test_ParseSession(t *testing.T) {
 		},
 		{
 			in: "2001.04.28 [250]",
-			line: 1,
 			out:  Session{
-				Line: 1,
 				Date: time.Parse("2006/01/02", "2001/04/28"),
 				Reward: 250,
 			},
@@ -107,9 +89,7 @@ func Test_ParseSession(t *testing.T) {
 		},
 		{
 			in: "2001.04.28 [250] success",
-			line: 1,
 			out:  Session{
-				Line: 1,
 				Date: time.Parse("2006/01/02", "2001/04/28"),
 				Title: "success",
 				Reward: 250,
@@ -118,9 +98,7 @@ func Test_ParseSession(t *testing.T) {
 		},
 		{
 			in: "2001.04.28 success [250]",
-			line: 1,
 			out:  Session{
-				Line: 1,
 				Date: time.Parse("2006/01/02", "2001/04/28"),
 				Title: "success",
 				Reward: 250,
@@ -129,9 +107,7 @@ func Test_ParseSession(t *testing.T) {
 		},
 		{
 			in: "	2001.04.28	success	[250]",
-			line: 1,
 			out:  Session{
-				Line: 1,
 				Date: time.Parse("2006/01/02", "2001/04/28"),
 				Title: "success",
 				Reward: 250,
@@ -141,7 +117,7 @@ func Test_ParseSession(t *testing.T) {
 	}
 
 	for i, c := range cases {
-		out, err := ParseSession(c.line, c.in)
+		out, err := ParseSession(Line{Text: c.in, Number: 1})
 		if (err != nil) != c.err {
 			t.Logf("Unexpected error on case %d:", i+1)
 			t.Logf("	Having %s", err)
