@@ -8,23 +8,27 @@ type Upgrade interface {
 	Mark string
 	Name string
 	Cost string
+	Line int
 }
 
 // ParseUpgrade generate an upgrade from a raw line
-func ParseUpgrade(raw string) (Upgrade, error) {
-	upgrade := Upgrade{}
+func ParseUpgrade(raw string, line int) (Upgrade, error) {
+	// Initialize a new upgrade
+	upgrade := Upgrade{
+		Line: line,
+	}
 	
 	// Get the fields of the line
 	fields := strings.Fields(raw)
 	
 	// The minimum number of fields is 2
 	if len(fields) < 2 {
-		return upgrade, fmt.Errorf("not enought")
+		return Upgrade{}, fmt.Errorf("not enought")
 	}
 	
 	// Check that the mark is a valid one
 	if !in(fields[0], []string{"*", "+", "-"}) {
-		return upgrade, fmt.Errorf("%s isn't a valid mark", fields[0])
+		return Upgrade{}, fmt.Errorf("%s isn't a valid mark", fields[0])
 	}
 	
 	// Set the upgrade mark
