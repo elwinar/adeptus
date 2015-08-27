@@ -70,7 +70,7 @@ func Test_ParseSession(t *testing.T) {
 			line: 1,
 			out:  Session{
 				Line: 1,
-				Date: time.Parse("2006/03/02", "2001/04/28"),
+				Date: time.Parse("2006/01/02", "2001/04/28"),
 				Title: "success",
 			},
 			err:  false,
@@ -80,7 +80,7 @@ func Test_ParseSession(t *testing.T) {
 			line: 1,
 			out:  Session{
 				Line: 1,
-				Date: time.Parse("2006/03/02", "2001/04/28"),
+				Date: time.Parse("2006/01/02", "2001/04/28"),
 				Title: "success",
 			},
 			err:  false,
@@ -90,7 +90,7 @@ func Test_ParseSession(t *testing.T) {
 			line: 1,
 			out:  Session{
 				Line: 1,
-				Date: time.Parse("2006/03/02", "2001/04/28"),
+				Date: time.Parse("2006/01/02", "2001/04/28"),
 				Title: "success",
 			},
 			err:  false,
@@ -100,7 +100,7 @@ func Test_ParseSession(t *testing.T) {
 			line: 1,
 			out:  Session{
 				Line: 1,
-				Date: time.Parse("2006/03/02", "2001/04/28"),
+				Date: time.Parse("2006/01/02", "2001/04/28"),
 				Reward: 250,
 			},
 			err:  false,
@@ -110,7 +110,7 @@ func Test_ParseSession(t *testing.T) {
 			line: 1,
 			out:  Session{
 				Line: 1,
-				Date: time.Parse("2006/03/02", "2001/04/28"),
+				Date: time.Parse("2006/01/02", "2001/04/28"),
 				Title: "success",
 				Reward: 250,
 			},
@@ -121,7 +121,7 @@ func Test_ParseSession(t *testing.T) {
 			line: 1,
 			out:  Session{
 				Line: 1,
-				Date: time.Parse("2006/03/02", "2001/04/28"),
+				Date: time.Parse("2006/01/02", "2001/04/28"),
 				Title: "success",
 				Reward: 250,
 			},
@@ -132,7 +132,7 @@ func Test_ParseSession(t *testing.T) {
 			line: 1,
 			out:  Session{
 				Line: 1,
-				Date: time.Parse("2006/03/02", "2001/04/28"),
+				Date: time.Parse("2006/01/02", "2001/04/28"),
 				Title: "success",
 				Reward: 250,
 			},

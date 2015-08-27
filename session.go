@@ -10,6 +10,12 @@ type Session struct {
 	Upgrades []Upgrade
 }
 
+formats := []string{
+	"2006/02/01",
+	"2006-02-01",
+	"2006.02.01",
+}
+
 func ParseSession(line int, raw string) (Session, error) {
 	session := Session{
 		line: line,
