@@ -11,7 +11,7 @@ func Test_in(t *testing.T) {
 		out   bool
 	}{
 		{
-			in:    "",
+			in:    "a",
 			slice: []string{},
 			out:   false,
 		},
@@ -24,6 +24,21 @@ func Test_in(t *testing.T) {
 			in:    "a",
 			slice: []string{"a", "b", "c"},
 			out:   true,
+		},
+		{
+			in:    "b",
+			slice: []string{"a", "b", "c"},
+			out:   true,
+		},
+		{
+			in:    "c",
+			slice: []string{"a", "b", "c"},
+			out:   true,
+		},
+		{
+			in:    "d",
+			slice: []string{"a", "b", "c"},
+			out:   false,
 		},
 	}
 
