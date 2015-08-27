@@ -1,72 +1,73 @@
 package adeptus
 
 import (
+	"reflect"
 	"testing"
 )
 
 func Test_ParseUpgrade(t *testing.T) {
 	cases := []struct {
-		in   string
-		out  RawUpgrade
-		err  bool
+		in  string
+		out RawUpgrade
+		err bool
 	}{
 		{
-			in:   "",
-			out:  RawUpgrade{},
-			err:  true,
+			in:  "",
+			out: RawUpgrade{},
+			err: true,
 		},
 		{
 			in: "	",
-			out:  RawUpgrade{},
-			err:  true,
+			out: RawUpgrade{},
+			err: true,
 		},
 		{
 			in: " 	 ",
-			out:  RawUpgrade{},
-			err:  true,
-		},
-		{
-			in: "fail",
-			out:  RawUpgrade{},
-			err:  true,
-		},
-		{
-			in: "x fail",
-			out:  RawUpgrade{},
-			err:  true,
-		},
-		{
-			in: "*",
-			out:  RawUpgrade{},
-			err:  true,
-		},
-		{
-			in: "* [250]",
 			out: RawUpgrade{},
 			err: true,
 		},
 		{
-			in: "* fail [250] fail",
+			in:  "fail",
 			out: RawUpgrade{},
 			err: true,
 		},
 		{
-			in: "* fail [ 250]",
+			in:  "x fail",
 			out: RawUpgrade{},
 			err: true,
 		},
 		{
-			in: "* fail [abba250]",
+			in:  "*",
 			out: RawUpgrade{},
 			err: true,
 		},
 		{
-			in: "* fail 250]",
+			in:  "* [250]",
 			out: RawUpgrade{},
 			err: true,
 		},
 		{
-			in: "* fail [250",
+			in:  "* fail [250] fail",
+			out: RawUpgrade{},
+			err: true,
+		},
+		{
+			in:  "* fail [ 250]",
+			out: RawUpgrade{},
+			err: true,
+		},
+		{
+			in:  "* fail [abba250]",
+			out: RawUpgrade{},
+			err: true,
+		},
+		{
+			in:  "* fail 250]",
+			out: RawUpgrade{},
+			err: true,
+		},
+		{
+			in:  "* fail [250",
 			out: RawUpgrade{},
 			err: true,
 		},
@@ -79,91 +80,118 @@ func Test_ParseUpgrade(t *testing.T) {
 			err: false,
 		},
 		{
-			in: "* [250] success",
+			in: "* success confirmed!",
 			out: RawUpgrade{
 				mark: "*",
-				name: "success",
+				name: "success confirmed!",
+			},
+			err: false,
+		},
+		{
+			in: "* success 	(confirmed)",
+			out: RawUpgrade{
+				mark: "*",
+				name: "success (confirmed)",
+			},
+			err: false,
+		},
+		{
+			in: "* [250] success",
+			out: RawUpgrade{
+				mark:       "*",
+				name:       "success",
+				cost:       250,
+				customCost: true,
 			},
 			err: false,
 		},
 		{
 			in: "* success [250]",
 			out: RawUpgrade{
-				mark: "*",
-				name: "success",
-				cost: "250",
+				mark:       "*",
+				name:       "success",
+				cost:       250,
+				customCost: true,
 			},
 			err: false,
 		},
 		{
 			in: "  * [250] success",
 			out: RawUpgrade{
-				mark: "*",
-				name: "success",
-				cost: "250",
+				mark:       "*",
+				name:       "success",
+				cost:       250,
+				customCost: true,
 			},
 			err: false,
 		},
 		{
 			in: "	* [250] success",
 			out: RawUpgrade{
-				mark: "*",
-				name: "success",
-				cost: "250",
+				mark:       "*",
+				name:       "success",
+				cost:       250,
+				customCost: true,
 			},
 			err: false,
 		},
 		{
 			in: "* success +4 [250]",
 			out: RawUpgrade{
-				mark: "*",
-				name: "success +4",
-				cost: "250",
+				mark:       "*",
+				name:       "success +4",
+				cost:       250,
+				customCost: true,
 			},
 			err: false,
 		},
 		{
 			in: "* success	+4	[250]",
 			out: RawUpgrade{
-				mark: "*",
-				name: "success +4",
-				cost: "250",
+				mark:       "*",
+				name:       "success +4",
+				cost:       250,
+				customCost: true,
 			},
 			err: false,
 		},
 		{
 			in: "* success: confirmed [250]",
 			out: RawUpgrade{
-				mark: "*",
-				name: "success: confirmed",
-				cost: "250",
+				mark:       "*",
+				name:       "success: confirmed",
+				cost:       250,
+				customCost: true,
 			},
 			err: false,
 		},
 		{
 			in: " * success - confirmed	[250]",
 			out: RawUpgrade{
-				mark: "*",
-				name: "success - confirmed",
-				cost: "250",
+				mark:       "*",
+				name:       "success - confirmed",
+				cost:       250,
+				customCost: true,
 			},
 			err: false,
 		},
 		{
 			in: "* success (confirmed) [250]",
 			out: RawUpgrade{
-				mark: "*",
-				name: "success (confirmed)",
-				cost: "250",
+				mark:       "*",
+				name:       "success (confirmed)",
+				cost:       250,
+				customCost: true,
 			},
 			err: false,
 		},
 		{
 			in: " *	success	(confirmed) [250]",
 			out: RawUpgrade{
-				mark: "*",
-				name: "success (confirmed)",
-				cost: "250",
+				mark:       "*",
+				name:       "success (confirmed)",
+				cost:       250,
+				customCost: true,
 			},
 			err: false,
 		},
@@ -177,7 +205,7 @@ func Test_ParseUpgrade(t *testing.T) {
 			t.Fail()
 			continue
 		}
-		if out != c.out {
+		if !reflect.DeepEqual(out, c.out) {
 			t.Logf("Unexpected output on case %d:", i+1)
 			t.Logf("	Expected %v", c.out)
 			t.Logf("	Having %v", out)

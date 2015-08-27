@@ -10,9 +10,10 @@ type Upgrade interface {
 }
 
 type RawUpgrade struct {
-	mark string
-	name string
-	cost string
+	mark       string
+	name       string
+	cost       int
+	customCost bool
 }
 
 // ParseUpgrade generate an upgrade from a raw line
@@ -37,30 +38,33 @@ func ParseUpgrade(line Line) (RawUpgrade, error) {
 	fields = fields[1:]
 
 	// Check if a field seems to be a cost field
-	var cost string
+	var customCost bool = false
+	var cost int
+	var err error
 	for i, field := range fields {
-		
+
 		if strings.HasPrefix(field, "[") || strings.HasSuffix(field, "]") {
-		
+
 			// Check that the field has both brackets. If only one bracket is present, there is an error
 			if strings.HasPrefix(field, "[") != strings.HasSuffix(field, "]") {
 				return upgrade, fmt.Errorf("Error on line %d: brackets [] must open-close and contain no blank.", line.Number)
 			}
-		
+
 			// Check position of xp
-			if i == 0 || i == len(fields) - 1 {
-				return upgrade, fmt.Errorf("Error on line %d: experience must be after mark or at the end of line.", line.Number)
+			if i != 0 && i != len(fields)-1 {
+				return upgrade, fmt.Errorf("Error on line %d: experience must be in second or last position of the line.", line.Number)
 			}
-			
+
 			// Check value of xp
-			cost = strings.TrimSuffix(strings.TrimPrefix(field, "["), "]")
-			_, err := strconv.Atoi(cost)
-			if err || len(cost) == 0 {
-				return upgrade, fmt.Errorf("Error on line %d: expected number, \"%s\" is no numeric value.", line.Number, cost)
+			xp := strings.TrimSuffix(strings.TrimPrefix(field, "["), "]")
+			cost, err = strconv.Atoi(xp)
+			if err != nil || len(xp) == 0 {
+				return upgrade, fmt.Errorf("Error on line %d: expected number, \"%s\" is no numeric value.", line.Number, xp)
 			}
-			
+
 			// remove xp from field slice
 			fields = append(fields[:i], fields[i+1:]...)
+			customCost = true
 			break
 		}
 	}
@@ -71,6 +75,7 @@ func ParseUpgrade(line Line) (RawUpgrade, error) {
 	}
 
 	// Set the upgrade attributes at the end to return empty upgrade in case of error
+	upgrade.customCost = customCost
 	upgrade.mark = mark
 	upgrade.cost = cost
 	upgrade.name = strings.Join(fields, " ")
