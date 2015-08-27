@@ -2,12 +2,7 @@ package adeptus
 
 import (
 	"fmt"
-	"regexp"
 	"strings"
-)
-
-var (
-	regex_xp = regexp.MustCompile(`(?i)\(?\d+xp\)?`) // Match `150xp`, `150XP` and `(150xp)`
 )
 
 type Upgrade interface {
@@ -46,13 +41,29 @@ func ParseUpgrade(line int, raw string) (RawUpgrade, error) {
 	// Check if a field seems to be a cost field
 	var cost string
 	for i, field := range fields {
-		if !regex_xp.MatchString(field) {
-			continue
+		
+		// matches (250xp)
+		if strings.HasPrefix(field, "(") && strings.HasSuffix(field, "xp)") {
+			cost = strings.TrimSuffix(strings.TrimPrefix(field, "("), "xp)")
+			// TODO: should be integer
+			if len(cost) == 0 {
+				return upgrade, fmt.Errorf("Error on line %d: xp has no value. Expected number.", line)
+			}
 		}
-
-		cost = regexp.MustCompile(`\d+`).FindString(field)
-		fields = append(fields[:i], fields[i+1:]...)
-		break
+		
+		// matches 250xp
+		if strings.HasPrefix(field, "xp") {
+			cost = strings.TrimSuffix(field, "xp")
+			// TODO: should be integer
+			if len(cost) == 0 {
+				return upgrade, fmt.Errorf("Error on line %d: xp has no value. Expected number.", line)
+			}
+		}
+		
+		if len(cost) != 0 {
+			fields = append(fields[:i], fields[i+1:]...)
+			break
+		}
 	}
 
 	// The remaining line is the name of the upgrade
