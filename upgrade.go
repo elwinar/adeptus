@@ -14,13 +14,8 @@ type Upgrade interface {
 func ParseUpgrade(raw string) (Upgrade, error) {
 	upgrade := Upgrade{}
 	
-	// Split the line on its whitespaces
-	fields := strings.FieldsFunc(raw, splitter(' ', '	'))
-	for i := 0; i < len(fields); i++ {
-		if fields[i] == "" {
-			fields = append(fields[:i], fields[i+1:])
-		}
-	}
+	// Get the fields of the line
+	fields := strings.Fields(raw)
 	
 	// The minimum number of fields is 2
 	if len(fields) < 2 {

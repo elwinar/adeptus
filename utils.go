@@ -9,15 +9,3 @@ func in(needle string, haystack []string) bool {
 	}
 	return false
 }
-
-// splitter return a function for the strings.FieldsFunc
-func splitter(delimiters ...rune) func(c rune) bool {
-	return func(c rune) bool {
-		for _, d := range delimiters {
-			if c == d {
-				return true
-			}
-		}
-		return false
-	}
-}
