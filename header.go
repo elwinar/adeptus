@@ -17,7 +17,7 @@ func ParseHeader(block []Line) (Header, error) {
 	
 	header := Header{}
 	for _, line := range block {
-		fields := strings.SplitN(block, ":", 2)
+		fields := strings.SplitN(line.Text, ":", 2)
 		if len(fields) < 2 {
 			return Header{}, fmt.Errorf("Error on line %d: Expected pair key:value.", line.Number)
 		}

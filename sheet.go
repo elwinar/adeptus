@@ -66,7 +66,9 @@ func ParseSheet(file io.Reader) (Sheet, error) {
 		return sheet, nil
 	}
 	buffer = buffer[1:]
-	for i, block := range buffer {
+
+	// For each remaining block, parse it as a session block
+	for _, block := range buffer {
 		s, err := ParseSession(block)
 		if err != nil {
 			return Sheet{}, err

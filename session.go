@@ -97,7 +97,7 @@ func ParseSession(block []Line) (Session, error) {
 	for _, line := range block {
 		u, err := ParseUpgrade(line)
 		if err != nil {
-			return session{}, err
+			return Session{}, err
 		}
 		session.Upgrades = append(session.Upgrades, u)
 	}
