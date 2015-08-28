@@ -34,7 +34,7 @@ func ParseSheet(file io.Reader) (Sheet, error) {
 		}
 
 		// If line is not empty, stock it
-		if line.IsEmpty() {
+		if !line.IsEmpty() {
 			block = append(block, line)
 			continue
 		}
