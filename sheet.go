@@ -11,7 +11,16 @@ type Sheet struct {
 	Sessions []Session
 }
 
+type headerParser func([]Line) (Header, error)
+type sessionParser func([]Line) (Session, error)
+
 func ParseSheet(file io.Reader) (Sheet, error) {
+	return parseSheet(file, parseHeader, parseSession)
+}
+
+// non-exported function for parseSheet:
+// dependency injection (parseH, parseS)
+func parseSheet(file io.Reader, parseH headerParser, parseS sessionParser) (Sheet, error) {
 
 	sheet := Sheet{}
 
@@ -64,13 +73,10 @@ func ParseSheet(file io.Reader) (Sheet, error) {
 		return sheet, fmt.Errorf("unable to parse sheet: %s", err)
 	}
 	sheet.Header = h
-
-	// Remove the header block from the buffer
-	buffer = buffer[1:]
-
-	// For each remaining block, parse it as a session block
-	for _, block := range buffer {
-		s, err := ParseSession(block)
+	
+	// Parse sessions
+	for i, block := range buffer[1:] {
+		s, err := parseS(block)
 		if err != nil {
 			return Sheet{}, fmt.Errorf("unable to parse sheet: %s", err)
 		}

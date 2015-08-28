@@ -40,6 +40,23 @@ func ParseHeader(block []Line) (Header, error) {
 			default:
 				return Header{}, fmt.Errorf("Error on line %d: Undefined key: \"%s\".", line.Number, key)
 		}
+	
+		// every field must be informed
+		if header.Name == "" {
+				return Header{}, fmt.Errorf("Undefined character's name. Set name:<name> In header.")
+		}
+		if header.Origin == "" {
+				return Header{}, fmt.Errorf("Undefined character's origin. Set origin:<origin> In header.")
+		}
+		if header.Background == "" {
+				return Header{}, fmt.Errorf("Undefined character's background. Set background:<background> In header.")
+		}
+		if header.Role == "" {
+				return Header{}, fmt.Errorf("Undefined character's role. Set role:<role> In header.")
+		}
+		if header.Tarot == "" {
+				return Header{}, fmt.Errorf("Undefined character's tarot. Set tarot:<tarot> In header.")
+		}
 	}
 
 	return header, nil

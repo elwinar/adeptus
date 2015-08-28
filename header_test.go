@@ -38,29 +38,96 @@ func Test_ParseHeader(t *testing.T) {
 		},
 		{
 			in: []Line{
-				Line{Text: "NamE:success"},
+				Line{Text: "name: fail"},
 			},
-			out: Header{
-				Name: "success"
-			},
-			err: false
+			out: Header{},
+			err: true
 		},
 		{
 			in: []Line{
-				Line{Text: "	name	:	success	"},
+				Line{Text: "name: fail"},
+				Line{Text: "origin: fail"},
 			},
-			out: Header{
-				Name: "success"
-			},
-			err: false
+			out: Header{},
+			err: true
 		},
 		{
 			in: []Line{
-				Line{Text: "role: successful role"},
+				Line{Text: "name: fail"},
+				Line{Text: "origin: fail"},
+				Line{Text: "background: fail"},
+			},
+			out: Header{},
+			err: true
+		},
+		{
+			in: []Line{
+				Line{Text: "name: fail"},
+				Line{Text: "origin: fail"},
+				Line{Text: "background: fail"},
+				Line{Text: "role: fail"},
+			},
+			out: Header{},
+			err: true
+		},
+		{
+			in: []Line{
+				Line{Text: "rolE: successful role"},
 				Line{Text: "name: successful name"},
 				Line{Text: "tarot: successful tarot"},
 				Line{Text: "background: successful background"},
 				Line{Text: "origin: successful origin"},
+			},
+			out: Header{
+				Name: "successful name",
+				Origin: "successful origin",
+				Background: "successful background",
+				Role: "successful role",
+				Tarot: "successful tarot",
+			},
+			err: false
+		},
+		{
+			in: []Line{
+				Line{Text: "role	: successful role"},
+				Line{Text: "name	: successful name"},
+				Line{Text: "tarot	: successful tarot"},
+				Line{Text: "background	: successful background"},
+				Line{Text: "origin	: successful origin"},
+			},
+			out: Header{
+				Name: "successful name",
+				Origin: "successful origin",
+				Background: "successful background",
+				Role: "successful role",
+				Tarot: "successful tarot",
+			},
+			err: false
+		},
+		{
+			in: []Line{
+				Line{Text: "role: 	successful role"},
+				Line{Text: "name: 	successful name"},
+				Line{Text: "tarot: 	successful tarot"},
+				Line{Text: "background: 	successful background"},
+				Line{Text: "origin: 	successful origin"},
+			},
+			out: Header{
+				Name: "successful name",
+				Origin: "successful origin",
+				Background: "successful background",
+				Role: "successful role",
+				Tarot: "successful tarot",
+			},
+			err: false
+		},
+		{
+			in: []Line{
+				Line{Text: "	role: successful role"},
+				Line{Text: "	name: successful name"},
+				Line{Text: "	tarot: successful tarot"},
+				Line{Text: "	background: successful background"},
+				Line{Text: "	origin: successful origin"},
 			},
 			out: Header{
 				Name: "successful name",
