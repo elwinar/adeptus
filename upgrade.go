@@ -16,8 +16,8 @@ type RawUpgrade struct {
 	customCost bool
 }
 
-// ParseUpgrade generate an upgrade from a raw line
-func ParseUpgrade(line Line) (RawUpgrade, error) {
+// parseUpgrade generate an upgrade from a raw line
+func parseUpgrade(line Line) (RawUpgrade, error) {
 	upgrade := RawUpgrade{}
 
 	// Get the fields of the line

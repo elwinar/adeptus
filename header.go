@@ -13,6 +13,7 @@ type Header struct {
 	Tarot		string
 }
 
+// ParseHeader generate a Header from a block of lines
 func ParseHeader(block []Line) (Header, error) {
 	
 	header := Header{}
@@ -22,6 +23,7 @@ func ParseHeader(block []Line) (Header, error) {
 			return Header{}, fmt.Errorf("Error on line %d: Expected pair key:value.", line.Number)
 		}
 		
+		// Check key:value
 		key := strings.TrimSpace(strings.ToLower(fields[0]))
 		value := strings.TrimSpace(fields[1])
 		switch key {

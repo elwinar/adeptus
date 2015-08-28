@@ -14,6 +14,8 @@ type Session struct {
 	Upgrades []Upgrade
 }
 
+type upgradeParser func(Line) (Upgrade, error)
+
 var formats []string = []string{
 	"2006/01/02",
 	"2006-01-02",
@@ -21,7 +23,14 @@ var formats []string = []string{
 	"20060102",
 }
 
-func ParseSession(block []Line) (Session, error) {
+// ParseSession generate a Session from a block of lines
+func ParseSession(block, []Line) (Session, error) {
+	return parseSession(block, parseUpgrade)
+}
+
+// non-exported function for parseSession:
+// dependency injection (parser)
+func parseSession(block []Line, parse upgradeParser) (Session, error) {
 
 	session := Session{}
 	if len(block) < 1 {
@@ -96,7 +105,7 @@ func ParseSession(block []Line) (Session, error) {
 	}
 	block = block[1:]
 	for _, line := range block {
-		u, err := ParseUpgrade(line)
+		u, err := parse(line)
 		if err != nil {
 			return Session{}, err
 		}
