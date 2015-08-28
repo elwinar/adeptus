@@ -18,6 +18,7 @@ var formats []string = []string{
 	"2006/01/02",
 	"2006-01-02",
 	"2006.01.02",
+	"20060102",
 }
 
 func ParseSession(block []Line) (Session, error) {
