@@ -15,7 +15,7 @@ type headerParser func([]Line) (Header, error)
 type sessionParser func([]Line) (Session, error)
 
 func ParseSheet(file io.Reader) (Sheet, error) {
-	return parseSheet(file, parseHeader, parseSession)
+	return parseSheet(file, ParseHeader, ParseSession)
 }
 
 // non-exported function for parseSheet:
@@ -56,26 +56,31 @@ func parseSheet(file io.Reader, parseH headerParser, parseS sessionParser) (Shee
 			block = []Line{}
 		}
 	}
+	
+	// Retrieve the last block
+	if len(block) != 0 {
+		buffer = append(buffer, block)
+	}
 
 	// In case of error, return now
 	if scanner.Err() != nil {
 		return sheet, fmt.Errorf("error while reading the sheet: %s", scanner.Err())
 	}
-	
+
 	// Check there is at least one block
 	if len(buffer) == 0 {
-		return sheet, fmt.Errorf("invalid sheet: sheet should contain at least a complete header") 
+		return sheet, fmt.Errorf("invalid sheet: sheet should contain at least a complete header")
 	}
-	
+
 	// Parse the header
-	h, err := ParseHeader(buffer[0])
+	h, err := parseH(buffer[0])
 	if err != nil {
 		return sheet, fmt.Errorf("unable to parse sheet: %s", err)
 	}
 	sheet.Header = h
-	
+
 	// Parse sessions
-	for i, block := range buffer[1:] {
+	for _, block := range buffer[1:] {
 		s, err := parseS(block)
 		if err != nil {
 			return Sheet{}, fmt.Errorf("unable to parse sheet: %s", err)
@@ -84,4 +89,3 @@ func parseSheet(file io.Reader, parseH headerParser, parseS sessionParser) (Shee
 	}
 	return sheet, nil
 }
-

@@ -1,47 +1,48 @@
 package adeptus
 
-import(
+import (
+	"reflect"
 	"testing"
 )
 
 func Test_ParseHeader(t *testing.T) {
-	cases := []struct{
-		in []Line
-		out	Header
-		err	bool
+	cases := []struct {
+		in  []Line
+		out Header
+		err bool
 	}{
 		{
-			in: []Line{},
+			in:  []Line{},
 			out: Header{},
-			err: true
+			err: true,
 		},
 		{
 			in: []Line{
 				Line{Text: "fail"},
 			},
 			out: Header{},
-			err: true
+			err: true,
 		},
 		{
 			in: []Line{
 				Line{Text: ":"},
 			},
 			out: Header{},
-			err: true
+			err: true,
 		},
 		{
 			in: []Line{
 				Line{Text: "fail:fail"},
 			},
 			out: Header{},
-			err: true
+			err: true,
 		},
 		{
 			in: []Line{
 				Line{Text: "name: fail"},
 			},
 			out: Header{},
-			err: true
+			err: true,
 		},
 		{
 			in: []Line{
@@ -49,7 +50,7 @@ func Test_ParseHeader(t *testing.T) {
 				Line{Text: "origin: fail"},
 			},
 			out: Header{},
-			err: true
+			err: true,
 		},
 		{
 			in: []Line{
@@ -58,7 +59,7 @@ func Test_ParseHeader(t *testing.T) {
 				Line{Text: "background: fail"},
 			},
 			out: Header{},
-			err: true
+			err: true,
 		},
 		{
 			in: []Line{
@@ -68,7 +69,7 @@ func Test_ParseHeader(t *testing.T) {
 				Line{Text: "role: fail"},
 			},
 			out: Header{},
-			err: true
+			err: true,
 		},
 		{
 			in: []Line{
@@ -79,13 +80,13 @@ func Test_ParseHeader(t *testing.T) {
 				Line{Text: "origin: successful origin"},
 			},
 			out: Header{
-				Name: "successful name",
-				Origin: "successful origin",
+				Name:       "successful name",
+				Origin:     "successful origin",
 				Background: "successful background",
-				Role: "successful role",
-				Tarot: "successful tarot",
+				Role:       "successful role",
+				Tarot:      "successful tarot",
 			},
-			err: false
+			err: false,
 		},
 		{
 			in: []Line{
@@ -96,13 +97,13 @@ func Test_ParseHeader(t *testing.T) {
 				Line{Text: "origin	: successful origin"},
 			},
 			out: Header{
-				Name: "successful name",
-				Origin: "successful origin",
+				Name:       "successful name",
+				Origin:     "successful origin",
 				Background: "successful background",
-				Role: "successful role",
-				Tarot: "successful tarot",
+				Role:       "successful role",
+				Tarot:      "successful tarot",
 			},
-			err: false
+			err: false,
 		},
 		{
 			in: []Line{
@@ -113,13 +114,13 @@ func Test_ParseHeader(t *testing.T) {
 				Line{Text: "origin: 	successful origin"},
 			},
 			out: Header{
-				Name: "successful name",
-				Origin: "successful origin",
+				Name:       "successful name",
+				Origin:     "successful origin",
 				Background: "successful background",
-				Role: "successful role",
-				Tarot: "successful tarot",
+				Role:       "successful role",
+				Tarot:      "successful tarot",
 			},
-			err: false
+			err: false,
 		},
 		{
 			in: []Line{
@@ -130,13 +131,13 @@ func Test_ParseHeader(t *testing.T) {
 				Line{Text: "	origin: successful origin"},
 			},
 			out: Header{
-				Name: "successful name",
-				Origin: "successful origin",
+				Name:       "successful name",
+				Origin:     "successful origin",
 				Background: "successful background",
-				Role: "successful role",
-				Tarot: "successful tarot",
+				Role:       "successful role",
+				Tarot:      "successful tarot",
 			},
-			err: false
+			err: false,
 		},
 	}
 
@@ -155,5 +156,5 @@ func Test_ParseHeader(t *testing.T) {
 			t.Fail()
 		}
 	}
-	
+
 }

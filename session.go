@@ -24,8 +24,8 @@ var formats []string = []string{
 }
 
 // ParseSession generate a Session from a block of lines
-func ParseSession(block, []Line) (Session, error) {
-	return parseSession(block, parseUpgrade)
+func ParseSession(block []Line) (Session, error) {
+	return parseSession(block, ParseUpgrade)
 }
 
 // non-exported function for parseSession:
@@ -63,10 +63,12 @@ func parseSession(block []Line, parse upgradeParser) (Session, error) {
 	if err != nil {
 		return session, fmt.Errorf("Error on line %d: invalid date format. Expecting \"YYYY/MM/DD\", \"YYYY.MM.DD\" or \"YYY-MM-DD.\"", line.Number)
 	}
+	
+	fields = fields[1:]
 
 	// Check if a field seems to be a reward field
 	var reward int
-	for i, field := range fields[1:] {
+	for i, field := range fields {
 
 		if strings.HasPrefix(field, "[") || strings.HasSuffix(field, "]") {
 
@@ -97,7 +99,7 @@ func parseSession(block []Line, parse upgradeParser) (Session, error) {
 	session.Date = date
 	session.Reward = reward
 	session.Title = strings.Join(fields, " ")
-	
+
 	// Parse upgrades
 	block = block[1:]
 	for _, line := range block {

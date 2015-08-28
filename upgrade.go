@@ -17,7 +17,7 @@ type RawUpgrade struct {
 }
 
 // parseUpgrade generate an upgrade from a raw line
-func parseUpgrade(line Line) (RawUpgrade, error) {
+func ParseUpgrade(line Line) (Upgrade, error) {
 	upgrade := RawUpgrade{}
 
 	// Get the fields of the line

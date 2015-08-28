@@ -198,7 +198,7 @@ func Test_ParseUpgrade(t *testing.T) {
 	}
 
 	for i, c := range cases {
-		out, err := ParseUpgrade(Line{Text: c.in})
+		out, err := ParseUpgrade(c.in)
 		if (err != nil) != c.err {
 			t.Logf("Unexpected error on case %d:", i+1)
 			t.Logf("	Having %s", err)

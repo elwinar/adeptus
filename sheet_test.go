@@ -1,8 +1,10 @@
 package adeptus
 
-import(
-	"testing"
+import (
+	"errors"
 	"os"
+	"reflect"
+	"testing"
 )
 
 func successSessionParser(_ []Line) (Session, error) {
@@ -15,11 +17,11 @@ func successHeaderParser(_ []Line) (Header, error) {
 	return Header{}, nil
 }
 func failHeaderParser(_ []Line) (Header, error) {
-	return Session{}, errors.New("fail")
+	return Header{}, errors.New("fail")
 }
 
-func Test_ParseSheet(t *testing.T) {
-	cases := []struct{
+func Test_parseSheet(t *testing.T) {
+	cases := []struct {
 		in string
 		sessionParser
 		headerParser
@@ -27,46 +29,39 @@ func Test_ParseSheet(t *testing.T) {
 		err bool
 	}{
 		{
-			in: "tests/empty-file.40k",
-			headerParser: successHeaderParser,
+			in:            "tests/empty-file.40k",
+			headerParser:  successHeaderParser,
 			sessionParser: successSessionParser,
-			out: Sheet{},
-			err: true,
+			out:           Sheet{},
+			err:           true,
 		},
 		{
-			in: "tests/comments-only.40k",
-			headerParser: successHeaderParser,
+			in:            "tests/comments-only.40k",
+			headerParser:  successHeaderParser,
 			sessionParser: successSessionParser,
-			out: Sheet{},
-			err: true,
+			out:           Sheet{},
+			err:           true,
 		},
 		{
-			in: "tests/wrong-header.40k",
-			headerParser: failHeaderParser,
+			in:            "tests/fail.40k",
+			headerParser:  failHeaderParser,
 			sessionParser: successSessionParser,
-			out: Sheet{},
-			err: true,
+			out:           Sheet{},
+			err:           true,
 		},
 		{
-			in: "tests/wrong-session.40k",
-			headerParser: successHeaderParser,
+			in:            "tests/fail.40k",
+			headerParser:  successHeaderParser,
 			sessionParser: failSessionParser,
-			out: Sheet{},
-			err: true,
+			out:           Sheet{},
+			err:           true,
 		},
 		{
-			in: "tests/no-session.40k",
-			headerParser: successHeaderParser,
-			sessionParser: failSessionParser,
-			out: Sheet{},
-			err: false,
-		},
-		{
-			in: "tests/success.40k",
-			headerParser: successHeaderParser,
+			in:            "tests/success.40k",
+			headerParser:  successHeaderParser,
 			sessionParser: successSessionParser,
-			out: Sheet{},
-			err: false,
+			out:           Sheet{},
+			err:           false,
 		},
 	}
 
@@ -75,7 +70,7 @@ func Test_ParseSheet(t *testing.T) {
 		if err != nil {
 			t.Fatalf("Unable to open file %s.", c.in)
 		}
-		out, err := Test_parseSheet(in, c.headerParser, c.sessionParser)
+		out, err := parseSheet(in, c.headerParser, c.sessionParser)
 		if (err != nil) != c.err {
 			t.Logf("Unexpected error on case %d:", i+1)
 			t.Logf("	Having %s", err)
@@ -89,5 +84,5 @@ func Test_ParseSheet(t *testing.T) {
 			t.Fail()
 		}
 	}
-	
+
 }
