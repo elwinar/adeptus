@@ -47,34 +47,35 @@ func ParseSheet(file io.Reader) (Sheet, error) {
 			block = []Line{}
 		}
 	}
+
+	// In case of error, return now
 	if scanner.Err() != nil {
-		return sheet, fmt.Errorf("Error during scan.")
+		return sheet, fmt.Errorf("error while reading the sheet: %s", scanner.Err())
 	}
 	
-	// Parse header
-	if len(buffer) < 1 {
-		return sheet, fmt.Errorf("Empy file. Expecting at least a complete header."), 
+	// Check there is at least one block
+	if len(buffer) == 0 {
+		return sheet, fmt.Errorf("invalid sheet: sheet should contain at least a complete header") 
 	}
+	
+	// Parse the header
 	h, err := ParseHeader(buffer[0])
 	if err != nil {
-		return sheet, err
+		return sheet, fmt.Errorf("unable to parse sheet: %s", err)
 	}
 	sheet.Header = h
-	
-	// Parse sessions
-	if len(buffer) < 2 {
-		return sheet, nil
-	}
+
+	// Remove the header block from the buffer
 	buffer = buffer[1:]
 
 	// For each remaining block, parse it as a session block
 	for _, block := range buffer {
 		s, err := ParseSession(block)
 		if err != nil {
-			return Sheet{}, err
+			return Sheet{}, fmt.Errorf("unable to parse sheet: %s", err)
 		}
 		sheet.Sessions = append(sheet.Sessions, s)
 	}
 	return sheet, nil
-
 }
+
