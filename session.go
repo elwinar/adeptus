@@ -20,9 +20,13 @@ var formats []string = []string{
 	"2006.01.02",
 }
 
-func ParseSession(line Line) (Session, error) {
+func ParseSession(block []Line) (Session, error) {
 
 	session := Session{}
+	if len(block) < 1 {
+		return session, fmt.Errorf("Unexpected block size.")
+	}
+	line := block[0]
 
 	// Get the fields of the line
 	fields := strings.Fields(line.Text)
@@ -84,6 +88,19 @@ func ParseSession(line Line) (Session, error) {
 	session.Date = date
 	session.Reward = reward
 	session.Title = strings.Join(fields, " ")
+	
+	// Parse upgrades
+	if len(block) < 2 {
+		return session, nil
+	}
+	block = block[1:]
+	for _, line := range block {
+		u, err := ParseUpgrade(line)
+		if err != nil {
+			return session{}, err
+		}
+		session.Upgrades = append(session.Upgrades, u)
+	}
 
 	return session, nil
 }

@@ -7,72 +7,72 @@ import (
 
 func Test_ParseUpgrade(t *testing.T) {
 	cases := []struct {
-		in  string
+		in  Line
 		out RawUpgrade
 		err bool
 	}{
 		{
-			in:  "",
+			in:  Line{Text: ""},
 			out: RawUpgrade{},
 			err: true,
 		},
 		{
-			in: "	",
+			in: Line{Text: "	"},
 			out: RawUpgrade{},
 			err: true,
 		},
 		{
-			in: " 	 ",
+			in: Line{Text: " 	 "},
 			out: RawUpgrade{},
 			err: true,
 		},
 		{
-			in:  "fail",
+			in:  Line{Text: "fail"},
 			out: RawUpgrade{},
 			err: true,
 		},
 		{
-			in:  "x fail",
+			in:  Line{Text: "x fail"},
 			out: RawUpgrade{},
 			err: true,
 		},
 		{
-			in:  "*",
+			in:  Line{Text: "*"},
 			out: RawUpgrade{},
 			err: true,
 		},
 		{
-			in:  "* [250]",
+			in:  Line{Text: "* [250]"},
 			out: RawUpgrade{},
 			err: true,
 		},
 		{
-			in:  "* fail [250] fail",
+			in:  Line{Text: "* fail [250] fail"},
 			out: RawUpgrade{},
 			err: true,
 		},
 		{
-			in:  "* fail [ 250]",
+			in:  Line{Text: "* fail [ 250]"},
 			out: RawUpgrade{},
 			err: true,
 		},
 		{
-			in:  "* fail [abba250]",
+			in:  Line{Text: "* fail [abba250]"},
 			out: RawUpgrade{},
 			err: true,
 		},
 		{
-			in:  "* fail 250]",
+			in:  Line{Text: "* fail 250]"},
 			out: RawUpgrade{},
 			err: true,
 		},
 		{
-			in:  "* fail [250",
+			in:  Line{Text: "* fail [250"},
 			out: RawUpgrade{},
 			err: true,
 		},
 		{
-			in: "* success",
+			in: Line{Text: "* success"},
 			out: RawUpgrade{
 				mark: "*",
 				name: "success",
@@ -80,7 +80,7 @@ func Test_ParseUpgrade(t *testing.T) {
 			err: false,
 		},
 		{
-			in: "* success confirmed!",
+			in: Line{Text: "* success confirmed!"},
 			out: RawUpgrade{
 				mark: "*",
 				name: "success confirmed!",
@@ -88,7 +88,7 @@ func Test_ParseUpgrade(t *testing.T) {
 			err: false,
 		},
 		{
-			in: "* success 	(confirmed)",
+			in: Line{Text: "* success 	(confirmed)"},
 			out: RawUpgrade{
 				mark: "*",
 				name: "success (confirmed)",
@@ -96,7 +96,7 @@ func Test_ParseUpgrade(t *testing.T) {
 			err: false,
 		},
 		{
-			in: "* [250] success",
+			in: Line{Text: "* [250] success"},
 			out: RawUpgrade{
 				mark:       "*",
 				name:       "success",
@@ -106,7 +106,7 @@ func Test_ParseUpgrade(t *testing.T) {
 			err: false,
 		},
 		{
-			in: "* success [250]",
+			in: Line{Text: "* success [250]"},
 			out: RawUpgrade{
 				mark:       "*",
 				name:       "success",
@@ -116,7 +116,7 @@ func Test_ParseUpgrade(t *testing.T) {
 			err: false,
 		},
 		{
-			in: "  * [250] success",
+			in: Line{Text: "  * [250] success"},
 			out: RawUpgrade{
 				mark:       "*",
 				name:       "success",
@@ -126,7 +126,7 @@ func Test_ParseUpgrade(t *testing.T) {
 			err: false,
 		},
 		{
-			in: "	* [250] success",
+			in: Line{Text: "	* [250] success"},
 			out: RawUpgrade{
 				mark:       "*",
 				name:       "success",
@@ -136,7 +136,7 @@ func Test_ParseUpgrade(t *testing.T) {
 			err: false,
 		},
 		{
-			in: "* success +4 [250]",
+			in: Line{Text: "* success +4 [250]"},
 			out: RawUpgrade{
 				mark:       "*",
 				name:       "success +4",
@@ -146,7 +146,7 @@ func Test_ParseUpgrade(t *testing.T) {
 			err: false,
 		},
 		{
-			in: "* success	+4	[250]",
+			in: Line{Text: "* success	+4	[250]"},
 			out: RawUpgrade{
 				mark:       "*",
 				name:       "success +4",
@@ -156,7 +156,7 @@ func Test_ParseUpgrade(t *testing.T) {
 			err: false,
 		},
 		{
-			in: "* success: confirmed [250]",
+			in: Line{Text: "* success: confirmed [250]"},
 			out: RawUpgrade{
 				mark:       "*",
 				name:       "success: confirmed",
@@ -166,7 +166,7 @@ func Test_ParseUpgrade(t *testing.T) {
 			err: false,
 		},
 		{
-			in: " * success - confirmed	[250]",
+			in: Line{Text: " * success - confirmed	[250]"},
 			out: RawUpgrade{
 				mark:       "*",
 				name:       "success - confirmed",
@@ -176,7 +176,7 @@ func Test_ParseUpgrade(t *testing.T) {
 			err: false,
 		},
 		{
-			in: "* success (confirmed) [250]",
+			in: Line{Text: "* success (confirmed) [250]"},
 			out: RawUpgrade{
 				mark:       "*",
 				name:       "success (confirmed)",
@@ -186,7 +186,7 @@ func Test_ParseUpgrade(t *testing.T) {
 			err: false,
 		},
 		{
-			in: " *	success	(confirmed) [250]",
+			in: Line{Text: " *	success	(confirmed) [250]"},
 			out: RawUpgrade{
 				mark:       "*",
 				name:       "success (confirmed)",
@@ -198,7 +198,7 @@ func Test_ParseUpgrade(t *testing.T) {
 	}
 
 	for i, c := range cases {
-		out, err := ParseUpgrade(Line{Text: c.in, Number: 1})
+		out, err := ParseUpgrade(Line{Text: c.in})
 		if (err != nil) != c.err {
 			t.Logf("Unexpected error on case %d:", i+1)
 			t.Logf("	Having %s", err)

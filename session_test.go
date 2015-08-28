@@ -8,72 +8,77 @@ import (
 
 func Test_ParseSession(t *testing.T) {
 	cases := []struct {
-		in  string
+		in  []Line
 		out Session
 		err bool
 	}{
 		{
-			in:  "",
+			in:  []Line{},
 			out: Session{},
 			err: true,
 		},
 		{
-			in: "	",
+			in:  []Line{Line{Text:""}},
 			out: Session{},
 			err: true,
 		},
 		{
-			in: " 	 ",
+			in: []Line{Line{Text:"	"}},
 			out: Session{},
 			err: true,
 		},
 		{
-			in:  "fail",
+			in: []Line{Line{Text:" 	 "}},
 			out: Session{},
 			err: true,
 		},
 		{
-			in:  "200 01 01",
+			in:  []Line{Line{Text:"fail"}},
 			out: Session{},
 			err: true,
 		},
 		{
-			in:  "2001 04 28",
+			in:  []Line{Line{Text:"200 01 01"}},
 			out: Session{},
 			err: true,
 		},
 		{
-			in:  "2001_04_28",
+			in:  []Line{Line{Text:"2001 04 28"}},
 			out: Session{},
 			err: true,
 		},
 		{
-			in:  "2001.04.28 [250",
+			in:  []Line{Line{Text:"2001_04_28"}},
 			out: Session{},
 			err: true,
 		},
 		{
-			in:  "2001.04.28 250]",
+			in:  []Line{Line{Text:"2001.04.28 [250"}},
 			out: Session{},
 			err: true,
 		},
 		{
-			in:  "2001.04.28 fail [250] fail",
+			in:  []Line{Line{Text:"2001.04.28 250]"}},
 			out: Session{},
 			err: true,
 		},
 		{
-			in:  "2001.04.28 fail [ 250]",
+			in:  []Line{Line{Text:"2001.04.28 fail [250] fail"}},
 			out: Session{},
 			err: true,
 		},
 		{
-			in:  "2001.04.28 fail [abba250]",
+			in:  []Line{Line{Text:"2001.04.28 fail [ 250]"}},
 			out: Session{},
 			err: true,
 		},
 		{
-			in: "2001/04/28 success",
+			in:  []Line{Line{Text:"2001.04.28 fail [abba250]"}},
+			out: Session{},
+			err: true,
+		},
+		{
+			in: []Line{Line{Text:"2001/04/28 success"}},
 			out: Session{
 				Date:  time.Date(2001, time.April, 28, 0, 0, 0, 0, time.UTC),
 				Title: "success",
@@ -81,7 +86,7 @@ func Test_ParseSession(t *testing.T) {
 			err: false,
 		},
 		{
-			in: "2001-04-28 success",
+			in: []Line{Line{Text:"2001-04-28 success"}},
 			out: Session{
 				Date:  time.Date(2001, time.April, 28, 0, 0, 0, 0, time.UTC),
 				Title: "success",
@@ -89,7 +94,7 @@ func Test_ParseSession(t *testing.T) {
 			err: false,
 		},
 		{
-			in: "2001.04.28 success",
+			in: []Line{Line{Text:"2001.04.28 success"}},
 			out: Session{
 				Date:  time.Date(2001, time.April, 28, 0, 0, 0, 0, time.UTC),
 				Title: "success",
@@ -97,7 +102,7 @@ func Test_ParseSession(t *testing.T) {
 			err: false,
 		},
 		{
-			in: "2001.04.28 [250]",
+			in: []Line{Line{Text:"2001.04.28 [250]"}},
 			out: Session{
 				Date:   time.Date(2001, time.April, 28, 0, 0, 0, 0, time.UTC),
 				Reward: 250,
@@ -105,7 +110,7 @@ func Test_ParseSession(t *testing.T) {
 			err: false,
 		},
 		{
-			in: "2001.04.28 [250] success",
+			in: []Line{Line{Text:"2001.04.28 [250] success"}},
 			out: Session{
 				Date:   time.Date(2001, time.April, 28, 0, 0, 0, 0, time.UTC),
 				Title:  "success",
@@ -114,7 +119,7 @@ func Test_ParseSession(t *testing.T) {
 			err: false,
 		},
 		{
-			in: "2001.04.28 success [250]",
+			in: []Line{Line{Text:"2001.04.28 success [250]"}},
 			out: Session{
 				Date:   time.Date(2001, time.April, 28, 0, 0, 0, 0, time.UTC),
 				Title:  "success",
@@ -123,18 +128,43 @@ func Test_ParseSession(t *testing.T) {
 			err: false,
 		},
 		{
-			in: "	2001.04.28	success	[250]",
+			in: []Line{Line{Text:"	2001.04.28	success	[250]"}},
 			out: Session{
 				Date:   time.Date(2001, time.April, 28, 0, 0, 0, 0, time.UTC),
 				Title:  "success",
 				Reward: 250,
 			},
 			err: false,
+		},
+		{
+			in: []Line{
+				Line{Text:"2001.04.28	success	[250]"}},
+				Line{Text:"	* WP +5"}},
+			},
+			out: Session{
+				Date:   time.Date(2001, time.April, 28, 0, 0, 0, 0, time.UTC),
+				Title:  "success",
+				Reward: 250,
+			},
+			err: false,
+		},
+		{
+			in: []Line{
+				Line{Text:"2001.04.28	success	[250]"}},
+				Line{Text:"	* WP +5"}},
+				Line{Text:"	x WP +5"}}, // provokes an error: incorrect mark
+			},
+			out: Session{
+				Date:   time.Date(2001, time.April, 28, 0, 0, 0, 0, time.UTC),
+				Title:  "success",
+				Reward: 250,
+			},
+			err: true,
 		},
 	}
 
 	for i, c := range cases {
-		out, err := ParseSession(Line{Text: c.in, Number: 1})
+		out, err := ParseSession(c.in)
 		if (err != nil) != c.err {
 			t.Logf("Unexpected error on case %d:", i+1)
 			t.Logf("	Having %s", err)

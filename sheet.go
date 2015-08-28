@@ -7,7 +7,7 @@ import (
 )
 
 type Sheet struct {
-	Header   map[string]string
+	Header   Header
 	Sessions []Session
 }
 
@@ -46,11 +46,33 @@ func ParseSheet(file io.Reader) (Sheet, error) {
 			buffer = append(buffer, block)
 			block = []Line{}
 		}
-
 	}
 	if scanner.Err() != nil {
-		return Sheet{}, fmt.Errorf("Error during scan.")
+		return sheet, fmt.Errorf("Error during scan.")
 	}
-
+	
+	// Parse header
+	if len(buffer) < 1 {
+		return sheet, fmt.Errorf("Empy file. Expecting at least a complete header."), 
+	}
+	h, err := ParseHeader(buffer[0])
+	if err != nil {
+		return sheet, err
+	}
+	sheet.Header = h
+	
+	// Parse sessions
+	if len(buffer) < 2 {
+		return sheet, nil
+	}
+	buffer = buffer[1:]
+	for i, block := range buffer {
+		s, err := ParseSession(block)
+		if err != nil {
+			return Sheet{}, err
+		}
+		sheet.Sessions = append(sheet.Sessions, s)
+	}
 	return sheet, nil
+
 }
