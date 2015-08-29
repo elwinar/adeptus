@@ -54,7 +54,9 @@ func ParseSheet(file io.Reader) (Sheet, error) {
 	}
 
 	// Append the last block to the buffer
-	buffer = append(buffer, block)
+	if len(block) != 0 {
+		buffer = append(buffer, block)
+	}
 
 	// Check there is at least one block
 	if len(buffer) == 0 {

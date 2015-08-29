@@ -117,6 +117,14 @@ func Test_parseSession(t *testing.T) {
 		},
 		{
 			in: []string{
+				"2001/04/28 [250] fail [250]",
+			},
+			out: Session{},
+			err:   true,
+			panic: false,
+		},
+		{
+			in: []string{
 				"2001/04/28 success",
 			},
 			out: Session{

@@ -76,6 +76,11 @@ func Test_parseUpgrade(t *testing.T) {
 			err: true,
 		},
 		{
+			in: "* [250] fail [250]",
+			out: Upgrade{},
+			err: true,
+		},
+		{
 			in: "* success",
 			out: Upgrade{
 				Mark: "*",

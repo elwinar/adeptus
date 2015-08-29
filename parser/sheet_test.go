@@ -1,12 +1,21 @@
 package parser
 
 import (
+	"errors"
 	"io"
 	"reflect"
 	"strings"
 	"testing"
 	"time"
 )
+
+type ErrorIoReader struct {}
+
+func (r ErrorIoReader) Read(p []byte) (n int, err error) {
+	n = 0
+	err = errors.New("read error")
+	return
+}
 
 func Test_ParseSheet(t *testing.T) {
 	cases := []struct {
@@ -16,18 +25,24 @@ func Test_ParseSheet(t *testing.T) {
 		panic bool
 	}{
 		{
-			in:    nil,
+			in:    ErrorIoReader{},
 			out:   Sheet{},
 			err:   false,
 			panic: true,
+		},
+		{
+			in:    strings.NewReader(``),
+			out:   Sheet{},
+			err:   true,
+			panic: false,
 		},
 		{
 			in: strings.NewReader(`#  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum rhoncus porta tellus, eget placerat libero dictum ac. Sed massa ex, vehicula eget egestas quis, rutrum non quam. Quisque blandit lacus ac erat posuere pellentesque. Integer vitae eleifend nisi. Duis hendrerit facilisis blandit. Ut sed semper eros. Vestibulum laoreet consequat leo id interdum. Ut mauris justo, tincidunt ac tortor eu, auctor auctor eros. 
 //  Duis id tincidunt lacus. Etiam a tincidunt urna. In et sapien vitae eros tempus cursus vitae dignissim felis. Etiam eget scelerisque nibh, eget maximus quam. Sed vitae elit id velit feugiat elementum. Praesent viverra tincidunt mi, nec posuere diam sodales ut. Fusce lectus nisi, venenatis sit amet accumsan placerat, luctus nec nulla. Donec eget metus sed ante ornare iaculis. 
 `),
 			out:   Sheet{},
-			err:   false,
-			panic: true,
+			err:   true,
+			panic: false,
 		},
 		{
 			in: strings.NewReader(`Babar: Celeste
