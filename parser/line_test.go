@@ -1,35 +1,40 @@
-package adeptus
+package parser
 
 import (
 	"testing"
 )
 
-func Test_Line_IsEmpty(t *testing.T) {
+func Test_newLine(t *testing.T) {
+	t.Fatalf("unimplemented")
+}
+
+func Test_line_IsEmpty(t *testing.T) {
 
 	cases := []struct {
-		in  Line
+		in  string
 		out bool
 	}{
 		{
-			in:  Line{Text: "Not empty"},
+			in:  "Not empty",
 			out: false,
 		},
 		{
-			in:  Line{Text: " "},
-			out: false,
+			in:  " ",
+			out: true,
 		},
 		{
-			in: Line{Text: "	"},
-			out: false,
+			in: "	",
+			out: true,
 		},
 		{
-			in:  Line{Text: ""},
+			in:  "",
 			out: true,
 		},
 	}
 
 	for i, c := range cases {
-		out := c.in.IsEmpty()
+		out := newLine(c.in, 0).IsEmpty()
+
 		if out != c.out {
 			t.Logf("Unexpected output on case %d:", i+1)
 			t.Logf("	Expected %v", c.out)
@@ -39,44 +44,45 @@ func Test_Line_IsEmpty(t *testing.T) {
 	}
 }
 
-func Test_Line_IsComment(t *testing.T) {
+func Test_line_IsComment(t *testing.T) {
 
 	cases := []struct {
-		in  Line
+		in  string
 		out bool
 	}{
 		{
-			in:  Line{Text: "Not a comment"},
+			in:  "Not a comment",
 			out: false,
 		},
 		{
-			in:  Line{Text: "* Not a comment"},
+			in:  "* Not a comment",
 			out: false,
 		},
 		{
-			in:  Line{Text: "+ Not a comment"},
+			in:  "+ Not a comment",
 			out: false,
 		},
 		{
-			in:  Line{Text: "/ / Not a comment"},
+			in:  "/ / Not a comment",
 			out: false,
 		},
 		{
-			in:  Line{Text: "// A comment"},
+			in:  "// A comment",
 			out: true,
 		},
 		{
-			in:  Line{Text: "# A comment"},
+			in:  "# A comment",
 			out: true,
 		},
 		{
-			in:  Line{Text: "; A comment"},
+			in:  "; A comment",
 			out: true,
 		},
 	}
 
 	for i, c := range cases {
-		out := c.in.IsComment()
+		out := newLine(c.in, 0).IsComment()
+
 		if out != c.out {
 			t.Logf("Unexpected output on case %d:", i+1)
 			t.Logf("	Expected %v", c.out)

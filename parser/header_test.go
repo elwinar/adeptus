@@ -1,4 +1,4 @@
-package adeptus
+package parser
 
 import (
 	"reflect"
@@ -7,77 +7,77 @@ import (
 
 func Test_ParseHeader(t *testing.T) {
 	cases := []struct {
-		in  []Line
+		in  []string
 		out Header
 		err bool
 	}{
 		{
-			in:  []Line{},
+			in:  []string{},
 			out: Header{},
 			err: true,
 		},
 		{
-			in: []Line{
-				Line{Text: "fail"},
+			in: []string{
+				"fail",
 			},
 			out: Header{},
 			err: true,
 		},
 		{
-			in: []Line{
-				Line{Text: ":"},
+			in: []string{
+				":",
 			},
 			out: Header{},
 			err: true,
 		},
 		{
-			in: []Line{
-				Line{Text: "fail:fail"},
+			in: []string{
+				"fail:fail",
 			},
 			out: Header{},
 			err: true,
 		},
 		{
-			in: []Line{
-				Line{Text: "name: fail"},
+			in: []string{
+				"name: fail",
 			},
 			out: Header{},
 			err: true,
 		},
 		{
-			in: []Line{
-				Line{Text: "name: fail"},
-				Line{Text: "origin: fail"},
+			in: []string{
+				"name: fail",
+				"origin: fail",
 			},
 			out: Header{},
 			err: true,
 		},
 		{
-			in: []Line{
-				Line{Text: "name: fail"},
-				Line{Text: "origin: fail"},
-				Line{Text: "background: fail"},
+			in: []string{
+				"name: fail",
+				"origin: fail",
+				"background: fail",
 			},
 			out: Header{},
 			err: true,
 		},
 		{
-			in: []Line{
-				Line{Text: "name: fail"},
-				Line{Text: "origin: fail"},
-				Line{Text: "background: fail"},
-				Line{Text: "role: fail"},
+			in: []string{
+				"name: fail",
+				"origin: fail",
+				"background: fail",
+				"role: fail",
 			},
 			out: Header{},
 			err: true,
 		},
 		{
-			in: []Line{
-				Line{Text: "rolE: successful role"},
-				Line{Text: "name: successful name"},
-				Line{Text: "tarot: successful tarot"},
-				Line{Text: "background: successful background"},
-				Line{Text: "origin: successful origin"},
+			in: []string{
+				"rolE: successful role",
+				"name: successful name",
+				"tarot: successful tarot",
+				"background: successful background",
+				"origin: successful origin",
 			},
 			out: Header{
 				Name:       "successful name",
@@ -89,12 +89,12 @@ func Test_ParseHeader(t *testing.T) {
 			err: false,
 		},
 		{
-			in: []Line{
-				Line{Text: "role	: successful role"},
-				Line{Text: "name	: successful name"},
-				Line{Text: "tarot	: successful tarot"},
-				Line{Text: "background	: successful background"},
-				Line{Text: "origin	: successful origin"},
+			in: []string{
+				"role	: successful role",
+				"name	: successful name",
+				"tarot	: successful tarot",
+				"background	: successful background",
+				"origin	: successful origin",
 			},
 			out: Header{
 				Name:       "successful name",
@@ -106,12 +106,12 @@ func Test_ParseHeader(t *testing.T) {
 			err: false,
 		},
 		{
-			in: []Line{
-				Line{Text: "role: 	successful role"},
-				Line{Text: "name: 	successful name"},
-				Line{Text: "tarot: 	successful tarot"},
-				Line{Text: "background: 	successful background"},
-				Line{Text: "origin: 	successful origin"},
+			in: []string{
+				"role: 	successful role",
+				"name: 	successful name",
+				"tarot: 	successful tarot",
+				"background: 	successful background",
+				"origin: 	successful origin",
 			},
 			out: Header{
 				Name:       "successful name",
@@ -123,12 +123,12 @@ func Test_ParseHeader(t *testing.T) {
 			err: false,
 		},
 		{
-			in: []Line{
-				Line{Text: "	role: successful role"},
-				Line{Text: "	name: successful name"},
-				Line{Text: "	tarot: successful tarot"},
-				Line{Text: "	background: successful background"},
-				Line{Text: "	origin: successful origin"},
+			in: []string{
+				"	role: successful role",
+				"	name: successful name",
+				"	tarot: successful tarot",
+				"	background: successful background",
+				"	origin: successful origin",
 			},
 			out: Header{
 				Name:       "successful name",
@@ -142,7 +142,12 @@ func Test_ParseHeader(t *testing.T) {
 	}
 
 	for i, c := range cases {
-		out, err := ParseHeader(c.in)
+		in := []line{}
+		for number, text := range c.in {
+			in = append(in, newLine(text, number))
+		}
+
+		out, err := parseHeader(in)
 		if (err != nil) != c.err {
 			t.Logf("Unexpected error on case %d:", i+1)
 			t.Logf("	Having %s", err)

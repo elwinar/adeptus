@@ -1,4 +1,4 @@
-package adeptus
+package parser
 
 import (
 	"testing"
