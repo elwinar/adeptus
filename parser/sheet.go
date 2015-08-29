@@ -52,7 +52,7 @@ func ParseSheet(file io.Reader) (Sheet, error) {
 	if scanner.Err() != nil {
 		panic(fmt.Sprintf("unable to read sheet: %s", scanner.Err()))
 	}
-	
+
 	// Append the last block to the buffer
 	buffer = append(buffer, block)
 
@@ -60,7 +60,7 @@ func ParseSheet(file io.Reader) (Sheet, error) {
 	if len(buffer) == 0 {
 		return Sheet{}, NewError(0, EmptySheet)
 	}
-	
+
 	// Parse the first block as header
 	header, err := parseHeader(buffer[0])
 	if err != nil {

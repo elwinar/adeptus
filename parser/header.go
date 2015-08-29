@@ -19,7 +19,7 @@ func parseHeader(block []line) (Header, error) {
 	if len(block) == 0 {
 		panic("empty block")
 	}
-	
+
 	// Initialize the values to find
 	var name, origin, background, role, tarot *string
 

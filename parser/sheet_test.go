@@ -89,7 +89,7 @@ Tarot: XXI
 					Tarot:      StringP("XXI"),
 				},
 				Sessions: []Session{
-					Session {
+					Session{
 						Date:   time.Date(2015, time.June, 01, 0, 0, 0, 0, time.UTC),
 						Title:  "Creation",
 						Reward: IntP(500),

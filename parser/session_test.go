@@ -8,111 +8,111 @@ import (
 
 func Test_parseSession(t *testing.T) {
 	cases := []struct {
-		in  []string
-		out Session
-		err bool
+		in    []string
+		out   Session
+		err   bool
 		panic bool
 	}{
 		{
-			in:  []string{},
-			out: Session{},
-			err: false,
+			in:    []string{},
+			out:   Session{},
+			err:   false,
 			panic: true,
 		},
 		{
 			in: []string{
 				"",
 			},
-			out: Session{},
-			err: false,
+			out:   Session{},
+			err:   false,
 			panic: true,
 		},
 		{
 			in: []string{
 				"	",
 			},
-			out: Session{},
-			err: false,
+			out:   Session{},
+			err:   false,
 			panic: true,
 		},
 		{
 			in: []string{
 				" 	 ",
 			},
-			out: Session{},
-			err: false,
+			out:   Session{},
+			err:   false,
 			panic: true,
 		},
 		{
 			in: []string{
 				"fail",
 			},
-			out: Session{},
-			err: true,
+			out:   Session{},
+			err:   true,
 			panic: false,
 		},
 		{
 			in: []string{
 				"200 01 01",
 			},
-			out: Session{},
-			err: true,
+			out:   Session{},
+			err:   true,
 			panic: false,
 		},
 		{
 			in: []string{
 				"2001 04 28",
 			},
-			out: Session{},
-			err: true,
+			out:   Session{},
+			err:   true,
 			panic: false,
 		},
 		{
 			in: []string{
 				"2001_04_28",
 			},
-			out: Session{},
-			err: true,
+			out:   Session{},
+			err:   true,
 			panic: false,
 		},
 		{
 			in: []string{
 				"2001.04.28 [250",
 			},
-			out: Session{},
-			err: true,
+			out:   Session{},
+			err:   true,
 			panic: false,
 		},
 		{
 			in: []string{
 				"2001.04.28 250]",
 			},
-			out: Session{},
-			err: true,
+			out:   Session{},
+			err:   true,
 			panic: false,
 		},
 		{
 			in: []string{
 				"2001.04.28 fail [250] fail",
 			},
-			out: Session{},
-			err: true,
+			out:   Session{},
+			err:   true,
 			panic: false,
 		},
 		{
 			in: []string{
 				"2001.04.28 fail [ 250]",
 			},
-			out: Session{},
-			err: true,
+			out:   Session{},
+			err:   true,
 			panic: false,
 		},
 		{
 			in: []string{
 				"2001.04.28 fail [abba250]",
 			},
-			out: Session{},
-			err: true,
+			out:   Session{},
+			err:   true,
 			panic: false,
 		},
 		{
@@ -120,12 +120,12 @@ func Test_parseSession(t *testing.T) {
 				"2001/04/28 success",
 			},
 			out: Session{
-				Date:  time.Date(2001, time.April, 28, 0, 0, 0, 0, time.UTC),
-				Title: "success",
-				Reward: nil,
+				Date:     time.Date(2001, time.April, 28, 0, 0, 0, 0, time.UTC),
+				Title:    "success",
+				Reward:   nil,
 				Upgrades: []Upgrade{},
 			},
-			err: false,
+			err:   false,
 			panic: false,
 		},
 		{
@@ -133,12 +133,12 @@ func Test_parseSession(t *testing.T) {
 				"2001-04-28 success",
 			},
 			out: Session{
-				Date:  time.Date(2001, time.April, 28, 0, 0, 0, 0, time.UTC),
-				Title: "success",
-				Reward: nil,
+				Date:     time.Date(2001, time.April, 28, 0, 0, 0, 0, time.UTC),
+				Title:    "success",
+				Reward:   nil,
 				Upgrades: []Upgrade{},
 			},
-			err: false,
+			err:   false,
 			panic: false,
 		},
 		{
@@ -146,12 +146,12 @@ func Test_parseSession(t *testing.T) {
 				"2001.04.28 success",
 			},
 			out: Session{
-				Date:  time.Date(2001, time.April, 28, 0, 0, 0, 0, time.UTC),
-				Title: "success",
-				Reward: nil,
+				Date:     time.Date(2001, time.April, 28, 0, 0, 0, 0, time.UTC),
+				Title:    "success",
+				Reward:   nil,
 				Upgrades: []Upgrade{},
 			},
-			err: false,
+			err:   false,
 			panic: false,
 		},
 		{
@@ -159,12 +159,12 @@ func Test_parseSession(t *testing.T) {
 				"2001.04.28 [250]",
 			},
 			out: Session{
-				Date:   time.Date(2001, time.April, 28, 0, 0, 0, 0, time.UTC),
-				Title: "",
-				Reward: IntP(250),
+				Date:     time.Date(2001, time.April, 28, 0, 0, 0, 0, time.UTC),
+				Title:    "",
+				Reward:   IntP(250),
 				Upgrades: []Upgrade{},
 			},
-			err: false,
+			err:   false,
 			panic: false,
 		},
 		{
@@ -172,12 +172,12 @@ func Test_parseSession(t *testing.T) {
 				"2001.04.28 [250] success",
 			},
 			out: Session{
-				Date:   time.Date(2001, time.April, 28, 0, 0, 0, 0, time.UTC),
-				Title:  "success",
-				Reward: IntP(250),
+				Date:     time.Date(2001, time.April, 28, 0, 0, 0, 0, time.UTC),
+				Title:    "success",
+				Reward:   IntP(250),
 				Upgrades: []Upgrade{},
 			},
-			err: false,
+			err:   false,
 			panic: false,
 		},
 		{
@@ -185,12 +185,12 @@ func Test_parseSession(t *testing.T) {
 				"2001.04.28 success [250]",
 			},
 			out: Session{
-				Date:   time.Date(2001, time.April, 28, 0, 0, 0, 0, time.UTC),
-				Title:  "success",
-				Reward: IntP(250),
+				Date:     time.Date(2001, time.April, 28, 0, 0, 0, 0, time.UTC),
+				Title:    "success",
+				Reward:   IntP(250),
 				Upgrades: []Upgrade{},
 			},
-			err: false,
+			err:   false,
 			panic: false,
 		},
 		{
@@ -198,12 +198,12 @@ func Test_parseSession(t *testing.T) {
 				"	2001.04.28	success	[250]",
 			},
 			out: Session{
-				Date:   time.Date(2001, time.April, 28, 0, 0, 0, 0, time.UTC),
-				Title:  "success",
-				Reward: IntP(250),
+				Date:     time.Date(2001, time.April, 28, 0, 0, 0, 0, time.UTC),
+				Title:    "success",
+				Reward:   IntP(250),
 				Upgrades: []Upgrade{},
 			},
-			err: false,
+			err:   false,
 			panic: false,
 		},
 		{
@@ -211,8 +211,17 @@ func Test_parseSession(t *testing.T) {
 				"2001.04.28	success	[250]",
 				"",
 			},
-			out: Session{},
-			err: true,
+			out:   Session{},
+			err:   false,
+			panic: true,
+		},
+		{
+			in: []string{
+				"2001.04.28	success	[250]",
+				"fsrfwsf",
+			},
+			out:   Session{},
+			err:   true,
 			panic: false,
 		},
 		{
@@ -228,23 +237,23 @@ func Test_parseSession(t *testing.T) {
 				Reward: IntP(250),
 				Upgrades: []Upgrade{
 					Upgrade{
-						Mark:"*",
+						Mark: "*",
 						Name: "WP +5",
 						Cost: nil,
 					},
 					Upgrade{
-						Mark:"*",
+						Mark: "*",
 						Name: "WS +5",
 						Cost: nil,
 					},
 					Upgrade{
-						Mark:"*",
+						Mark: "*",
 						Name: "BS +5",
 						Cost: nil,
 					},
 				},
 			},
-			err: false,
+			err:   false,
 			panic: false,
 		},
 		{
@@ -252,9 +261,9 @@ func Test_parseSession(t *testing.T) {
 				"2001.04.28	success	[250]",
 				"",
 			},
-			out: Session{},
-			err: true,
-			panic: false,
+			out:   Session{},
+			err:   false,
+			panic: true,
 		},
 	}
 
@@ -270,12 +279,11 @@ func Test_parseSession(t *testing.T) {
 					panic = true
 				}
 			}()
-			
+
 			out, err = parseSession(in)
 			return
 		}()
-		
-		
+
 		if (err != nil) != c.err {
 			if err == nil {
 				t.Logf("Expected error on case %d", i+1)
@@ -291,7 +299,7 @@ func Test_parseSession(t *testing.T) {
 			t.Logf("	Having %v", out)
 			t.Fail()
 		}
-		
+
 		if panic != c.panic {
 			if panic {
 				t.Logf("Unexpected panic on case %d", i+1)

@@ -83,7 +83,7 @@ func parseUpgrade(line line) (Upgrade, error) {
 		if err != nil {
 			return Upgrade{}, NewError(line.Number, InvalidCost)
 		}
-		
+
 		// Check the cost is positive
 		if c < 0 {
 			return Upgrade{}, NewError(line.Number, InvalidCost)

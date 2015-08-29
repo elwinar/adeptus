@@ -7,27 +7,27 @@ import (
 
 func Test_parseUpgrade(t *testing.T) {
 	cases := []struct {
-		in  string
-		out Upgrade
-		err bool
+		in    string
+		out   Upgrade
+		err   bool
 		panic bool
 	}{
 		{
-			in:  "",
-			out: Upgrade{},
-			err: false,
+			in:    "",
+			out:   Upgrade{},
+			err:   false,
 			panic: true,
 		},
 		{
 			in: "	",
-			out: Upgrade{},
-			err: false,
+			out:   Upgrade{},
+			err:   false,
 			panic: true,
 		},
 		{
 			in: " 	 ",
-			out: Upgrade{},
-			err: false,
+			out:   Upgrade{},
+			err:   false,
 			panic: true,
 		},
 		{
