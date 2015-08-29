@@ -12,8 +12,14 @@ type Header struct {
 	Tarot      *string
 }
 
-// ParseHeader generate a Header from a block of lines
+// ParseHeader generate a Header from a block of lines. The block must not be
+// empty.
 func parseHeader(block []line) (Header, error) {
+	// Check the block is non-empty
+	if len(block) == 0 {
+		panic("empty block")
+	}
+	
 	// Initialize the values to find
 	var name, origin, background, role, tarot *string
 

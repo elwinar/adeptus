@@ -10,11 +10,13 @@ func Test_ParseHeader(t *testing.T) {
 		in  []string
 		out Header
 		err bool
+		panic bool
 	}{
 		{
 			in:  []string{},
 			out: Header{},
-			err: true,
+			err: false,
+			panic: true,
 		},
 		{
 			in: []string{
@@ -22,6 +24,7 @@ func Test_ParseHeader(t *testing.T) {
 			},
 			out: Header{},
 			err: true,
+			panic: false,
 		},
 		{
 			in: []string{
@@ -29,6 +32,7 @@ func Test_ParseHeader(t *testing.T) {
 			},
 			out: Header{},
 			err: true,
+			panic: false,
 		},
 		{
 			in: []string{
@@ -36,40 +40,17 @@ func Test_ParseHeader(t *testing.T) {
 			},
 			out: Header{},
 			err: true,
+			panic: false,
 		},
 		{
 			in: []string{
-				"name: fail",
+				"name: success",
 			},
-			out: Header{},
-			err: true,
-		},
-		{
-			in: []string{
-				"name: fail",
-				"origin: fail",
+			out: Header{
+				Name: StringP("success"),
 			},
-			out: Header{},
-			err: true,
-		},
-		{
-			in: []string{
-				"name: fail",
-				"origin: fail",
-				"background: fail",
-			},
-			out: Header{},
-			err: true,
-		},
-		{
-			in: []string{
-				"name: fail",
-				"origin: fail",
-				"background: fail",
-				"role: fail",
-			},
-			out: Header{},
-			err: true,
+			err: false,
+			panic: false,
 		},
 		{
 			in: []string{
@@ -87,6 +68,7 @@ func Test_ParseHeader(t *testing.T) {
 				Tarot:      StringP("successful tarot"),
 			},
 			err: false,
+			panic: false,
 		},
 		{
 			in: []string{
@@ -104,6 +86,7 @@ func Test_ParseHeader(t *testing.T) {
 				Tarot:      StringP("successful tarot"),
 			},
 			err: false,
+			panic: false,
 		},
 		{
 			in: []string{
@@ -121,6 +104,7 @@ func Test_ParseHeader(t *testing.T) {
 				Tarot:      StringP("successful tarot"),
 			},
 			err: false,
+			panic: false,
 		},
 		{
 			in: []string{
@@ -138,6 +122,7 @@ func Test_ParseHeader(t *testing.T) {
 				Tarot:      StringP("successful tarot"),
 			},
 			err: false,
+			panic: false,
 		},
 	}
 
@@ -147,17 +132,39 @@ func Test_ParseHeader(t *testing.T) {
 			in = append(in, newLine(text, number))
 		}
 
-		out, err := parseHeader(in)
+		out, err, panic := func() (out Header, err error, panic bool) {
+			defer func() {
+				if e := recover(); e != nil {
+					panic = true
+				}
+			}()
+			
+			out, err = parseHeader(in)
+			return
+		}()
+		
 		if (err != nil) != c.err {
-			t.Logf("Unexpected error on case %d:", i+1)
-			t.Logf("	Having %s", err)
+			if err == nil {
+				t.Logf("Expected error on case %d", i+1)
+			} else {
+				t.Logf("Unexpected error on case %d: %s", i+1, err)
+			}
 			t.Fail()
-			continue
 		}
+		
 		if !reflect.DeepEqual(out, c.out) {
 			t.Logf("Unexpected output on case %d:", i+1)
 			t.Logf("	Expected %v", c.out)
 			t.Logf("	Having %v", out)
+			t.Fail()
+		}
+		
+		if panic != c.panic {
+			if panic {
+				t.Logf("Unexpected panic on case %d", i+1)
+			} else {
+				t.Logf("Should panic on case %d", i+1)
+			}
 			t.Fail()
 		}
 	}
