@@ -63,10 +63,14 @@ func parseSession(block []line) (Session, error) {
 	if err != nil {
 		return Session{}, NewError(headline.Number, NoDate)
 	}
+	
+	// Remove the date from the fields
+	fields = fields[1:]
 
 	// Check if a field seems to be a reward field
 	var reward *int
-	for i, field := range fields[1:] {
+	for i, field := range fields {
+		
 		// If one end has the brackets but not the other, that's an error:
 		// brackets does by pairs, and are forbidden in the title
 		if strings.HasPrefix(field, "[") != strings.HasSuffix(field, "]") {
@@ -77,7 +81,7 @@ func parseSession(block []line) (Session, error) {
 		// Note that as both ends have brackets (or not), we just need to test
 		// one of them.
 		if !strings.HasPrefix(field, "[") {
-			break
+			continue
 		}
 
 		// There can be only one reward on the line
