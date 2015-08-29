@@ -1,7 +1,6 @@
 package parser
 
 import (
-	"fmt"
 	"strconv"
 	"strings"
 	"time"
@@ -24,11 +23,12 @@ var formats = []string{
 }
 
 // parseSession parse a block of line into a Session, and return an error in the
-// event of an invalid line.
+// event of an invalid line. The block of line musn't contain at least one line,
+// and no line can be empty (or blanks only).
 func parseSession(block []line) (Session, error) {
 	// Check the block is non-empty
 	if len(block) == 0 {
-		return Session{}, fmt.Errorf("unexpected block size")
+		panic("empty block")
 	}
 
 	// The first line of the block is always the headline
@@ -37,9 +37,9 @@ func parseSession(block []line) (Session, error) {
 	// Get the fields of the line
 	fields := strings.Fields(headline.Text)
 
-	// The line should at least have a date field
+	// The line shouldn't be empty
 	if len(fields) == 0 {
-		return Session{}, fmt.Errorf("line %d: expected at least a date", headline.Number)
+		panic("empty line")
 	}
 
 	// Check if the first field is a recognized date
@@ -61,7 +61,7 @@ func parseSession(block []line) (Session, error) {
 
 	// If we have an error, that's because no format matched
 	if err != nil {
-		return Session{}, fmt.Errorf("line %d: invalid date format", headline.Number)
+		return Session{}, NewError(headline.Number, NoDate)
 	}
 
 	// Check if a field seems to be a reward field
@@ -70,7 +70,7 @@ func parseSession(block []line) (Session, error) {
 		// If one end has the brackets but not the other, that's an error:
 		// brackets does by pairs, and are forbidden in the title
 		if strings.HasPrefix(field, "[") != strings.HasSuffix(field, "]") {
-			return Session{}, fmt.Errorf("line %d: brackets [] must open-close and contain no blank", headline.Number)
+			return Session{}, NewError(headline.Number, InvalidReward)
 		}
 
 		// If the brackets are absents, that's not a reward, so skip the field.
@@ -79,15 +79,15 @@ func parseSession(block []line) (Session, error) {
 		if !strings.HasPrefix(field, "[") {
 			break
 		}
-		
+
 		// There can be only one reward on the line
 		if reward != nil {
-			return Session{}, fmt.Errorf("line %d: the can be only one reward on the headline", headline.Number)
+			return Session{}, NewError(headline.Number, RewardAlreadyFound)
 		}
 
 		// Check position of the reward
 		if i != 0 && i != len(fields)-1 {
-			return Session{}, fmt.Errorf("line %d: reward must be in second or last position of the line", headline.Number)
+			return Session{}, NewError(headline.Number, WrongRewardPosition)
 		}
 
 		// Trim the field to get the raw reward
@@ -96,7 +96,7 @@ func parseSession(block []line) (Session, error) {
 		// Parse the reward
 		r, err := strconv.Atoi(raw)
 		if err != nil {
-			return Session{}, fmt.Errorf("line %d: expected integer, got \"%s\"", headline.Number, raw)
+			return Session{}, NewError(headline.Number, InvalidReward)
 		}
 		reward = &r
 

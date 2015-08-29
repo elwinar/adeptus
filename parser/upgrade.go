@@ -1,7 +1,6 @@
 package parser
 
 import (
-	"fmt"
 	"strconv"
 	"strings"
 )
@@ -22,12 +21,12 @@ func parseUpgrade(line line) (Upgrade, error) {
 
 	// The minimum number of fields is 2
 	if len(fields) < 2 {
-		return Upgrade{}, fmt.Errorf("line %d: expected at least a mark and a label", line.Number)
+		return Upgrade{}, NewError(line.Number, InvalidUpgrade)
 	}
 
 	// Check that the mark is a valid one
 	if !in(fields[0], []string{"*", "+", "-"}) {
-		return Upgrade{}, fmt.Errorf("line %d: \"%s\" is not a valid mark (\"*\", \"+\", \"-\")", line.Number, fields[0])
+		return Upgrade{}, NewError(line.Number, InvalidMark)
 	}
 
 	// Set the upgrade mark
@@ -40,7 +39,7 @@ func parseUpgrade(line line) (Upgrade, error) {
 		// If one end has the brackets but not the other, that's an error:
 		// brackets does by pairs, and are forbidden in the title
 		if strings.HasPrefix(field, "[") != strings.HasSuffix(field, "]") {
-			return Upgrade{}, fmt.Errorf("line %d: brackets [] must open-close and contain no blank", line.Number)
+			return Upgrade{}, NewError(line.Number, InvalidCost)
 		}
 
 		// If the brackets are absents, that's not a cost, so skip the field.
@@ -50,9 +49,14 @@ func parseUpgrade(line line) (Upgrade, error) {
 			break
 		}
 
+		// There can be only one cost on the line
+		if cost != nil {
+			return Upgrade{}, NewError(line.Number, CostAlreadyFound)
+		}
+
 		// Check position of the cost
 		if i != 0 && i != len(fields)-1 {
-			return Upgrade{}, fmt.Errorf("line %d: cost must be in second or last position of the line", line.Number)
+			return Upgrade{}, NewError(line.Number, WrongCostPosition)
 		}
 
 		// Trim the field to get the raw cost
@@ -61,7 +65,7 @@ func parseUpgrade(line line) (Upgrade, error) {
 		// Parse the cost
 		c, err := strconv.Atoi(raw)
 		if err != nil {
-			return Upgrade{}, fmt.Errorf("line %d: expected integer, got \"%s\"", line.Number, raw)
+			return Upgrade{}, NewError(line.Number, InvalidCost)
 		}
 		cost = &c
 
@@ -71,7 +75,7 @@ func parseUpgrade(line line) (Upgrade, error) {
 
 	// The remaining line is the name of the upgrade
 	if len(fields) == 0 {
-		return Upgrade{}, fmt.Errorf("line %d: name should not be empty", line.Number)
+		return Upgrade{}, NewError(line.Number, EmptyName)
 	}
 
 	return Upgrade{

@@ -50,18 +50,18 @@ func ParseSheet(file io.Reader) (Sheet, error) {
 
 	// In case of error, return now
 	if scanner.Err() != nil {
-		return Sheet{}, fmt.Errorf("error while reading the sheet: %s", scanner.Err())
+		panic(fmt.Sprintf("unable to read sheet: %s", scanner.Err()))
 	}
 
 	// Check there is at least one block
 	if len(buffer) == 0 {
-		return Sheet{}, fmt.Errorf("invalid sheet: sheet should contain at least a header")
+		return Sheet{}, NewError(0, EmptySheet)
 	}
 
 	// Parse the first block as header
 	header, err := parseHeader(buffer[0])
 	if err != nil {
-		return Sheet{}, fmt.Errorf("unable to parse sheet: %s", err)
+		return Sheet{}, err
 	}
 
 	// Parse the other blocks as sessions
@@ -69,7 +69,7 @@ func ParseSheet(file io.Reader) (Sheet, error) {
 	for _, block := range buffer[1:] {
 		session, err := parseSession(block)
 		if err != nil {
-			return Sheet{}, fmt.Errorf("unable to parse sheet: %s", err)
+			return Sheet{}, err
 		}
 
 		sessions = append(sessions, session)
