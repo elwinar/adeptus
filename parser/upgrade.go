@@ -25,10 +25,15 @@ type Upgrade struct {
 	Cost *int
 }
 
-// parseUpgrade generate an upgrade from a raw line
+// parseUpgrade generate an upgrade from a raw line. The line must not be empty.
 func parseUpgrade(line line) (Upgrade, error) {
 	// Get the fields of the line
 	fields := strings.Fields(line.Text)
+
+	// The line shouldn't be empty
+	if len(fields) == 0 {
+		panic("empty line")
+	}
 
 	// The minimum number of fields is 2
 	if len(fields) < 2 {
@@ -57,7 +62,7 @@ func parseUpgrade(line line) (Upgrade, error) {
 		// Note that as both ends have brackets (or not), we just need to test
 		// one of them.
 		if !strings.HasPrefix(field, "[") {
-			break
+			continue
 		}
 
 		// There can be only one cost on the line
@@ -76,6 +81,11 @@ func parseUpgrade(line line) (Upgrade, error) {
 		// Parse the cost
 		c, err := strconv.Atoi(raw)
 		if err != nil {
+			return Upgrade{}, NewError(line.Number, InvalidCost)
+		}
+		
+		// Check the cost is positive
+		if c < 0 {
 			return Upgrade{}, NewError(line.Number, InvalidCost)
 		}
 		cost = &c
