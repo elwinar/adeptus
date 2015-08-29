@@ -5,7 +5,17 @@ import (
 )
 
 func Test_newLine(t *testing.T) {
-	t.Fatalf("unimplemented")
+	l := newLine("raw", 0)
+	
+	if l.Number != 0 {
+		t.Logf("invalid line number: expected %d, got %d", 0, l.Number)
+		t.Fail()
+	}
+	
+	if l.Text != "raw" {
+		t.Logf("invalid text: expected %d, got %d", "raw", l.Text)
+		t.Fail()
+	}
 }
 
 func Test_line_IsEmpty(t *testing.T) {

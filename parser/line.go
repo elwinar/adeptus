@@ -7,6 +7,7 @@ type line struct {
 	Text   string
 }
 
+// newLine return a wrapper for the line string
 func newLine(text string, number int) line {
 	return line{
 		Text:   text,
