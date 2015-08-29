@@ -2,29 +2,57 @@ package parser
 
 import "fmt"
 
+// ErrorCode holds the type of error return
 type ErrorCode int
 
 const (
-	EmptySheet                    = 000 // EmptySheet is returned when the sheet doesn't contain anything other than empty lines (or no line)
-	InvalidKeyValuePair ErrorCode = 100 // InvalidKeyValuePair is returned when a header line isn't of the right format
-	UnknownKey                    = 101 // UnknownKey is returned when the header key isn't a valid one
-	NoDate                        = 200 // NoDate is returned when no date of the right format is found in the headline of a session
-	InvalidReward                 = 201 // InvalidReward is returned when the reward of a session headline isn't correctly formed
-	RewardAlreadyFound            = 202 // RewardAlreadyFound is returned when two or more rewards are found for the same session headline
-	WrongRewardPosition           = 203 // WrongRewardPosition is returned when the reward isn't on the second or last position of a session headline
-	InvalidUpgrade                = 300 // InvalidUpgrade is returned when the upgrade format is invalid
-	InvalidMark                   = 301 // InvalidMark is returned when the mark of an upgrade isn't recognized
-	InvalidCost                   = 302 // InvalidCost is returned when the cost of an upgrade isn't correctly formed
-	CostAlreadyFound              = 303 // CostAlreadyFound is returned when two or more costs are found for the same upgrade
-	WrongCostPosition             = 304 // WrongCostPosition is returned when the cost isn't on the second or last position of an upgrade
-	EmptyName                     = 305 // EmptyName is returned when the name of an upgrade is empty
+	// EmptySheet is returned when the sheet is empty
+	EmptySheet = 000
+
+	// InvalidKeyValuePair is returned when a header line isn't of the right format
+	InvalidKeyValuePair = 100
+
+	// UnknownKey is returned when the header key isn't a valid one
+	UnknownKey = 101
+
+	// NoDate is returned when no date of the right format is found in the headline
+	NoDate = 200
+
+	// InvalidReward is returned when the reward of a headline isn't correctly formed
+	InvalidReward = 201
+
+	// RewardAlreadyFound is returned when two or more rewards are found for the same headline
+	RewardAlreadyFound = 202
+
+	// WrongRewardPosition is returned when the reward isn't on the second or last position of a headline
+	WrongRewardPosition = 203
+
+	// InvalidUpgrade is returned when the upgrade format is invalid
+	InvalidUpgrade = 300
+
+	// InvalidMark is returned when the mark of an upgrade isn't recognized
+	InvalidMark = 301
+
+	// InvalidCost is returned when the cost of an upgrade isn't correctly formed
+	InvalidCost = 302
+
+	// CostAlreadyFound is returned when two or more costs are found for the same upgrade
+	CostAlreadyFound = 303
+
+	// WrongCostPosition is returned when the cost isn't on the second or last position of an upgrade
+	WrongCostPosition = 304
+
+	// EmptyName is returned when the name of an upgrade is empty
+	EmptyName = 305
 )
 
+// Error is an error encountered when parsing the sheet
 type Error struct {
 	Line int
 	Code ErrorCode
 }
 
+// NewError build a new error from the line and error code
 func NewError(line int, code ErrorCode) Error {
 	return Error{
 		Line: line,
@@ -32,6 +60,7 @@ func NewError(line int, code ErrorCode) Error {
 	}
 }
 
+// Error implements the Error interface
 func (e Error) Error() string {
 	return fmt.Sprintf("line %d: %d", e.Line, e.Code)
 }

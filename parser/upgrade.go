@@ -5,6 +5,17 @@ import (
 	"strings"
 )
 
+const (
+	// MarkDefault denotes that the upgrade is taken into account for future upgrades
+	MarkDefault = "*"
+
+	// MarkSpecial denotes that the upgrade isn't taken into account for future ugprades
+	MarkSpecial = "+"
+
+	// MarkFree is a shortcut for MarkSpecial and cost 0
+	MarkFree = "-"
+)
+
 // Upgrade describe one upgrade applied to the character. The mark indicate how
 // to handle the upgrade considéring future upgrades. The cost is optionnal in
 // certain cases.
@@ -24,13 +35,13 @@ func parseUpgrade(line line) (Upgrade, error) {
 		return Upgrade{}, NewError(line.Number, InvalidUpgrade)
 	}
 
-	// Check that the mark is a valid one
-	if !in(fields[0], []string{"*", "+", "-"}) {
+	// Parse the mark
+	if !in(fields[0], []string{MarkDefault, MarkSpecial, MarkFree}) {
 		return Upgrade{}, NewError(line.Number, InvalidMark)
 	}
-
-	// Set the upgrade mark
 	mark := fields[0]
+
+	// Remove the field from the slice
 	fields = fields[1:]
 
 	// Check if a field seems to be a cost field
