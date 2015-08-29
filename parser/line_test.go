@@ -13,7 +13,7 @@ func Test_newLine(t *testing.T) {
 	}
 
 	if l.Text != "raw" {
-		t.Logf("invalid text: expected %d, got %d", "raw", l.Text)
+		t.Logf("invalid text: expected %s, got %s", "raw", l.Text)
 		t.Fail()
 	}
 }
