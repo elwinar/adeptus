@@ -9,8 +9,8 @@ import (
 // Sheet holds the informations of the character sheet: the character definition
 // in the header, and the history of the character in the sessions.
 type Sheet struct {
-	Header   Header
-	Sessions []Session
+	Header          Header
+	Sessions        []Session
 	Characteristics Characteristics
 }
 
@@ -59,8 +59,8 @@ func ParseSheet(file io.Reader) (Sheet, error) {
 		buffer = append(buffer, block)
 	}
 
-	// Check there is at least one block
-	if len(buffer) == 0 {
+	// Check there is at least two blocks
+	if len(buffer) < 2 {
 		return Sheet{}, NewError(0, EmptySheet)
 	}
 
@@ -70,9 +70,15 @@ func ParseSheet(file io.Reader) (Sheet, error) {
 		return Sheet{}, err
 	}
 
+	// Parse the second block as Characteristics
+	characteristics, err := parseCharacteristics(buffer[1])
+	if err != nil {
+		return Sheet{}, err
+	}
+
 	// Parse the other blocks as sessions
 	sessions := []Session{}
-	for _, block := range buffer[1:] {
+	for _, block := range buffer[2:] {
 		session, err := parseSession(block)
 		if err != nil {
 			return Sheet{}, err
@@ -84,5 +90,6 @@ func ParseSheet(file io.Reader) (Sheet, error) {
 	return Sheet{
 		Header:   header,
 		Sessions: sessions,
+                Characteristics: characteristics,
 	}, nil
 }
