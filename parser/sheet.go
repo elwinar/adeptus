@@ -88,8 +88,8 @@ func ParseSheet(file io.Reader) (Sheet, error) {
 	}
 
 	return Sheet{
-		Header:   header,
-		Sessions: sessions,
-                Characteristics: characteristics,
+		Header:          header,
+		Sessions:        sessions,
+		Characteristics: characteristics,
 	}, nil
 }

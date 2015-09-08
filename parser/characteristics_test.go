@@ -19,102 +19,102 @@ func Test_parseCharacteristics(t *testing.T) {
 			panic: true,
 		},
 		{
-			in:    []string{
-                            "",
-                        },
+			in: []string{
+				"",
+			},
 			out:   Characteristics{},
 			err:   true,
 			panic: false,
 		},
 		{
 			in: []string{
-                            " ",
-                        },
+				" ",
+			},
 			out:   Characteristics{},
 			err:   true,
 			panic: false,
 		},
 		{
 			in: []string{
-                            " 	 ",
-                        },
+				" 	 ",
+			},
 			out:   Characteristics{},
 			err:   true,
 			panic: false,
 		},
 		{
-			in:  []string{
-                            "fail",
-                        },
-			out: Characteristics{},
-			err: true,
+			in: []string{
+				"fail",
+			},
+			out:   Characteristics{},
+			err:   true,
 			panic: false,
 		},
 		{
-			in:  []string{
-                            "x fail",
-                        },
-			out: Characteristics{},
-			err: true,
+			in: []string{
+				"x fail",
+			},
+			out:   Characteristics{},
+			err:   true,
 			panic: false,
 		},
 		{
-			in:  []string{
-                            "* WP 25",
-                        },
-			out: Characteristics{},
-			err: true,
+			in: []string{
+				"* WP 25",
+			},
+			out:   Characteristics{},
+			err:   true,
 			panic: false,
 		},
 		{
-			in:  []string{
-                            "WP +25",
-                        },
-			out: Characteristics{},
-			err: true,
+			in: []string{
+				"WP +25",
+			},
+			out:   Characteristics{},
+			err:   true,
 			panic: false,
 		},
 		{
-			in:  []string{
-                            "STR 25", 
-                            "WP +25",
-                        },
-			out: Characteristics{},
-			err: true,
+			in: []string{
+				"STR 25",
+				"WP +25",
+			},
+			out:   Characteristics{},
+			err:   true,
 			panic: false,
 		},
 		{
-			in:  []string{
-                            "WP 25",
-                        },
+			in: []string{
+				"WP 25",
+			},
 			out: Characteristics{
-                                Upgrade{
-                                        Mark: "-",
-                                        Name: "WP 25",
-                                        Cost: nil,
-                                },
-                        },
-			err: false,
+				Upgrade{
+					Mark: "-",
+					Name: "WP 25",
+					Cost: nil,
+				},
+			},
+			err:   false,
 			panic: false,
 		},
 		{
-			in:  []string{
-                            "STR 25", 
-                            "WP 25",
-                        },
+			in: []string{
+				"STR 25",
+				"WP 25",
+			},
 			out: Characteristics{
-                                Upgrade{
-                                        Mark: "-",
-                                        Name: "STR 25",
-                                        Cost: nil,
-                                },
-                                Upgrade{
-                                        Mark: "-",
-                                        Name: "WP 25",
-                                        Cost: nil,
-                                },
-                        },
-			err: false,
+				Upgrade{
+					Mark: "-",
+					Name: "STR 25",
+					Cost: nil,
+				},
+				Upgrade{
+					Mark: "-",
+					Name: "WP 25",
+					Cost: nil,
+				},
+			},
+			err:   false,
 			panic: false,
 		},
 	}
@@ -131,7 +131,7 @@ func Test_parseCharacteristics(t *testing.T) {
 					panic = true
 				}
 			}()
-                        out = Characteristics{}
+			out = Characteristics{}
 
 			out, err = parseCharacteristics(in)
 			return

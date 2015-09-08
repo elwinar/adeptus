@@ -119,7 +119,7 @@ WP 25
 2015/06/01 Creation [500]
 	fail
 `),
-			out: Sheet{},
+			out:   Sheet{},
 			err:   true,
 			panic: false,
 		},

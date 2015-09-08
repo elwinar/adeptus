@@ -119,7 +119,7 @@ func Test_parseSession(t *testing.T) {
 			in: []string{
 				"2001/04/28 [250] fail [250]",
 			},
-			out: Session{},
+			out:   Session{},
 			err:   true,
 			panic: false,
 		},
