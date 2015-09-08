@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-type ErrorIoReader struct {}
+type ErrorIoReader struct{}
 
 func (r ErrorIoReader) Read(p []byte) (n int, err error) {
 	n = 0
@@ -71,7 +71,7 @@ Background: Something
 Role: Warmonger
 Tarot: XXI
 `),
-			out: Sheet{},
+			out:   Sheet{},
 			err:   true,
 			panic: false,
 		},
@@ -86,7 +86,7 @@ Tarot: XXI
 	* BULLSHIT +5 [250]
 	- Awesomeskill
 `),
-			out: Sheet{},
+			out:   Sheet{},
 			err:   true,
 			panic: false,
 		},
@@ -102,6 +102,22 @@ fail value
 2015/06/01 Creation [500]
 	* BULLSHIT +5 [250]
 	- Awesomeskill
+`),
+			out:   Sheet{},
+			err:   true,
+			panic: false,
+		},
+		{
+			in: strings.NewReader(`Name: Someone
+Origin: Somewhere
+Background: Something
+Role: Warmonger
+Tarot: XXI
+
+WP 25
+
+2015/06/01 Creation [500]
+	fail
 `),
 			out: Sheet{},
 			err:   true,
@@ -128,13 +144,13 @@ WP 25
 					Role:       StringP("Warmonger"),
 					Tarot:      StringP("XXI"),
 				},
-                                Characteristics: Characteristics {
-                                        Upgrade{
-                                            Mark: "-",
-                                            Name: "WP 25",
-                                            Cost: nil,
-                                        },
-                                },
+				Characteristics: Characteristics{
+					Upgrade{
+						Mark: "-",
+						Name: "WP 25",
+						Cost: nil,
+					},
+				},
 				Sessions: []Session{
 					Session{
 						Date:   time.Date(2015, time.June, 01, 0, 0, 0, 0, time.UTC),
