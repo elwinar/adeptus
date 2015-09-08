@@ -77,39 +77,50 @@ Talents also have prerequisites in terms of characteristic values, skills, other
 
 A character sheet is stored in a file following a special format designed to be intuitive to read and write for humans. The file to use must be specified on the command line using the `sheet,s` command line option.
 
-The sheet itself consist in a header defining the character's name, origin, background, role and tarot, followed by a number of sessions, each session consisting in a headline containing a date, a label, and an experience point reward, followed by a list of upgrades to apply.
+The sheet itself consist in a header defining the character's name, universe, origin, background, role and tarot, followed by a block of characteristic rolls, and a number of sessions. Each session consists in a headline containing a date, a label, and an experience point reward, followed by a list of upgrades to apply.
 
-Each upgrade is composed of a mark, the upgrade definition and eventually a cost (surrounded by parenthesis). The upgrade definition is composer of the name of the upgrade, its type being inferred from its name, and eventually any additionnal information needed like the value change for a characteristic, or an eventual specialisation for a skill or talent.
+Each header line is mandatory. Origin, Background, Role and Tarot may propose choices between different skills, talents or other upgrades. Each choice made must be precised in parenthesis `()`, separated by comas `,`.
+
+The characteristic block must containt each characteristic defined in the universe.
+
+Any line beginning with either `#`, `;` or `//` will be ignored
+
+Each upgrade is composed of a mark, the upgrade definition and eventually a cost (surrounded by brackets `[]`). The upgrade definition is composed of the name of the upgrade, its type being inferred from its name, and eventually any additionnal information needed like the value change for a characteristic, or an eventual specialisation for a skill or talent.
 
 Example of sheet file:
 
 ```
+# Header block
 Name: Sephiam
+Universe: Fantasy
 Origin: Wood Elve
-Background: Outcast
-Role: Warrior
-Tarot: Boon & Bane
+Background: Outcast (Jaded)
+Role: Warrior (Weapon Proficiency: Sword, Iron Jaw)
+Tarot: Boon & Bane (WS +3, INT -3)
 
+# Characteristic block
+WS 	38
+BS 	33
+STR 	29
+AGI 	34
+TOU 	29
+INT 	33
+PER 	25
+WIL 	31
+FEL 	26
+
+# Session blocks
 2015/07/01 Creation [1500]
-	- WS +18
-	- BS +13
-	- STR +9
-	- AGI +14
-	- TOU +9
-	- INT +13
-	- PER +5
-	- WIL +11
-	- FEL +6
-	* Weapon Proficiency: Sword
 	* Weapon Proficiency: Bow
 	* Catfall
 	* BS +5
 	* AGI +5
 	* Combat master
 
-2015/07/01 First scenarii [750]
+2015/07/01 First scenario [750]
 	* Resistance: Disease
 	+ WIL +2 [100]
+	- Malignancy: Fear of the Damned
 ```
 
 ### Blanks
@@ -132,7 +143,7 @@ The mark must be the first item of the line, not counting blanks
 ### Experience
 
 The value between brackets is experience. A Session offers some, an Upgrade costs some.
-- must be numeric
+- must be a positive integer
 - must be between brackets
 - must not contain any blank
 - must be placed in second or in last position of the line
@@ -164,7 +175,7 @@ If not point cost is given, the program must stop with an error.
 
 The list of skills, talents, special rules, aptitudes, etc, is stored in a JSON file named an "universe". The program must load the universe prior to doing any other action.
 
-The universe file is named `universe.json` and is located either in the working directory or in the installation directory of the program. It is overridable using the `universe,u`  option on the command line to specify the path to the wanted universe file.
+The universe file is named `universe.json` and is located either in the working directory or in the installation directory of the program. It is defined by the `universe` value in the header.
 
 The file is a valid JSON file containing multiple arrays:
 
