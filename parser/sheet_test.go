@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-type ErrorIoReader struct {}
+type ErrorIoReader struct{}
 
 func (r ErrorIoReader) Read(p []byte) (n int, err error) {
 	n = 0
@@ -71,17 +71,8 @@ Background: Something
 Role: Warmonger
 Tarot: XXI
 `),
-			out: Sheet{
-				Header: Header{
-					Name:       StringP("Someone"),
-					Origin:     StringP("Somewhere"),
-					Background: StringP("Something"),
-					Role:       StringP("Warmonger"),
-					Tarot:      StringP("XXI"),
-				},
-				Sessions: []Session{},
-			},
-			err:   false,
+			out:   Sheet{},
+			err:   true,
 			panic: false,
 		},
 		{
@@ -95,6 +86,56 @@ Tarot: XXI
 	* BULLSHIT +5 [250]
 	- Awesomeskill
 `),
+			out:   Sheet{},
+			err:   true,
+			panic: false,
+		},
+		{
+			in: strings.NewReader(`Name: Someone
+Origin: Somewhere
+Background: Something
+Role: Warmonger
+Tarot: XXI
+
+fail value
+
+2015/06/01 Creation [500]
+	* BULLSHIT +5 [250]
+	- Awesomeskill
+`),
+			out:   Sheet{},
+			err:   true,
+			panic: false,
+		},
+		{
+			in: strings.NewReader(`Name: Someone
+Origin: Somewhere
+Background: Something
+Role: Warmonger
+Tarot: XXI
+
+WP 25
+
+2015/06/01 Creation [500]
+	fail
+`),
+			out:   Sheet{},
+			err:   true,
+			panic: false,
+		},
+		{
+			in: strings.NewReader(`Name: Someone
+Origin: Somewhere
+Background: Something
+Role: Warmonger
+Tarot: XXI
+
+WP 25
+
+2015/06/01 Creation [500]
+	* BULLSHIT +5 [250]
+	- Awesomeskill
+`),
 			out: Sheet{
 				Header: Header{
 					Name:       StringP("Someone"),
@@ -102,6 +143,13 @@ Tarot: XXI
 					Background: StringP("Something"),
 					Role:       StringP("Warmonger"),
 					Tarot:      StringP("XXI"),
+				},
+				Characteristics: Characteristics{
+					Upgrade{
+						Mark: "-",
+						Name: "WP 25",
+						Cost: nil,
+					},
 				},
 				Sessions: []Session{
 					Session{

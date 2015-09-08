@@ -44,6 +44,12 @@ const (
 
 	// EmptyName is returned when the name of an upgrade is empty
 	EmptyName = 305
+
+	// InvalidCharacteristicFormat is returned when the characteristic format is incorrect
+	InvalidCharacteristicFormat = 400
+
+	// NotIntegerCharacteristicValue is returned when the characteristic value is not a positive integer
+	NotIntegerCharacteristicValue = 401
 )
 
 // Error is an error encountered when parsing the sheet
