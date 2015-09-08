@@ -11,6 +11,7 @@ import (
 type Sheet struct {
 	Header   Header
 	Sessions []Session
+	Characteristics Characteristics
 }
 
 // ParseSheet parse a Sheet from a io.Reader.
