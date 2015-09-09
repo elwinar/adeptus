@@ -138,11 +138,11 @@ WP 25
 `),
 			out: Sheet{
 				Header: Header{
-					Name:       StringP("Someone"),
-					Origin:     StringP("Somewhere"),
-					Background: StringP("Something"),
-					Role:       StringP("Warmonger"),
-					Tarot:      StringP("XXI"),
+					Name:       "Someone",
+					Origin:     NewMeta("Somewhere"),
+					Background: NewMeta("Something"),
+					Role:       NewMeta("Warmonger"),
+					Tarot:      NewMeta("XXI"),
 				},
 				Characteristics: Characteristics{
 					Upgrade{

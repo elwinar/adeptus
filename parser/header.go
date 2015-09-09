@@ -2,14 +2,27 @@ package parser
 
 import "strings"
 
+// Meta is a header and a collection of associated options
+type Meta struct {
+	Label   *string
+	Options []string
+}
+
+// NewMeta constructs a new meta given a label
+func NewMeta(label string) Meta {
+	return Meta{
+		Label: &label,
+	}
+}
+
 // Header is the first block of the sheet, and define the character with its
 // name, origin, etc.
 type Header struct {
-	Name       *string
-	Origin     *string
-	Background *string
-	Role       *string
-	Tarot      *string
+	Name       string
+	Origin     Meta
+	Background Meta
+	Role       Meta
+	Tarot      Meta
 }
 
 // ParseHeader generate a Header from a block of lines. The block must not be
@@ -21,7 +34,8 @@ func parseHeader(block []line) (Header, error) {
 	}
 
 	// Initialize the values to find
-	var name, origin, background, role, tarot *string
+	var name string
+	var origin, background, role, tarot Meta
 
 	for _, line := range block {
 		// Parse the field as a key and value
@@ -35,15 +49,15 @@ func parseHeader(block []line) (Header, error) {
 		// Check key:value
 		switch key {
 		case "name":
-			name = &value
+			name = value
 		case "origin":
-			origin = &value
+			origin = NewMeta(value)
 		case "background":
-			background = &value
+			background = NewMeta(value)
 		case "role":
-			role = &value
+			role = NewMeta(value)
 		case "tarot":
-			tarot = &value
+			tarot = NewMeta(value)
 		default:
 			return Header{}, NewError(line.Number, UnknownKey)
 		}
