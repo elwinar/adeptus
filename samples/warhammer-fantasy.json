@@ -322,8 +322,9 @@
             "Type": "skill"
         }
     ],
-    "Tarots": {
-        "Mutation without, corruption within.": {
+    "Tarots": [
+        {
+            "Name": "Mutation without, corruption within.",
             "Upgrades": [
                 [
                     {
@@ -333,7 +334,8 @@
                 ]
             ]
         },
-        "Trust in your fear.": {
+        {
+            "Name": "Trust in your fear.",
             "Upgrades": [
                 [
                     {
@@ -349,7 +351,8 @@
                 ]
             ]
         },
-        "Humans must die so that humanity can endure.": {
+        {
+            "Name": "Humans must die so that humanity can endure.",
             "Upgrades": [
                 [
                     {
@@ -363,7 +366,8 @@
                 ]
             ]
         },
-        "The pain of the bullet is ecstasy compared to damnation.": {
+        {
+            "Name": "The pain of the bullet is ecstasy compared to damnation.",
             "Upgrades": [
                 [
                     {
@@ -379,7 +383,8 @@
                 ]
             ]
         },
-        "Be a boon to your allies and the bane of your enemies.": {
+        {
+            "Name": "Be a boon to your allies and the bane of your enemies.",
             "Upgrades": [
                 [
                     {
@@ -393,7 +398,8 @@
                 ]
             ]
         },
-        "The wise learn from the deaths of others.": {
+        {
+            "Name": "The wise learn from the deaths of others.",
             "Upgrades": [
                 [
                     {
@@ -417,7 +423,8 @@
                 ]
             ]
         },
-        "Kill the alien before it can speak its lies.": {
+        {
+            "Name": "Kill the alien before it can speak its lies.",
             "Upgrades": [
                 [
                     {
@@ -431,7 +438,8 @@
                 ]
             ]
         },
-        "Truth is subjective.": {
+        {
+            "Name": "Truth is subjective.",
             "Upgrades": [
                 [
                     {
@@ -447,7 +455,8 @@
                 ]
             ]
         },
-        "Thought begets Heresy.": {
+        {
+            "Name": "Thought begets Heresy.",
             "Upgrades": [
                 [
                     {
@@ -463,7 +472,8 @@
                 ]
             ]
         },
-        "Heresy begets Retribution.": {
+        {
+            "Name": "Heresy begets Retribution.",
             "Upgrades": [
                 [
                     {
@@ -487,7 +497,8 @@
                 ]
             ]
         },
-        "A mind without purpose wanders in dark places.": {
+        {
+            "Name": "A mind without purpose wanders in dark places.",
             "Upgrades": [
                 [
                     {
@@ -497,7 +508,8 @@
                 ]
             ]
         },
-        "If a job is worth doing, it is worth dying for.": {
+        {
+            "Name": "If a job is worth doing, it is worth dying for.",
             "Upgrades": [
                 [
                     {
@@ -521,7 +533,8 @@
                 ]
             ]
         },
-        "Dark dreams lie upon the heart.": {
+        {
+            "Name": "Dark dreams lie upon the heart.",
             "Upgrades": [
                 [
                     {
@@ -531,7 +544,8 @@
                 ]
             ]
         },
-        "Violence solves everything.": {
+        {
+            "Name": "Violence solves everything.",
             "Upgrades": [
                 [
                     {
@@ -555,7 +569,8 @@
                 ]
             ]
         },
-        "Ignorance is a wisdom of its own.": {
+        {
+            "Name": "Ignorance is a wisdom of its own.",
             "Upgrades": [
                 [
                     {
@@ -571,7 +586,8 @@
                 ]
             ]
         },
-        "Only the insane have strength enough to prosper.": {
+        {
+            "Name": "Only the insane have strength enough to prosper.",
             "Upgrades": [
                 [
                     {
@@ -587,7 +603,8 @@
                 ]
             ]
         },
-        "A suspicious mind is a healthy mind.": {
+        {
+            "Name": "A suspicious mind is a healthy mind.",
             "Upgrades": [
                 [
                     {
@@ -603,7 +620,8 @@
                 ]
             ]
         },
-        "Suffering is an unrelenting instructor.": {
+        {
+            "Name": "Suffering is an unrelenting instructor.",
             "Upgrades": [
                 [
                     {
@@ -619,7 +637,8 @@
                 ]
             ]
         },
-        "The only true fear is dying without your duty done.": {
+        {
+            "Name": "The only true fear is dying without your duty done.",
             "Upgrades": [
                 [
                     {
@@ -647,7 +666,8 @@
                 ]
             ]
         },
-        "Only in death does duty end.": {
+        {
+            "Name": "Only in death does duty end.",
             "Upgrades": [
                 [
                     {
@@ -657,7 +677,8 @@
                 ]
             ]
         },
-        "Innocence is an illusion.": {
+        {
+            "Name": "Innocence is an illusion.",
             "Upgrades": [
                 [
                     {
@@ -671,7 +692,8 @@
                 ]
             ]
         },
-        "To war is human.": {
+        {
+            "Name": "To war is human.",
             "Upgrades": [
                 [
                     {
@@ -685,7 +707,8 @@
                 ]
             ]
         },
-        "There is no substitute for zeal.": {
+        {
+            "Name": "There is no substitute for zeal.",
             "Upgrades": [
                 [
                     {
@@ -699,7 +722,8 @@
                 ]
             ]
         },
-        "Even one who has nothing can still offer his life.": {
+        {
+            "Name": "Even one who has nothing can still offer his life.",
             "Upgrades": [
                 [
                     {
@@ -709,7 +733,8 @@
                 ]
             ]
         },
-        "Do not ask why you serve. Only ask how.": {
+        {
+            "Name": "Do not ask why you serve. Only ask how.",
             "Upgrades": [
                 [
                     {
@@ -719,7 +744,7 @@
                 ]
             ]
         }
-    },
+    ],
     "Costs": {
         "characteristic": {
             "0": {
