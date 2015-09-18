@@ -18,6 +18,7 @@ func NewMeta(label string) Meta {
 // Header is the first block of the sheet, and define the character with its
 // name, origin, etc.
 type Header struct {
+<<<<<<< HEAD
 	Name       string
 	Origin     Meta
 	Background Meta
