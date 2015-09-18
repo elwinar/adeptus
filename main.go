@@ -11,8 +11,25 @@ import (
 func main() {
 	app := cli.NewApp()
 
-	app.Name = "Adeptus"
+	app.Name = "adeptus"
 	app.Usage = "Compiles character sheet for Dark Heresy 2.0 related systems."
+	app.Version = "alpha"
+	app.Authors = []cli.Author{
+		{
+				Name: "Romain Baugue",
+				Email: "romain.baugue@gmail.com",
+		},
+		{
+				Name: "Alexandre Thomas",
+				Email: "alexandre.thomas@outlook.fr",
+		},
+	}
+	app.Flags = []cli.Flag{
+		cli.StringFlag{
+				Name: "character, c",
+				Usage: "The filepath to the character sheet.",
+		},
+	}
 	app.Action = Display
 
 	app.Commands = []cli.Command{
@@ -20,17 +37,6 @@ func main() {
 			Name:   "history",
 			Usage:  "Displays the history of the character.",
 			Action: History,
-			Flags: []cli.Flag{
-				cli.StringFlag{
-						Name: "character, c",
-						Usage: "The filepath to the character sheet.",
-				},
-			},
-		},
-		{
-			Name:   "display",
-			Usage:  "Displays the current status of the character.",
-			Action: Display,
 			Flags: []cli.Flag{
 				cli.StringFlag{
 						Name: "character, c",
