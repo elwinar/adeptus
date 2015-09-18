@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
+	"encoding/json"
 )
 
 type Universe struct {
@@ -26,7 +27,7 @@ func ParseUniverse(file io.Reader) (Universe, error) {
 	}
 
 	universe := Universe{}
-	err := json.Unmarshall(file, &universe)
+	err = json.Unmarshal(raw, &universe)
 	if err != nil {
 		return Universe{}, fmt.Errorf("unable to parse universe: %s", err.Error())
 	}
