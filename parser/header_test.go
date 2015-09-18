@@ -113,6 +113,7 @@ func Test_ParseHeader(t *testing.T) {
 				"	tarot: successful tarot",
 				"	background: successful background",
 				"	origin: successful origin",
+				"	universe: successful universe",
 			},
 			out: Header{
 				Name:       "successful name",
@@ -120,6 +121,7 @@ func Test_ParseHeader(t *testing.T) {
 				Background: NewMeta("successful background"),
 				Role:       NewMeta("successful role"),
 				Tarot:      NewMeta("successful tarot"),
+				Universe:   NewMeta("successful universe"),
 			},
 			err:   false,
 			panic: false,

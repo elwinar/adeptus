@@ -23,6 +23,7 @@ type Header struct {
 	Background Meta
 	Role       Meta
 	Tarot      Meta
+	Universe   Meta
 }
 
 // ParseHeader generate a Header from a block of lines. The block must not be
@@ -35,7 +36,7 @@ func parseHeader(block []line) (Header, error) {
 
 	// Initialize the values to find
 	var name string
-	var origin, background, role, tarot Meta
+	var origin, background, role, tarot, universe Meta
 
 	for _, line := range block {
 		// Parse the field as a key and value
@@ -58,6 +59,8 @@ func parseHeader(block []line) (Header, error) {
 			role = NewMeta(value)
 		case "tarot":
 			tarot = NewMeta(value)
+		case "universe":
+			universe = NewMeta(value)
 		default:
 			return Header{}, NewError(line.Number, UnknownKey)
 		}
@@ -69,5 +72,6 @@ func parseHeader(block []line) (Header, error) {
 		Background: background,
 		Role:       role,
 		Tarot:      tarot,
+		Universe:   universe,
 	}, nil
 }
