@@ -9,5 +9,7 @@ type Origin struct {
 
 // NewOrigin returns the origin associated to the name
 func NewOrigin(name string) Origin {
-		return Origin{}
+		return Origin{
+			Name: name,
+		}
 }

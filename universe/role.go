@@ -9,5 +9,7 @@ type Role struct {
 
 // NewRole returns the role associated to the name
 func NewRole(name string) Role {
-		return Role{}
+		return Role{
+			Name: name,
+		}
 }

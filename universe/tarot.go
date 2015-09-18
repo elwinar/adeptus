@@ -9,5 +9,7 @@ type Tarot struct {
 
 // NewTarot returns the background associated to the name
 func NewTarot(name string) Tarot {
-		return Tarot{}
+		return Tarot{
+			Name: name,
+		}
 }
