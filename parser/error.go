@@ -6,8 +6,8 @@ import "fmt"
 type ErrorCode int
 
 const (
-	// EmptySheet is returned when the sheet is empty
-	EmptySheet = 000
+	// InsuficientData is returned when the sheet does not contain the minimal two mandatory blocks
+	InsuficientData = 000
 
 	// InvalidKeyValuePair is returned when a header line isn't of the right format
 	InvalidKeyValuePair = 100

@@ -21,17 +21,17 @@ type Character struct{
 func NewCharacter(s parser.Sheet) (*Character, error) {	
 	
 	// Retrieve name
-	if s.Header.Name == nil || len(*s.Header.Name) == 0 {
+	if len(s.Header.Name) == 0 {
 			return nil, NewError(UndefinedName)
 	}
-	name := *s.Header.Name
+	name := s.Header.Name
 	
 	// Open and parse universe given the sheet's universe
-	if s.Header.Universe == nil {
+	if s.Header.Universe.Label == nil {
 			return nil, NewError(UndefinedUniverse)
 	}
 	
-	reader, err := os.Open(fmt.Sprintf("samples/%s.json", *s.Header.Universe))
+	reader, err := os.Open(fmt.Sprintf("samples/%s.json", *s.Header.Universe.Label))
 	if err != nil {
 			return nil, NewError(NotFoundUniverse, err)
 	}
@@ -42,28 +42,28 @@ func NewCharacter(s parser.Sheet) (*Character, error) {
 	}
 	
 	// Retrieve origin
-	if s.Header.Origin == nil {
+	if s.Header.Origin.Label == nil {
 			return nil, NewError(UndefinedOrigin)
 	}
-	origin := universe.NewOrigin(*s.Header.Origin)
+	origin := universe.NewOrigin(*s.Header.Origin.Label)
 	
 	// Retrieve background
-	if s.Header.Background == nil {
+	if s.Header.Background.Label == nil {
 			return nil, NewError(UndefinedBackground)
 	}
-	background := universe.NewBackground(*s.Header.Background)
+	background := universe.NewBackground(*s.Header.Background.Label)
 	
 	// Retrieve role
-	if s.Header.Role == nil {
+	if s.Header.Role.Label == nil {
 			return nil, NewError(UndefinedRole)
 	}
-	role := universe.NewRole(*s.Header.Role)
+	role := universe.NewRole(*s.Header.Role.Label)
 	
 	// Retrieve tarot
-	if s.Header.Tarot == nil {
+	if s.Header.Tarot.Label == nil {
 			return nil, NewError(UndefinedTarot)
 	}
-	tarot := universe.NewTarot(*s.Header.Tarot)
+	tarot := universe.NewTarot(*s.Header.Tarot.Label)
 	
 	return &Character{
 		Name : name,

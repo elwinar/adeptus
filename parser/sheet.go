@@ -61,7 +61,7 @@ func ParseSheet(file io.Reader) (Sheet, error) {
 
 	// Check there is at least two blocks
 	if len(buffer) < 2 {
-		return Sheet{}, NewError(0, EmptySheet)
+		return Sheet{}, NewError(0, InsuficientData)
 	}
 
 	// Parse the first block as header
