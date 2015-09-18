@@ -7,7 +7,6 @@ import (
 
 	"github.com/codegangsta/cli"
 	"adeptus/parser"
-	"adeptus/universe"
 )
 
 func main() {
@@ -61,27 +60,14 @@ func Display(ctx *cli.Context) {
 			return
 	}
 	
-	// Open and parse universe given the sheet's universe
-	if sheet.Header.Universe == nil {
-			log.Println("undefined universe: unable to create the character")
-			return
-	}
-	
-	reader, err = os.Open(fmt.Sprintf("samples/%s.json", *sheet.Header.Universe))
+	// Create character with the seet
+	character, err := NewCharacter(sheet)
 	if err != nil {
-			log.Printf("undefined universe: %s\n", err)
+			log.Printf("unable to create character: %s\n", err)
 			return
 	}
 	
-	data, err := universe.ParseUniverse(reader)
-	if err != nil {
-			log.Printf("error in universe file: %s\n", err)
-			return
-	}
-	character := NewCharacter(sheet)
-	
-	log.Println(data)
-	log.Println(character)
+	fmt.Println(character.Display())
 }
 
 // Displays the history of the character

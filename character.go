@@ -74,3 +74,12 @@ func NewCharacter(s parser.Sheet) (*Character, error) {
 		Tarot: tarot,
 	}, nil
 }
+
+func (c Character) Display() string {
+		return fmt.Sprintf("Name:		%s\nOrigin:		%s\nBackground:	%s\nRole:		%s\nTarot:		%s", 
+			c.Name, 
+			c.Origin.Name, 
+			c.Background.Name, 
+			c.Role.Name, 
+			c.Tarot.Name)
+}
