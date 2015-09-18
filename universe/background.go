@@ -9,5 +9,7 @@ type Background struct {
 
 // NewBackground returns the background associated to the name
 func NewBackground(name string) Background {
-		return Background{}
+		return Background{
+			Name: name,
+		}
 }
