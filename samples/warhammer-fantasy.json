@@ -1,0 +1,810 @@
+{
+    "Attributes": [
+        {
+            "Name": "WS",
+            "Aptitudes": [
+                "weapon skill",
+                "offense"
+            ],
+            "Type": "characteristic"
+        },
+        {
+            "Name": "BS",
+            "Aptitudes": [
+                "ballistic skill",
+                "finesse"
+            ],
+            "Type": "characteristic"
+        },
+        {
+            "Name": "STR",
+            "Aptitudes": [
+                "strength",
+                "offence"
+            ],
+            "Type": "characteristic"
+        },
+        {
+            "Name": "TOU",
+            "Aptitudes": [
+                "toughness",
+                "defence"
+            ],
+            "Type": "characteristic"
+        },
+        {
+            "Name": "AGI",
+            "Aptitudes": [
+                "agility",
+                "finesse"
+            ],
+            "Type": "characteristic"
+        },
+        {
+            "Name": "INT",
+            "Aptitudes": [
+                "intelligence",
+                "knowledge"
+            ],
+            "Type": "characteristic"
+        },
+        {
+            "Name": "PER",
+            "Aptitudes": [
+                "perception",
+                "fieldcraft"
+            ],
+            "Type": "characteristic"
+        },
+        {
+            "Name": "WIL",
+            "Aptitudes": [
+                "willpower",
+                "sorcerer"
+            ],
+            "Type": "characteristic"
+        },
+        {
+            "Name": "FEL",
+            "Aptitudes": [
+                "fellowship",
+                "social"
+            ],
+            "Type": "characteristic"
+        },
+        {
+            "Name": "INS",
+            "Aptitudes": [],
+            "Type": "special"
+        },
+        {
+            "Name": "COR",
+            "Aptitudes": [],
+            "Type": "special"
+        },
+        {
+            "Name": "DR",
+            "Aptitudes": [],
+            "Type": "special"
+        },
+        {
+            "Name": "PR",
+            "Aptitudes": [],
+            "Type": "special"
+        },
+        {
+            "Name": "Fate",
+            "Aptitudes": [],
+            "Type": "special"
+        },
+        {
+            "Name": "acrobatics",
+            "Aptitudes": [
+                "agility",
+                "general"
+            ],
+            "Type": "skill"
+        },
+        {
+            "Name": "athletics",
+            "Aptitudes": [
+                "strength",
+                "general"
+            ],
+            "Type": "skill"
+        },
+        {
+            "Name": "awarness",
+            "Aptitudes": [
+                "perception",
+                "fieldcraft"
+            ],
+            "Type": "skill"
+        },
+        {
+            "Name": "charm",
+            "Aptitudes": [
+                "fellowship",
+                "social"
+            ],
+            "Type": "skill"
+        },
+        {
+            "Name": "command",
+            "Aptitudes": [
+                "fellowship",
+                "social"
+            ],
+            "Type": "skill"
+        },
+        {
+            "Name": "commerce",
+            "Aptitudes": [
+                "intelligence",
+                "knowledge"
+            ],
+            "Type": "skill"
+        },
+        {
+            "Name": "common lore",
+            "Aptitudes": [
+                "intelligence",
+                "knowledge"
+            ],
+            "Type": "skill"
+        },
+        {
+            "Name": "craft",
+            "Aptitudes": [
+                "intelligence",
+                "fieldcraft"
+            ],
+            "Type": "skill"
+        },
+        {
+            "Name": "deceive",
+            "Aptitudes": [
+                "fellowship",
+                "social"
+            ],
+            "Type": "skill"
+        },
+        {
+            "Name": "dodge",
+            "Aptitudes": [
+                "agility",
+                "defence"
+            ],
+            "Type": "skill"
+        },
+        {
+            "Name": "forbiden lore",
+            "Aptitudes": [
+                "intelligence",
+                "knowledge"
+            ],
+            "Type": "skill"
+        },
+        {
+            "Name": "inquiry",
+            "Aptitudes": [
+                "fellowship",
+                "social"
+            ],
+            "Type": "skill"
+        },
+        {
+            "Name": "interrogation",
+            "Aptitudes": [
+                "willpower",
+                "social"
+            ],
+            "Type": "skill"
+        },
+        {
+            "Name": "intimidate",
+            "Aptitudes": [
+                "strength",
+                "social"
+            ],
+            "Type": "skill"
+        },
+        {
+            "Name": "linguistics",
+            "Aptitudes": [
+                "intelligence",
+                "general"
+            ],
+            "Type": "skill"
+        },
+        {
+            "Name": "logic",
+            "Aptitudes": [
+                "intelligence",
+                "knowledge"
+            ],
+            "Type": "skill"
+        },
+        {
+            "Name": "medicae",
+            "Aptitudes": [
+                "intelligence",
+                "fieldcraft"
+            ],
+            "Type": "skill"
+        },
+        {
+            "Name": "navigate",
+            "Aptitudes": [
+                "intelligence",
+                "fieldcraft"
+            ],
+            "Type": "skill"
+        },
+        {
+            "Name": "operate",
+            "Aptitudes": [
+                "agility",
+                "fieldcraft"
+            ],
+            "Type": "skill"
+        },
+        {
+            "Name": "parry",
+            "Aptitudes": [
+                "weapin skill",
+                "defence"
+            ],
+            "Type": "skill"
+        },
+        {
+            "Name": "magic sense",
+            "Aptitudes": [
+                "perception",
+                "sorcerer"
+            ],
+            "Type": "skill"
+        },
+        {
+            "Name": "scholastic lore",
+            "Aptitudes": [
+                "intelligence",
+                "knowledge"
+            ],
+            "Type": "skill"
+        },
+        {
+            "Name": "scrutiny",
+            "Aptitudes": [
+                "perception",
+                "general"
+            ],
+            "Type": "skill"
+        },
+        {
+            "Name": "security",
+            "Aptitudes": [
+                "intelligence",
+                "fieldcraft"
+            ],
+            "Type": "skill"
+        },
+        {
+            "Name": "sleight of hand",
+            "Aptitudes": [
+                "agility",
+                "knowledge"
+            ],
+            "Type": "skill"
+        },
+        {
+            "Name": "stealth",
+            "Aptitudes": [
+                "agility",
+                "fieldcraft"
+            ],
+            "Type": "skill"
+        },
+        {
+            "Name": "survival",
+            "Aptitudes": [
+                "perception",
+                "fieldcraft"
+            ],
+            "Type": "skill"
+        },
+        {
+            "Name": "trade",
+            "Aptitudes": [
+                "intelligence",
+                "general"
+            ],
+            "Type": "skill"
+        }
+    ],
+    "Tarots": [
+        {
+            "Name": "Mutation without, corruption within.",
+            "Upgrades": [
+                [
+                    {
+                        "Name": "Malignancy",
+                        "Mark": "-"
+                    }
+                ]
+            ]
+        },
+        {
+            "Name": "Trust in your fear.",
+            "Upgrades": [
+                [
+                    {
+                        "Name": "Phobia",
+                        "Mark": "-"
+                    }
+                ],
+                [
+                    {
+                        "Name": "PER +5",
+                        "Mark": "-"
+                    }
+                ]
+            ]
+        },
+        {
+            "Name": "Humans must die so that humanity can endure.",
+            "Upgrades": [
+                [
+                    {
+                        "Name": "Jaded",
+                        "Mark": "-"
+                    },
+                    {
+                        "Name": "WIP +2",
+                        "Mark": "-"
+                    }
+                ]
+            ]
+        },
+        {
+            "Name": "The pain of the bullet is ecstasy compared to damnation.",
+            "Upgrades": [
+                [
+                    {
+                        "Name": "AGI -3",
+                        "Mark": "-"
+                    }
+                ],
+                [
+                    {
+                        "Name": "Tarot: The pain of the bullet is ecstasy compared to damnation.",
+                        "Mark": "-"
+                    }
+                ]
+            ]
+        },
+        {
+            "Name": "Be a boon to your allies and the bane of your enemies.",
+            "Upgrades": [
+                [
+                    {
+                        "Name": "Hatred",
+                        "Mark": "-"
+                    },
+                    {
+                        "Name": "STR +2",
+                        "Mark": "-"
+                    }
+                ]
+            ]
+        },
+        {
+            "Name": "The wise learn from the deaths of others.",
+            "Upgrades": [
+                [
+                    {
+                        "Name": "AGI +3",
+                        "Mark": "-"
+                    },
+                    {
+                        "Name": "INT +3",
+                        "Mark": "-"
+                    }
+                ],
+                [
+                    {
+                        "Name": "BS -3",
+                        "Mark": "-"
+                    },
+                    {
+                        "Name": "WS -3",
+                        "Mark": "-"
+                    }
+                ]
+            ]
+        },
+        {
+            "Name": "Kill the alien before it can speak its lies.",
+            "Upgrades": [
+                [
+                    {
+                        "Name": "Quick draw",
+                        "Mark": "-"
+                    },
+                    {
+                        "Name": "Agi +2",
+                        "Mark": "-"
+                    }
+                ]
+            ]
+        },
+        {
+            "Name": "Truth is subjective.",
+            "Upgrades": [
+                [
+                    {
+                        "Name": "PER +3",
+                        "Mark": "-"
+                    }
+                ],
+                [
+                    {
+                        "Name": "Tarot: Truth is subjective.",
+                        "Mark": "-"
+                    }
+                ]
+            ]
+        },
+        {
+            "Name": "Thought begets Heresy.",
+            "Upgrades": [
+                [
+                    {
+                        "Name": "INT -3",
+                        "Mark": "-"
+                    }
+                ],
+                [
+                    {
+                        "Name": "Tarot: Thought begets Heresy.",
+                        "Mark": "-"
+                    }
+                ]
+            ]
+        },
+        {
+            "Name": "Heresy begets Retribution.",
+            "Upgrades": [
+                [
+                    {
+                        "Name": "FEL +3",
+                        "Mark": "-"
+                    },
+                    {
+                        "Name": "STR +3",
+                        "Mark": "-"
+                    }
+                ],
+                [
+                    {
+                        "Name": "TOU -3",
+                        "Mark": "-"
+                    },
+                    {
+                        "Name": "WIP -3",
+                        "Mark": "-"
+                    }
+                ]
+            ]
+        },
+        {
+            "Name": "A mind without purpose wanders in dark places.",
+            "Upgrades": [
+                [
+                    {
+                        "Name": "Tarot: A mind without purpose wanders in dark places.",
+                        "Mark": "-"
+                    }
+                ]
+            ]
+        },
+        {
+            "Name": "If a job is worth doing, it is worth dying for.",
+            "Upgrades": [
+                [
+                    {
+                        "Name": "FEL -3",
+                        "Mark": "-"
+                    },
+                    {
+                        "Name": "STR -3",
+                        "Mark": "-"
+                    }
+                ],
+                [
+                    {
+                        "Name": "TOU +3",
+                        "Mark": "-"
+                    },
+                    {
+                        "Name": "WIP +3",
+                        "Mark": "-"
+                    }
+                ]
+            ]
+        },
+        {
+            "Name": "Dark dreams lie upon the heart.",
+            "Upgrades": [
+                [
+                    {
+                        "Name": "Tarot: Dark dreams lie upon the heart.",
+                        "Mark": "-"
+                    }
+                ]
+            ]
+        },
+        {
+            "Name": "Violence solves everything.",
+            "Upgrades": [
+                [
+                    {
+                        "Name": "AGI -3",
+                        "Mark": "-"
+                    },
+                    {
+                        "Name": "INT -3",
+                        "Mark": "-"
+                    }
+                ],
+                [
+                    {
+                        "Name": "BS +3",
+                        "Mark": "-"
+                    },
+                    {
+                        "Name": "WS +3",
+                        "Mark": "-"
+                    }
+                ]
+            ]
+        },
+        {
+            "Name": "Ignorance is a wisdom of its own.",
+            "Upgrades": [
+                [
+                    {
+                        "Name": "PER -3",
+                        "Mark": "-"
+                    }
+                ],
+                [
+                    {
+                        "Name": "Tarot: Ignorance is a wisdom of its own.",
+                        "Mark": "-"
+                    }
+                ]
+            ]
+        },
+        {
+            "Name": "Only the insane have strength enough to prosper.",
+            "Upgrades": [
+                [
+                    {
+                        "Name": "WP +3",
+                        "Mark": "-"
+                    }
+                ],
+                [
+                    {
+                        "Name": "Tarot: Only the insane have strength enough to prosper.",
+                        "Mark": "-"
+                    }
+                ]
+            ]
+        },
+        {
+            "Name": "A suspicious mind is a healthy mind.",
+            "Upgrades": [
+                [
+                    {
+                        "Name": "PER +2",
+                        "Mark": "-"
+                    }
+                ],
+                [
+                    {
+                        "Name": "Tarot: A suspicious mind is a healthy mind.",
+                        "Mark": "-"
+                    }
+                ]
+            ]
+        },
+        {
+            "Name": "Suffering is an unrelenting instructor.",
+            "Upgrades": [
+                [
+                    {
+                        "Name": "TOU -2",
+                        "Mark": "-"
+                    }
+                ],
+                [
+                    {
+                        "Name": "Tarot: Suffering is an unrelenting instructor.",
+                        "Mark": "-"
+                    }
+                ]
+            ]
+        },
+        {
+            "Name": "The only true fear is dying without your duty done.",
+            "Upgrades": [
+                [
+                    {
+                        "Name": "Resistance: Heat",
+                        "Mark": "-"
+                    }
+                ],
+                [
+                    {
+                        "Name": "Resistance: Cold",
+                        "Mark": "-"
+                    }
+                ],
+                [
+                    {
+                        "Name": "Resistance: Fear",
+                        "Mark": "-"
+                    }
+                ],
+                [
+                    {
+                        "Name": "TOU +2",
+                        "Mark": "-"
+                    }
+                ]
+            ]
+        },
+        {
+            "Name": "Only in death does duty end.",
+            "Upgrades": [
+                [
+                    {
+                        "Name": "Tarot: Only in death does duty end.",
+                        "Mark": "-"
+                    }
+                ]
+            ]
+        },
+        {
+            "Name": "Innocence is an illusion.",
+            "Upgrades": [
+                [
+                    {
+                        "Name": "Keen intuition",
+                        "Mark": "-"
+                    },
+                    {
+                        "Name": "INT +2",
+                        "Mark": "-"
+                    }
+                ]
+            ]
+        },
+        {
+            "Name": "To war is human.",
+            "Upgrades": [
+                [
+                    {
+                        "Name": "Dodge",
+                        "Mark": "-"
+                    },
+                    {
+                        "Name": "AGI +2",
+                        "Mark": "-"
+                    }
+                ]
+            ]
+        },
+        {
+            "Name": "There is no substitute for zeal.",
+            "Upgrades": [
+                [
+                    {
+                        "Name": "Clues from the Crowds",
+                        "Mark": "-"
+                    },
+                    {
+                        "Name": "FEL +2",
+                        "Mark": "-"
+                    }
+                ]
+            ]
+        },
+        {
+            "Name": "Even one who has nothing can still offer his life.",
+            "Upgrades": [
+                [
+                    {
+                        "Name": "Tarot: Even one who has nothing can still offer his life.",
+                        "Mark": "-"
+                    }
+                ]
+            ]
+        },
+        {
+            "Name": "Do not ask why you serve. Only ask how.",
+            "Upgrades": [
+                [
+                    {
+                        "Name": "FATE +1",
+                        "Mark": "-"
+                    }
+                ]
+            ]
+        }
+    ],
+    "Costs": {
+        "characteristic": {
+            "0": {
+                "1": 500,
+                "2": 750,
+                "3": 1000,
+                "4": 1500,
+                "5": 2500
+            },
+            "1": {
+                "1": 250,
+                "2": 500,
+                "3": 750,
+                "4": 1000,
+                "5": 1500
+            },
+            "2": {
+                "1": 100,
+                "2": 250,
+                "3": 500,
+                "4": 750,
+                "5": 1250
+            }
+        },
+        "skill": {
+            "0": {
+                "1": 300,
+                "2": 600,
+                "3": 900,
+                "4": 1200
+            },
+            "1": {
+                "1": 200,
+                "2": 400,
+                "3": 600,
+                "4": 800
+            },
+            "2": {
+                "1": 100,
+                "2": 200,
+                "3": 300,
+                "4": 400
+            }
+        },
+        "talent": {
+            "0": {
+                "1": 600,
+                "2": 900,
+                "3": 1200
+            },
+            "1": {
+                "1": 300,
+                "2": 450,
+                "3": 600
+            },
+            "2": {
+                "1": 200,
+                "2": 300,
+                "3": 400
+            }
+        }
+    }
+}
