@@ -75,11 +75,11 @@ func NewCharacter(s parser.Sheet) (*Character, error) {
 	}, nil
 }
 
-func (c Character) Display() string {
-		return fmt.Sprintf("Name:		%s\nOrigin:		%s\nBackground:	%s\nRole:		%s\nTarot:		%s", 
-			c.Name, 
-			c.Origin.Name, 
-			c.Background.Name, 
-			c.Role.Name, 
-			c.Tarot.Name)
+// Debugs prints the current values of the character
+func (c Character) Debug() {
+	fmt.Printf("Name		%s\n", c.Name)
+	fmt.Printf("Origin		%s\n", c.Origin.Name)
+	fmt.Printf("Background	%s\n", c.Background.Name)
+	fmt.Printf("Role		%s\n", c.Role.Name)
+	fmt.Printf("Tarot		%s\n", c.Tarot.Name)
 }

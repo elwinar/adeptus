@@ -3,7 +3,6 @@ package main
 import (
 	"log"
 	"os"
-	"fmt"
 
 	"github.com/codegangsta/cli"
 	"adeptus/parser"
@@ -67,7 +66,8 @@ func Display(ctx *cli.Context) {
 			return
 	}
 	
-	fmt.Println(character.Display())
+	character.Debug()
+	
 }
 
 // Displays the history of the character
