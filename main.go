@@ -4,8 +4,9 @@ import (
 	"log"
 	"os"
 
-	"github.com/codegangsta/cli"
 	"adeptus/parser"
+
+	"github.com/codegangsta/cli"
 )
 
 func main() {
@@ -16,18 +17,18 @@ func main() {
 	app.Version = "alpha"
 	app.Authors = []cli.Author{
 		{
-				Name: "Romain Baugue",
-				Email: "romain.baugue@gmail.com",
+			Name:  "Romain Baugue",
+			Email: "romain.baugue@gmail.com",
 		},
 		{
-				Name: "Alexandre Thomas",
-				Email: "alexandre.thomas@outlook.fr",
+			Name:  "Alexandre Thomas",
+			Email: "alexandre.thomas@outlook.fr",
 		},
 	}
 	app.Flags = []cli.Flag{
 		cli.StringFlag{
-				Name: "character, c",
-				Usage: "The filepath to the character sheet.",
+			Name:  "character, c",
+			Usage: "The filepath to the character sheet.",
 		},
 	}
 	app.Action = Display
@@ -39,42 +40,46 @@ func main() {
 			Action: History,
 			Flags: []cli.Flag{
 				cli.StringFlag{
-						Name: "character, c",
-						Usage: "The filepath to the character sheet.",
+					Name:  "character, c",
+					Usage: "The filepath to the character sheet.",
 				},
 			},
 		},
 	}
 
-	app.Run(os.Args)
+	err := app.Run(os.Args)
+	if err != nil {
+		log.Println(err)
+		return
+	}
 }
 
-// Compiles character sheet
+// Display character sheet
 func Display(ctx *cli.Context) {
-	
+
 	// Open and parse character sheet
 	reader, err := os.Open(ctx.String("character"))
 	if err != nil {
-			log.Printf("undefined character: %s\n", err)
-			return
+		log.Printf("undefined character: %s\n", err)
+		return
 	}
-	
+
 	sheet, err := parser.ParseSheet(reader)
 	if err != nil {
-			log.Printf("error character sheet: %s\n", err)
-			return
+		log.Printf("error character sheet: %s\n", err)
+		return
 	}
-	
+
 	// Create character with the seet
 	character, err := NewCharacter(sheet)
 	if err != nil {
-			log.Printf("unable to create character: %s\n", err)
-			return
+		log.Printf("unable to create character: %s\n", err)
+		return
 	}
-	
+
 	character.Debug()
-	
+
 }
 
-// Displays the history of the character
+// History show the history of the character
 func History(ctx *cli.Context) {}
