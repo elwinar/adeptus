@@ -80,7 +80,8 @@ func Display(ctx *cli.Context) {
 
 	universe, err := universe.ParseUniverse(reader)
 	if err != nil {
-		log.Println("error universe: %s\n", err)
+		log.Printf("error universe: %s\n", err)
+		return
 	}
 
 	// Create character with the sheet
