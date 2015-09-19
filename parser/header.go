@@ -2,28 +2,14 @@ package parser
 
 import "strings"
 
-// Meta is a header and a collection of associated options
-type Meta struct {
-	Label   *string
-	Options []string
-}
-
-// NewMeta constructs a new meta given a label
-func NewMeta(label string) Meta {
-	return Meta{
-		Label: &label,
-	}
-}
-
 // Header is the first block of the sheet, and define the character with its
 // name, origin, etc.
 type Header struct {
 	Name       string
-	Origin     Meta
-	Background Meta
-	Role       Meta
-	Tarot      Meta
-	Universe   Meta
+	Origin     *Meta
+	Background *Meta
+	Role       *Meta
+	Tarot      *Meta
 }
 
 // ParseHeader generate a Header from a block of lines. The block must not be
@@ -36,7 +22,7 @@ func parseHeader(block []line) (Header, error) {
 
 	// Initialize the values to find
 	var name string
-	var origin, background, role, tarot, universe Meta
+	var origin, background, role, tarot *Meta
 
 	for _, line := range block {
 		// Parse the field as a key and value
@@ -47,22 +33,28 @@ func parseHeader(block []line) (Header, error) {
 		key := strings.TrimSpace(strings.ToLower(fields[0]))
 		value := strings.TrimSpace(fields[1])
 
-		// Check key:value
+		var err error
+
+		// Parse the value depending on the key
 		switch key {
 		case "name":
 			name = value
 		case "origin":
-			origin = NewMeta(value)
+			origin, err = NewMeta(value)
 		case "background":
-			background = NewMeta(value)
+			background, err = NewMeta(value)
 		case "role":
-			role = NewMeta(value)
+			role, err = NewMeta(value)
 		case "tarot":
-			tarot = NewMeta(value)
-		case "universe":
-			universe = NewMeta(value)
+			tarot, err = NewMeta(value)
+		// If the key doesn't exists, return an error
 		default:
 			return Header{}, NewError(line.Number, UnknownKey)
+		}
+
+		// If there was an error parsing the value, return it
+		if err != nil {
+			return Header{}, NewError(line.Number, InvalidMeta)
 		}
 	}
 
@@ -72,6 +64,5 @@ func parseHeader(block []line) (Header, error) {
 		Background: background,
 		Role:       role,
 		Tarot:      tarot,
-		Universe:   universe,
 	}, nil
 }

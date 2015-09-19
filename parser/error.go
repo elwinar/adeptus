@@ -15,6 +15,9 @@ const (
 	// UnknownKey is returned when the header key isn't a valid one
 	UnknownKey = 101
 
+	// InvalidMeta is returned when the meta value isn't valid
+	InvalidMeta = 102
+
 	// NoDate is returned when no date of the right format is found in the headline
 	NoDate = 200
 

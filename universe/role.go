@@ -1,16 +1,13 @@
 package universe
 
-import "adeptus/parser"
+import "github.com/elwinar/adeptus/parser"
 
 // Role represents a character's role
 type Role struct {
-	Name     string
-	Upgrades [][]parser.Upgrade
-}
+	Name string
 
-// NewRole returns the role associated to the name
-func NewRole(name string) Role {
-	return Role{
-		Name: name,
-	}
+	// Upgrades is the list of upgrades provided by an origin.
+	// The list is a slice of options, each option being itself
+	// a slice of upgrade from which the character must chose one.
+	Upgrades [][]parser.Upgrade
 }

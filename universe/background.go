@@ -1,16 +1,13 @@
 package universe
 
-import "adeptus/parser"
+import "github.com/elwinar/adeptus/parser"
 
 // Background represent a character's background
 type Background struct {
-	Name     string
-	Upgrades [][]parser.Upgrade
-}
+	Name string
 
-// NewBackground returns the background associated to the name
-func NewBackground(name string) Background {
-	return Background{
-		Name: name,
-	}
+	// Upgrades is the list of upgrades provided by a background.
+	// The list is a slice of options, each option being itself
+	// a slice of upgrade from which the character must chose one.
+	Upgrades [][]parser.Upgrade
 }

@@ -1,16 +1,16 @@
 package main
 
 import (
-	"adeptus/parser"
-	"adeptus/universe"
 	"fmt"
-	"os"
+	"strconv"
+
+	"github.com/elwinar/adeptus/parser"
+	"github.com/elwinar/adeptus/universe"
 )
 
 // Character is the type representing a role playing character
 type Character struct {
 	Name       string
-	Universe   universe.Universe
 	Origin     universe.Origin
 	Background universe.Background
 	Role       universe.Role
@@ -18,56 +18,67 @@ type Character struct {
 }
 
 // NewCharacter creates a new character given a sheet
-func NewCharacter(s parser.Sheet) (*Character, error) {
+func NewCharacter(u universe.Universe, s parser.Sheet) (*Character, error) {
 
-	// Retrieve name
-	if len(s.Header.Name) == 0 {
-		return nil, NewError(UndefinedName)
-	}
-	name := s.Header.Name
+	var h parser.Header = s.Header
 
-	// Open and parse universe given the sheet's universe
-	if s.Header.Universe.Label == nil {
-		return nil, NewError(UndefinedUniverse)
+	var name string
+	var origin universe.Origin
+	var background universe.Background
+	var role universe.Role
+	var tarot universe.Tarot
+	var found bool
+
+	// Retrieve the name from the sheet header.
+	if len(h.Name) == 0 {
+		return nil, fmt.Errorf("empty name")
+	}
+	name = h.Name
+
+	// Retrieve the origin from the universe.
+	if h.Origin == nil {
+		return nil, fmt.Errorf("unspecified origin")
+	}
+	origin, found = u.FindOrigin(h.Origin.Label)
+	if !found {
+		return nil, fmt.Errorf("origin %s not found", h.Origin.Label)
 	}
 
-	reader, err := os.Open(fmt.Sprintf("samples/%s.json", *s.Header.Universe.Label))
-	if err != nil {
-		return nil, NewError(NotFoundUniverse, err)
+	// Retrieve the background from the universe.
+	if h.Background == nil {
+		return nil, fmt.Errorf("unspecified background")
+	}
+	background, found = u.FindBackground(h.Background.Label)
+	if !found {
+		return nil, fmt.Errorf("background %s not found", h.Background.Label)
 	}
 
-	data, err := universe.ParseUniverse(reader)
-	if err != nil {
-		return nil, NewError(InvalidUniverse, err)
+	// Retrieve the role from the universe.
+	if h.Role == nil {
+		return nil, fmt.Errorf("unspecified role")
+	}
+	role, found = u.FindRole(h.Role.Label)
+	if !found {
+		return nil, fmt.Errorf("role %s not found", h.Role.Label)
 	}
 
-	// Retrieve origin
-	if s.Header.Origin.Label == nil {
-		return nil, NewError(UndefinedOrigin)
+	// Retrieve the tarot from the universe.
+	if h.Tarot == nil {
+		return nil, fmt.Errorf("unspecified tarot")
 	}
-	origin := universe.NewOrigin(*s.Header.Origin.Label)
 
-	// Retrieve background
-	if s.Header.Background.Label == nil {
-		return nil, NewError(UndefinedBackground)
+	dice, err := strconv.Atoi(h.Tarot.Label)
+	if err == nil {
+		tarot, found = u.FindTarotByDice(dice)
+	} else {
+		tarot, found = u.FindTarot(h.Tarot.Label)
 	}
-	background := universe.NewBackground(*s.Header.Background.Label)
-
-	// Retrieve role
-	if s.Header.Role.Label == nil {
-		return nil, NewError(UndefinedRole)
+	if !found {
+		return nil, fmt.Errorf("tarot %s not found", h.Tarot.Label)
 	}
-	role := universe.NewRole(*s.Header.Role.Label)
-
-	// Retrieve tarot
-	if s.Header.Tarot.Label == nil {
-		return nil, NewError(UndefinedTarot)
-	}
-	tarot := universe.NewTarot(*s.Header.Tarot.Label)
 
 	return &Character{
 		Name:       name,
-		Universe:   data,
 		Origin:     origin,
 		Background: background,
 		Role:       role,
