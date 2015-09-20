@@ -135,3 +135,15 @@ func (u Universe) FindTarotByDice(dice int) (Tarot, bool) {
 
 	return Tarot{}, false
 }
+
+// FindAptitude returns the aptitude corresponding to the given label or a zero value, and a boolean indicating if it was found.
+func (u Universe) FindAptitude(label string) (Aptitude, bool) {
+
+	for _, aptitude := range u.Aptitudes {
+		if string(aptitude) == label {
+			return aptitude, true
+		}
+	}
+
+	return Aptitude(""), false
+}

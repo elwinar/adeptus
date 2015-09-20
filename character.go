@@ -11,6 +11,7 @@ import (
 // Character is the type representing a role playing character
 type Character struct {
 	Name            string
+	Aptitudes		[]universe.Aptitude
 	Origin          universe.Origin
 	Background      universe.Background
 	Role            universe.Role
@@ -72,7 +73,7 @@ func NewCharacter(u universe.Universe, s parser.Sheet) (*Character, error) {
 		return nil, fmt.Errorf("tarot %s not found", h.Tarot.Label)
 	}
 
-	// For each characteristic from the sheet.
+	// Apply the initial characteristics from the sheet.
 	characteristics := make(map[*universe.Characteristic]int)
 	for _, c := range s.Characteristics {
 
@@ -97,6 +98,10 @@ func NewCharacter(u universe.Universe, s parser.Sheet) (*Character, error) {
 		// Associate the characteristic and it' value to the characteristics map
 		characteristics[&char] = value
 	}
+	
+	// Apply the meta from the header.
+	
+	// Apply the sessions.
 
 	return &Character{
 		Name:       name,
