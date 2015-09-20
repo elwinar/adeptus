@@ -10,36 +10,30 @@ import (
 
 // Character is the type representing a role playing character
 type Character struct {
-	Name       string
-	Origin     universe.Origin
-	Background universe.Background
-	Role       universe.Role
-	Tarot      universe.Tarot
+	Name            string
+	Origin          universe.Origin
+	Background      universe.Background
+	Role            universe.Role
+	Tarot           universe.Tarot
+	Characteristics map[*universe.Characteristic]int
 }
 
 // NewCharacter creates a new character given a sheet
 func NewCharacter(u universe.Universe, s parser.Sheet) (*Character, error) {
 
-	var h parser.Header = s.Header
-
-	var name string
-	var origin universe.Origin
-	var background universe.Background
-	var role universe.Role
-	var tarot universe.Tarot
-	var found bool
+	h := s.Header
 
 	// Retrieve the name from the sheet header.
 	if len(h.Name) == 0 {
 		return nil, fmt.Errorf("empty name")
 	}
-	name = h.Name
+	name := h.Name
 
 	// Retrieve the origin from the universe.
 	if h.Origin == nil {
 		return nil, fmt.Errorf("unspecified origin")
 	}
-	origin, found = u.FindOrigin(h.Origin.Label)
+	origin, found := u.FindOrigin(h.Origin.Label)
 	if !found {
 		return nil, fmt.Errorf("origin %s not found", h.Origin.Label)
 	}
@@ -48,7 +42,7 @@ func NewCharacter(u universe.Universe, s parser.Sheet) (*Character, error) {
 	if h.Background == nil {
 		return nil, fmt.Errorf("unspecified background")
 	}
-	background, found = u.FindBackground(h.Background.Label)
+	background, found := u.FindBackground(h.Background.Label)
 	if !found {
 		return nil, fmt.Errorf("background %s not found", h.Background.Label)
 	}
@@ -57,12 +51,13 @@ func NewCharacter(u universe.Universe, s parser.Sheet) (*Character, error) {
 	if h.Role == nil {
 		return nil, fmt.Errorf("unspecified role")
 	}
-	role, found = u.FindRole(h.Role.Label)
+	role, found := u.FindRole(h.Role.Label)
 	if !found {
 		return nil, fmt.Errorf("role %s not found", h.Role.Label)
 	}
 
 	// Retrieve the tarot from the universe.
+	var tarot universe.Tarot
 	if h.Tarot == nil {
 		return nil, fmt.Errorf("unspecified tarot")
 	}
@@ -75,6 +70,32 @@ func NewCharacter(u universe.Universe, s parser.Sheet) (*Character, error) {
 	}
 	if !found {
 		return nil, fmt.Errorf("tarot %s not found", h.Tarot.Label)
+	}
+
+	// For each characteristic from the sheet.
+	characteristics := make(map[*universe.Characteristic]int)
+	for _, c := range s.Characteristics {
+
+		// Identify name and value.
+		name, value, _, err := IdentifyCharacteristic(c.Name)
+		if err != nil {
+			return nil, err
+		}
+
+		// Retrieve characteristic from universe given it's name.
+		char, found := u.FindCharacteristic(name)
+		if !found {
+			return nil, fmt.Errorf("undefined characteristic %s", name)
+		}
+
+		// Check the characteristic is not set twice
+		_, found = characteristics[&char]
+		if found {
+			return nil, fmt.Errorf("characteristic %s previously defined in character sheet", name)
+		}
+
+		// Associate the characteristic and it' value to the characteristics map
+		characteristics[&char] = value
 	}
 
 	return &Character{
