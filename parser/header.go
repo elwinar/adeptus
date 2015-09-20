@@ -50,20 +50,27 @@ func parseHeader(block []line) (Header, error) {
 			return Header{}, NewError(line.Number, InvalidOptions)
 		}
 
-		// If the label is empty, the meta is nil. No need to retrieve pointer.
-		if len(m.Label) == 0 {
-			continue
-		}
-
 		// Associate the proper key to the meta.
 		switch key {
 		case "origin":
+			if origin != nil {
+				return Header{}, NewError(line.Number, DuplicateMeta)
+			}
 			origin = &m
 		case "background":
+			if background != nil {
+				return Header{}, NewError(line.Number, DuplicateMeta)
+			}
 			background = &m
 		case "role":
+			if role != nil {
+				return Header{}, NewError(line.Number, DuplicateMeta)
+			}
 			role = &m
 		case "tarot":
+			if tarot != nil {
+				return Header{}, NewError(line.Number, DuplicateMeta)
+			}
 			tarot = &m
 		}
 	}

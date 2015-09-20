@@ -36,6 +36,67 @@ func ParseUniverse(file io.Reader) (Universe, error) {
 	if err != nil {
 		return Universe{}, fmt.Errorf("unable to parse universe: %s", err.Error())
 	}
+	
+	// Check the aptitudes in Skills, Characteristics and Talents are defined in the universe.
+	observed := make(map[Aptitude]struct{})
+	
+	// For each aptitude of each characteristic.
+	for _, c := range universe.Characteristics{
+		for _, a := range c.Aptitudes {
+			
+			// Add the aptitude to the slice of observed aptitudes.
+			_, f := observed[a]
+			if !f {
+				observed[a] = struct{}{}
+			}
+		}
+	}
+	
+	// For each aptitude of each skill.
+	for _, c := range universe.Skills{
+		for _, a := range c.Aptitudes {
+			
+			// Add the aptitude to the slice of observed aptitudes.
+			_, f := observed[a]
+			if !f {
+				observed[a] = struct{}{}
+			}
+		}
+	}
+	
+	// For each aptitude of each talent.
+	for _, c := range universe.Talents{
+		for _, a := range c.Aptitudes {
+			
+			// Add the aptitude to the slice of observed aptitudes.
+			_, f := observed[a]
+			if !f {
+				observed[a] = struct{}{}
+			}
+		}
+	}
+	
+	// Check all aptitudes defined by universe are used at least once.
+	checkDefined:
+	for _, a := range universe.Aptitudes{
+		for o, _ := range observed {
+			if a == o {
+				continue checkDefined
+			}
+		}
+		return Universe{}, fmt.Errorf("aptitude %s defined by universe but not used", a)
+	}
+	
+	// Check all aptitudes defined by universe are used at least once.
+	checkObserved:
+	for o, _ := range observed {
+		for _, a := range universe.Aptitudes{
+			if a == o {
+				continue checkObserved
+			}
+		}
+		return Universe{}, fmt.Errorf("aptitude %s used by universe but not defined", o)
+	}
 
 	return universe, nil
 }
@@ -76,8 +137,20 @@ func (u Universe) FindTalent(label string) (Talent, bool) {
 	return Talent{}, false
 }
 
+// FindAptitude returns the aptitude corresponding to the given label or a zero value, and a boolean indicating if it was found.
+func (u Universe) FindAptitude(label string) (Aptitude, bool) {
+
+	for _, aptitude := range u.Aptitudes {
+		if string(aptitude) == label {
+			return aptitude, true
+		}
+	}
+
+	return Aptitude(""), false
+}
+
 // FindOrigin returns the origin corresponding to the given label or a zero value, and a boolean indicating if it was found.
-func (u Universe) FindOrigin(label string) (Origin, bool) {
+func (u Universe) FindOrigin(label string) (History, bool) {
 
 	for _, origin := range u.Origins {
 		if origin.Name == label {
@@ -89,7 +162,7 @@ func (u Universe) FindOrigin(label string) (Origin, bool) {
 }
 
 // FindBackground returns the background corresponding to the given label or a zero value, and a boolean indicating if it was found.
-func (u Universe) FindBackground(label string) (Background, bool) {
+func (u Universe) FindBackground(label string) (History, bool) {
 
 	for _, background := range u.Backgrounds {
 		if background.Name == label {
@@ -101,7 +174,7 @@ func (u Universe) FindBackground(label string) (Background, bool) {
 }
 
 // FindRole returns the role corresponding to the given label or a zero value, and a boolean indicating if it was found.
-func (u Universe) FindRole(label string) (Role, bool) {
+func (u Universe) FindRole(label string) (History, bool) {
 
 	for _, role := range u.Roles {
 		if role.Name == label {
@@ -113,7 +186,7 @@ func (u Universe) FindRole(label string) (Role, bool) {
 }
 
 // FindTarot returns the tarot corresponding to the given label or a zero value, and a boolean indicating if it was found.
-func (u Universe) FindTarot(label string) (Tarot, bool) {
+func (u Universe) FindTarot(label string) (History, bool) {
 
 	for _, tarot := range u.Tarots {
 		if tarot.Name == label {
@@ -125,7 +198,7 @@ func (u Universe) FindTarot(label string) (Tarot, bool) {
 }
 
 // FindTarotByDice returns the tarot corresponding to the given value or a zero value, and a boolean indicating if a tarot exist for this dice.
-func (u Universe) FindTarotByDice(dice int) (Tarot, bool) {
+func (u Universe) FindTarotByDice(dice int) (History, bool) {
 
 	for _, tarot := range u.Tarots {
 		if tarot.Min <= dice && dice <= tarot.Max {
@@ -134,16 +207,4 @@ func (u Universe) FindTarotByDice(dice int) (Tarot, bool) {
 	}
 
 	return Tarot{}, false
-}
-
-// FindAptitude returns the aptitude corresponding to the given label or a zero value, and a boolean indicating if it was found.
-func (u Universe) FindAptitude(label string) (Aptitude, bool) {
-
-	for _, aptitude := range u.Aptitudes {
-		if string(aptitude) == label {
-			return aptitude, true
-		}
-	}
-
-	return Aptitude(""), false
 }

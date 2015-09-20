@@ -54,16 +54,6 @@ func Test_ParseHeader(t *testing.T) {
 		},
 		{
 			in: []string{
-				"origin:",
-			},
-			out: Header{
-				Origin: nil,
-			},
-			err:   false,
-			panic: false,
-		},
-		{
-			in: []string{
 				"origin: fail(",
 			},
 			out:   Header{},
@@ -140,6 +130,15 @@ func Test_ParseHeader(t *testing.T) {
 				Tarot:      mustNewMeta("successful tarot"),
 			},
 			err:   false,
+			panic: false,
+		},
+		{
+			in: []string{
+				"	role: fail",
+				"	role: fail",
+			},
+			out:   Header{},
+			err:   true,
 			panic: false,
 		},
 	}

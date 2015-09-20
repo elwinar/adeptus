@@ -21,6 +21,9 @@ const (
 	// InvalidOptions is returned when the options provided are not allowed
 	InvalidOptions = 103
 
+	// DuplicateMeta is returned when a meta is specified more than once
+	DuplicateMeta = 104
+
 	// NoDate is returned when no date of the right format is found in the headline
 	NoDate = 200
 
