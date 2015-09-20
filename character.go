@@ -104,6 +104,7 @@ func NewCharacter(u universe.Universe, s parser.Sheet) (*Character, error) {
 		Background: background,
 		Role:       role,
 		Tarot:      tarot,
+		Characteristics: characteristics,
 	}, nil
 }
 
@@ -114,4 +115,8 @@ func (c Character) Debug() {
 	fmt.Printf("Background	%s\n", c.Background.Name)
 	fmt.Printf("Role		%s\n", c.Role.Name)
 	fmt.Printf("Tarot		%s\n", c.Tarot.Name)
+	fmt.Printf("\nCharacteristics\n")
+	for c, value := range c.Characteristics {
+		fmt.Printf("%s		%d\n", c.Name, value)
+	}
 }

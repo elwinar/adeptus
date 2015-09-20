@@ -1,325 +1,302 @@
 {
-    "Attributes": [
+    "Characteristics": [
         {
             "Name": "WS",
             "Aptitudes": [
                 "weapon skill",
                 "offense"
-            ],
-            "Type": "characteristic"
+            ]
         },
         {
             "Name": "BS",
             "Aptitudes": [
                 "ballistic skill",
                 "finesse"
-            ],
-            "Type": "characteristic"
+            ]
         },
         {
             "Name": "STR",
             "Aptitudes": [
                 "strength",
                 "offence"
-            ],
-            "Type": "characteristic"
+            ]
         },
         {
             "Name": "TOU",
             "Aptitudes": [
                 "toughness",
                 "defence"
-            ],
-            "Type": "characteristic"
+            ]
         },
         {
             "Name": "AGI",
             "Aptitudes": [
                 "agility",
                 "finesse"
-            ],
-            "Type": "characteristic"
+            ]
         },
         {
             "Name": "INT",
             "Aptitudes": [
                 "intelligence",
                 "knowledge"
-            ],
-            "Type": "characteristic"
+            ]
         },
         {
             "Name": "PER",
             "Aptitudes": [
                 "perception",
                 "fieldcraft"
-            ],
-            "Type": "characteristic"
+            ]
         },
         {
             "Name": "WIL",
             "Aptitudes": [
                 "willpower",
                 "sorcerer"
-            ],
-            "Type": "characteristic"
+            ]
         },
         {
             "Name": "FEL",
             "Aptitudes": [
                 "fellowship",
                 "social"
-            ],
-            "Type": "characteristic"
-        },
+            ]
+        }
+    ],
+    "Gauges": [
         {
             "Name": "INS",
-            "Aptitudes": [],
-            "Type": "special"
+            "Aptitudes": []
         },
         {
             "Name": "COR",
-            "Aptitudes": [],
-            "Type": "special"
+            "Aptitudes": []
         },
         {
             "Name": "DR",
-            "Aptitudes": [],
-            "Type": "special"
+            "Aptitudes": []
         },
         {
             "Name": "PR",
-            "Aptitudes": [],
-            "Type": "special"
+            "Aptitudes": []
         },
         {
             "Name": "Fate",
-            "Aptitudes": [],
-            "Type": "special"
-        },
+            "Aptitudes": []
+        }
+    ],
+    "Skills": [
         {
             "Name": "acrobatics",
             "Aptitudes": [
                 "agility",
                 "general"
-            ],
-            "Type": "skill"
+            ]
         },
         {
             "Name": "athletics",
             "Aptitudes": [
                 "strength",
                 "general"
-            ],
-            "Type": "skill"
+            ]
         },
         {
             "Name": "awarness",
             "Aptitudes": [
                 "perception",
                 "fieldcraft"
-            ],
-            "Type": "skill"
+            ]
         },
         {
             "Name": "charm",
             "Aptitudes": [
                 "fellowship",
                 "social"
-            ],
-            "Type": "skill"
+            ]
         },
         {
             "Name": "command",
             "Aptitudes": [
                 "fellowship",
                 "social"
-            ],
-            "Type": "skill"
+            ]
         },
         {
             "Name": "commerce",
             "Aptitudes": [
                 "intelligence",
                 "knowledge"
-            ],
-            "Type": "skill"
+            ]
         },
         {
             "Name": "common lore",
             "Aptitudes": [
                 "intelligence",
                 "knowledge"
-            ],
-            "Type": "skill"
+            ]
         },
         {
             "Name": "craft",
             "Aptitudes": [
                 "intelligence",
                 "fieldcraft"
-            ],
-            "Type": "skill"
+            ]
         },
         {
             "Name": "deceive",
             "Aptitudes": [
                 "fellowship",
                 "social"
-            ],
-            "Type": "skill"
+            ]
         },
         {
             "Name": "dodge",
             "Aptitudes": [
                 "agility",
                 "defence"
-            ],
-            "Type": "skill"
+            ]
         },
         {
             "Name": "forbiden lore",
             "Aptitudes": [
                 "intelligence",
                 "knowledge"
-            ],
-            "Type": "skill"
+            ]
         },
         {
             "Name": "inquiry",
             "Aptitudes": [
                 "fellowship",
                 "social"
-            ],
-            "Type": "skill"
+            ]
         },
         {
             "Name": "interrogation",
             "Aptitudes": [
                 "willpower",
                 "social"
-            ],
-            "Type": "skill"
+            ]
         },
         {
             "Name": "intimidate",
             "Aptitudes": [
                 "strength",
                 "social"
-            ],
-            "Type": "skill"
+            ]
         },
         {
             "Name": "linguistics",
             "Aptitudes": [
                 "intelligence",
                 "general"
-            ],
-            "Type": "skill"
+            ]
         },
         {
             "Name": "logic",
             "Aptitudes": [
                 "intelligence",
                 "knowledge"
-            ],
-            "Type": "skill"
+            ]
         },
         {
             "Name": "medicae",
             "Aptitudes": [
                 "intelligence",
                 "fieldcraft"
-            ],
-            "Type": "skill"
+            ]
         },
         {
             "Name": "navigate",
             "Aptitudes": [
                 "intelligence",
                 "fieldcraft"
-            ],
-            "Type": "skill"
+            ]
         },
         {
             "Name": "operate",
             "Aptitudes": [
                 "agility",
                 "fieldcraft"
-            ],
-            "Type": "skill"
+            ]
         },
         {
             "Name": "parry",
             "Aptitudes": [
                 "weapin skill",
                 "defence"
-            ],
-            "Type": "skill"
+            ]
         },
         {
             "Name": "magic sense",
             "Aptitudes": [
                 "perception",
                 "sorcerer"
-            ],
-            "Type": "skill"
+            ]
         },
         {
             "Name": "scholastic lore",
             "Aptitudes": [
                 "intelligence",
                 "knowledge"
-            ],
-            "Type": "skill"
+            ]
         },
         {
             "Name": "scrutiny",
             "Aptitudes": [
                 "perception",
                 "general"
-            ],
-            "Type": "skill"
+            ]
         },
         {
             "Name": "security",
             "Aptitudes": [
                 "intelligence",
                 "fieldcraft"
-            ],
-            "Type": "skill"
+            ]
         },
         {
             "Name": "sleight of hand",
             "Aptitudes": [
                 "agility",
                 "knowledge"
-            ],
-            "Type": "skill"
+            ]
         },
         {
             "Name": "stealth",
             "Aptitudes": [
                 "agility",
                 "fieldcraft"
-            ],
-            "Type": "skill"
+            ]
         },
         {
             "Name": "survival",
             "Aptitudes": [
                 "perception",
                 "fieldcraft"
-            ],
-            "Type": "skill"
+            ]
         },
         {
             "Name": "trade",
             "Aptitudes": [
                 "intelligence",
                 "general"
-            ],
-            "Type": "skill"
+            ]
+        }
+    ],
+    "Origins": [
+        {
+            "Name": "Tilea"
+        }
+    ],
+    "Backgrounds": [
+        {
+            "Name": "Cleric"
+        }
+    ],
+    "Roles": [
+        {
+            "Name": "Warrior"
         }
     ],
     "Tarots": [
@@ -622,6 +599,8 @@
         },
         {
             "Name": "Suffering is an unrelenting instructor.",
+            "Min": 72,
+            "Max": 75,
             "Upgrades": [
                 [
                     {
