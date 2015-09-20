@@ -25,7 +25,7 @@ func parseHeader(block []line) (Header, error) {
 	var origin, background, role, tarot *Meta
 
 	for _, line := range block {
-		// Parse the field as a key and value
+		// Parse the field as a key and value.
 		fields := strings.Split(line.Text, ":")
 		if len(fields) != 2 {
 			return Header{}, NewError(line.Number, InvalidKeyValuePair)
@@ -33,28 +33,38 @@ func parseHeader(block []line) (Header, error) {
 		key := strings.TrimSpace(strings.ToLower(fields[0]))
 		value := strings.TrimSpace(fields[1])
 
-		var err error
-
-		// Parse the value depending on the key
-		switch key {
-		case "name":
-			name = value
-		case "origin":
-			origin, err = NewMeta(value)
-		case "background":
-			background, err = NewMeta(value)
-		case "role":
-			role, err = NewMeta(value)
-		case "tarot":
-			tarot, err = NewMeta(value)
-		// If the key doesn't exists, return an error
-		default:
+		// Check the key is knowned.
+		if !in(key, []string{"name", "origin", "background", "role", "tarot"}) {
 			return Header{}, NewError(line.Number, UnknownKey)
 		}
-
-		// If there was an error parsing the value, return it
+		
+		// Retrieve the name.
+		if key == "name" {
+			name = value
+			continue
+		}
+		
+		// Create new meta.
+		m, err := NewMeta(value)
 		if err != nil {
-			return Header{}, NewError(line.Number, InvalidMeta)
+			return Header{}, NewError(line.Number, InvalidOptions)
+		}
+		
+		// If the label is empty, the meta is nil. No need to retrieve pointer.
+		if len(m.Label) == 0 {
+			continue
+		}
+		
+		// Associate the proper key to the meta.
+		switch key {
+			case "origin":
+				origin = &m
+			case "background":
+				background = &m
+			case "role":
+				role = &m
+			case "tarot":
+				tarot = &m
 		}
 	}
 

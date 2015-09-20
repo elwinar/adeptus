@@ -54,6 +54,24 @@ func Test_ParseHeader(t *testing.T) {
 		},
 		{
 			in: []string{
+				"origin:",
+			},
+			out: Header{
+				Origin:     nil,
+			},
+			err:   false,
+			panic: false,
+		},
+		{
+			in: []string{
+				"origin: fail(",
+			},
+			out: Header{},
+			err:   true,
+			panic: false,
+		},
+		{
+			in: []string{
 				"rolE: successful role",
 				"name: successful name",
 				"tarot: successful tarot",
@@ -62,10 +80,10 @@ func Test_ParseHeader(t *testing.T) {
 			},
 			out: Header{
 				Name:       "successful name",
-				Origin:     NewMeta("successful origin"),
-				Background: NewMeta("successful background"),
-				Role:       NewMeta("successful role"),
-				Tarot:      NewMeta("successful tarot"),
+				Origin:     mustNewMeta("successful origin"),
+				Background: mustNewMeta("successful background"),
+				Role:       mustNewMeta("successful role"),
+				Tarot:      mustNewMeta("successful tarot"),
 			},
 			err:   false,
 			panic: false,
@@ -80,10 +98,10 @@ func Test_ParseHeader(t *testing.T) {
 			},
 			out: Header{
 				Name:       "successful name",
-				Origin:     NewMeta("successful origin"),
-				Background: NewMeta("successful background"),
-				Role:       NewMeta("successful role"),
-				Tarot:      NewMeta("successful tarot"),
+				Origin:     mustNewMeta("successful origin"),
+				Background: mustNewMeta("successful background"),
+				Role:       mustNewMeta("successful role"),
+				Tarot:      mustNewMeta("successful tarot"),
 			},
 			err:   false,
 			panic: false,
@@ -98,10 +116,10 @@ func Test_ParseHeader(t *testing.T) {
 			},
 			out: Header{
 				Name:       "successful name",
-				Origin:     NewMeta("successful origin"),
-				Background: NewMeta("successful background"),
-				Role:       NewMeta("successful role"),
-				Tarot:      NewMeta("successful tarot"),
+				Origin:     mustNewMeta("successful origin"),
+				Background: mustNewMeta("successful background"),
+				Role:       mustNewMeta("successful role"),
+				Tarot:      mustNewMeta("successful tarot"),
 			},
 			err:   false,
 			panic: false,
@@ -113,15 +131,13 @@ func Test_ParseHeader(t *testing.T) {
 				"	tarot: successful tarot",
 				"	background: successful background",
 				"	origin: successful origin",
-				"	universe: successful universe",
 			},
 			out: Header{
 				Name:       "successful name",
-				Origin:     NewMeta("successful origin"),
-				Background: NewMeta("successful background"),
-				Role:       NewMeta("successful role"),
-				Tarot:      NewMeta("successful tarot"),
-				Universe:   NewMeta("successful universe"),
+				Origin:     mustNewMeta("successful origin"),
+				Background: mustNewMeta("successful background"),
+				Role:       mustNewMeta("successful role"),
+				Tarot:      mustNewMeta("successful tarot"),
 			},
 			err:   false,
 			panic: false,
@@ -169,21 +185,6 @@ func Test_ParseHeader(t *testing.T) {
 			}
 			t.Fail()
 		}
-	}
-
-}
-
-func Test_NewMeta(t *testing.T) {
-	label := "something"
-	expected := Meta{
-		Label: &label,
-	}
-	having := NewMeta(label)
-	if !reflect.DeepEqual(having, expected) {
-		t.Logf("Unexpected output")
-		t.Logf("	Expected %v", expected)
-		t.Logf("	Having %v", having)
-		t.Fail()
 	}
 
 }

@@ -139,10 +139,10 @@ WP 25
 			out: Sheet{
 				Header: Header{
 					Name:       "Someone",
-					Origin:     NewMeta("Somewhere"),
-					Background: NewMeta("Something"),
-					Role:       NewMeta("Warmonger"),
-					Tarot:      NewMeta("XXI"),
+					Origin:     mustNewMeta("Somewhere"),
+					Background: mustNewMeta("Something"),
+					Role:       mustNewMeta("Warmonger"),
+					Tarot:      mustNewMeta("XXI"),
 				},
 				Characteristics: Characteristics{
 					Upgrade{
