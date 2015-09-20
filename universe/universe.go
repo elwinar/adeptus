@@ -9,9 +9,7 @@ import (
 
 // Universe represents a set of configuration, often refered as data or database.
 type Universe struct {
-	Origins         []Origin
-	Backgrounds     []Background
-	Roles           []Role
+	Histories		map[string][]History
 	Tarots          []Tarot
 	Aptitudes       []Aptitude
 	Characteristics []Characteristic
@@ -149,56 +147,25 @@ func (u Universe) FindAptitude(label string) (Aptitude, bool) {
 	return Aptitude(""), false
 }
 
-// FindOrigin returns the origin corresponding to the given label or a zero value, and a boolean indicating if it was found.
-func (u Universe) FindOrigin(label string) (History, bool) {
-
-	for _, origin := range u.Origins {
-		if origin.Name == label {
-			return origin, true
+// FindHistory returns the history corresponding to the given label
+func (u Universe) FindHistory(typ string, label string) (History, bool, error) {
+	
+	histories, found := u.Histories[typ]
+	if !found {
+			return History{}, false, fmt.Errorf("undefined history type %s in universe.")
+	}
+	
+	for _, history := range histories {
+		if history.Name == label {
+			return history, true, nil
 		}
 	}
 
-	return Origin{}, false
+	return History{}, false, nil
 }
 
-// FindBackground returns the background corresponding to the given label or a zero value, and a boolean indicating if it was found.
-func (u Universe) FindBackground(label string) (History, bool) {
-
-	for _, background := range u.Backgrounds {
-		if background.Name == label {
-			return background, true
-		}
-	}
-
-	return Background{}, false
-}
-
-// FindRole returns the role corresponding to the given label or a zero value, and a boolean indicating if it was found.
-func (u Universe) FindRole(label string) (History, bool) {
-
-	for _, role := range u.Roles {
-		if role.Name == label {
-			return role, true
-		}
-	}
-
-	return Role{}, false
-}
-
-// FindTarot returns the tarot corresponding to the given label or a zero value, and a boolean indicating if it was found.
-func (u Universe) FindTarot(label string) (History, bool) {
-
-	for _, tarot := range u.Tarots {
-		if tarot.Name == label {
-			return tarot, true
-		}
-	}
-
-	return Tarot{}, false
-}
-
-// FindTarotByDice returns the tarot corresponding to the given value or a zero value, and a boolean indicating if a tarot exist for this dice.
-func (u Universe) FindTarotByDice(dice int) (History, bool) {
+// FindTarot returns the tarot corresponding to the given value or a zero value, and a boolean indicating if a tarot exist for this dice.
+func (u Universe) FindTarot(dice int) (Tarot, bool) {
 
 	for _, tarot := range u.Tarots {
 		if tarot.Min <= dice && dice <= tarot.Max {

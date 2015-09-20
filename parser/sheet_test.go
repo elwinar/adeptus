@@ -126,6 +126,22 @@ WP 25
 		{
 			in: strings.NewReader(`Name: Someone
 Origin: Somewhere
+Background: 
+Role: Warmonger
+Tarot: XXI
+
+WP 25
+
+2015/06/01 Creation [500]
+	* BULLSHIT +5 [250]
+	- Awesomeskill
+`),
+			out: Sheet{},
+			err:   true,
+		},
+		{
+			in: strings.NewReader(`Name: Someone
+Origin: Somewhere
 Background: Something
 Role: Warmonger
 Tarot: XXI
@@ -139,10 +155,12 @@ WP 25
 			out: Sheet{
 				Header: Header{
 					Name:       "Someone",
-					Origin:     mustNewMeta("Somewhere"),
-					Background: mustNewMeta("Something"),
-					Role:       mustNewMeta("Warmonger"),
-					Tarot:      mustNewMeta("XXI"),
+					Metas:		map[string]Meta{
+						"origin":     mustNewMeta("Somewhere"),
+						"background": mustNewMeta("Something"),
+						"role":       mustNewMeta("Warmonger"),
+						"tarot":       mustNewMeta("XXI"),
+					},
 				},
 				Characteristics: Characteristics{
 					Upgrade{

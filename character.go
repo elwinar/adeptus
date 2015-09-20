@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 	"strconv"
+	"text/tabwriter"
+	"os"
 
 	"github.com/elwinar/adeptus/parser"
 	"github.com/elwinar/adeptus/universe"
@@ -11,16 +13,16 @@ import (
 // Character is the type representing a role playing character
 type Character struct {
 	Name            string
-	Aptitudes       []universe.Aptitude
-	Origin          universe.Origin
-	Background      universe.Background
-	Role            universe.Role
+	Histories		map[string]universe.History
 	Tarot           universe.Tarot
+	Aptitudes       []universe.Aptitude
 	Characteristics map[*universe.Characteristic]int
 	Skills			map[*universe.Skill]int
 	Talents			map[*universe.Talent]int
 	Gauges			map[*universe.Gauge]int
 	Rules			[]universe.Rule
+	Experience		int
+	Spent			int
 }
 
 // NewCharacter creates a new character given a sheet
@@ -79,119 +81,83 @@ func NewCharacter(u universe.Universe, s parser.Sheet) (*Character, error) {
 	}
 	c.Name = h.Name
 	
-	// Apply each Meta
-	var err error
+	
+	// Apply each Meta.
+	c.Histories = make(map[string]universe.History)
+	metasLoop:
+	for typ, meta := range h.Metas {
+		
+		// Treat specific case of tarot
+		if typ == "tarot" {
 
-	// Retrieve the origin from the universe.
-	if h.Origin == nil {
-		return nil, fmt.Errorf("unspecified origin")
-	}
-	origin, found := u.FindOrigin(h.Origin.Label)
-	if !found {
-		return nil, fmt.Errorf("origin %s not found", h.Origin.Label)
-	}
-	err = c.ApplyHistory(origin, u)
-	if err != nil {
-		return nil, err
-	}
-
-	// Retrieve the background from the universe.
-	if h.Background == nil {
-		return nil, fmt.Errorf("unspecified background")
-	}
-	background, found := u.FindBackground(h.Background.Label)
-	if !found {
-		return nil, fmt.Errorf("background %s not found", h.Background.Label)
-	}
-	err = c.ApplyHistory(background, u)
-	if err != nil {
-		return nil, err
-	}
-
-	// Retrieve the role from the universe.
-	if h.Role == nil {
-		return nil, fmt.Errorf("unspecified role")
-	}
-	role, found := u.FindRole(h.Role.Label)
-	if !found {
-		return nil, fmt.Errorf("role %s not found", h.Role.Label)
-	}
-	err = c.ApplyHistory(role, u)
-	if err != nil {
-		return nil, err
-	}
-
-	// Retrieve the tarot from the universe.
-	var tarot universe.History
-	if h.Tarot == nil {
-		return nil, fmt.Errorf("unspecified tarot")
-	}
-
-	dice, err := strconv.Atoi(h.Tarot.Label)
-	if err == nil {
-		tarot, found = u.FindTarotByDice(dice)
-	} else {
-		tarot, found = u.FindTarot(h.Tarot.Label)
-	}
-	if !found {
-		return nil, fmt.Errorf("tarot %s not found", h.Tarot.Label)
-	}
-	err = c.ApplyHistory(tarot, u)
-	if err != nil {
-		return nil, err
+			dice, err := strconv.Atoi(meta.Label)
+			if err != nil {
+				return nil, fmt.Errorf("expecting numeric tarot")
+			} 
+			tarot, found := u.FindTarot(dice)
+			if !found {
+				return nil, fmt.Errorf("tarot %s not found", dice)
+			}
+			err = c.ApplyHistory(tarot.History, u)
+			if err != nil {
+				return nil, err
+			}
+			c.Tarot = tarot
+			continue metasLoop
+		}
+		
+		histories, found := u.Histories[typ]
+		
+		// Check the history type exists in universe.
+		if !found {
+			return nil, fmt.Errorf("undefined history %s in universe", typ)
+		}
+		
+		// Search the hystory corresponding to the provided meta
+		for _, h := range histories {
+			if meta.Label != h.Name {
+				continue
+			}
+			
+			// Apply the history
+			c.Histories[typ] = h
+			err := c.ApplyHistory(h, u)
+			if err != nil {
+				return nil, err
+			}
+			
+			continue metasLoop
+		}
+		return nil, fmt.Errorf("history %s not defined for history type %s in universe", meta.Label, typ)
 	}
 
 	// Apply the sessions.
+	for _, s := range s.Sessions {
+		
+		// Add experience value.
+		if s.Reward != nil {
+			c.Experience += *s.Reward
+		}
+		
+		// For each upgrade.
+		for _, up := range s.Upgrades {
+			
+			// Apply the upgrade.
+			err := c.ApplyUpgrade(up, u)
+			if err != nil {
+				return nil, err
+			}
+		}
+	}
 
 	return c, nil
 }
 
-// Debug prints the current values of the character
-func (c Character) Debug() {
-	fmt.Printf("Name		%s\n", c.Name)
-	fmt.Printf("Origin		%s\n", c.Origin.Name)
-	fmt.Printf("Background	%s\n", c.Background.Name)
-	fmt.Printf("Role		%s\n", c.Role.Name)
-	fmt.Printf("Tarot		%s\n", c.Tarot.Name)
-	fmt.Printf("\nCharacteristics\n")
-	for c, value := range c.Characteristics {
-		fmt.Printf("%s		%d\n", c.Name, value)
-	}
-	fmt.Printf("\nAptitudes\n")
-	for _, a := range c.Aptitudes {
-		fmt.Printf("		%s\n", a)
-	}
-	fmt.Printf("\nTalents\n")
-	for t, v := range c.Talents {
-		fmt.Printf("%s		%d\n", t.Name, v)
-	}
-	fmt.Printf("\nSkills\n")
-	for s, v := range c.Skills {
-		fmt.Printf("%s		%d\n", s.Name, v)
-	}
-	fmt.Printf("\nRules\n")
-	for _, r := range c.Rules {
-		fmt.Printf("%s		%s\n", r.Name, r.Description)
-	}
-}
-
-// ApplyHistory changes the character's trait according to the meta values
+// ApplyHistory changes the character's trait according to the history values
 func (c *Character) ApplyHistory(h universe.History, u universe.Universe) error {
 	
-	// Attach the history to the proper character's meta.
-	switch t := h.(type) {
-		case universe.Origin:
-			c.Origin = t
-		case universe.Background:
-			c.Background = t
-		case universe.Role:
-			c.Role = t
-		case universe.Tarot:
-			c.Tarot = t
-	}
-	
-	// For each upgrade associated to the meta, apply each option.
-	for _, upgrades := range h.GetUpgrades() {
+	// For each upgrade associated to the history, apply each option.
+	for _, upgrades := range h.Upgrades {
 		for _, option := range upgrades {
 			err := c.ApplyUpgrade(option, u)
 			if err != nil {
@@ -204,6 +170,27 @@ func (c *Character) ApplyHistory(h universe.History, u universe.Universe) error 
 
 // ApplyUpgrade changes the character's trait according to the given upgrade
 func (c *Character) ApplyUpgrade(up parser.Upgrade, un universe.Universe) error {
+	
+	
+	// Defer payment of upgrade
+	var payed bool
+	var coster universe.Coster
+			
+	// Pay the upgrade.
+	switch {
+		
+		// Upgrade is free.
+		case up.Mark == "-":
+			if up.Cost != nil {
+				return fmt.Errorf(`unexpected cost on upgrade line %d: mark "-" expects no cost value`, up.Line)
+			}
+			payed = true
+			
+		// Cost is hard defined.
+		case up.Cost != nil:
+			c.Spent += *up.Cost
+			payed = true
+	}
 			
 	// Identify characteristic.
 	name, value, sign, err := IdentifyCharacteristic(up.Name)
@@ -219,7 +206,26 @@ func (c *Character) ApplyUpgrade(up parser.Upgrade, un universe.Universe) error 
 		// The characteristic must have this characteristic
 		for char, v := range c.Characteristics {
 			if char.Name == characteristic.Name {
+		
+				// Increment the characteristic Tier.
+				if up.Mark == "*" {
+					char.Tier++
+				}
+				
+				// Apply the characteristic.
 				c.Characteristics[char] = ApplyCharacteristicUpgrade(v, sign, value)
+				coster = char
+		
+				// Pay for it
+				if !payed && coster != nil && err == nil {
+					var cost int
+					// Transmit the error value to the parent func
+					cost, err = coster.Cost(un.Costs, c.Aptitudes)
+					if err != nil {
+						return err
+					}
+					c.Spent += cost
+				}
 				return nil
 			}
 		}
@@ -241,6 +247,7 @@ func (c *Character) ApplyUpgrade(up parser.Upgrade, un universe.Universe) error 
 		
 	// Skill identified.
 	skill, isSkill := un.FindSkill(name)
+	
 	if isSkill {
 			
 		// The skill has a speciality
@@ -248,18 +255,53 @@ func (c *Character) ApplyUpgrade(up parser.Upgrade, un universe.Universe) error 
 			skill.Name = fmt.Sprintf("%s: %s", name, speciality)
 		}
 	
-		// Look for the skill with the given name in the character's skill,
-		// and apply the modification
+		// Look for the skill with the given name in the 
+		// character's skill, and apply the modification
 		for s := range c.Skills {
 			if s.Name == skill.Name {
 				
+				// Increment the skill tier
+				if up.Mark == "*" {
+					s.Tier++
+				}
+				
 				// Change the value of the skill of index s
 				c.Skills[s] += 10
+				coster = s
+		
+				// Pay for it
+				if !payed && coster != nil && err == nil {
+					var cost int
+					// Transmit the error value to the parent func
+					cost, err = coster.Cost(un.Costs, c.Aptitudes)
+					if err != nil {
+						return err
+					}
+					c.Spent += cost
+				}
 				return nil
 			}
 		}
+				
+		// Increment the skill tier
+		if up.Mark == "*" {
+			skill.Tier++
+		}
+		
 		// Create the skill of index *skill
 		c.Skills[&skill] = 0
+		coster = &skill
+		
+		// Pay for it
+		if !payed && coster != nil && err == nil {
+			var cost int
+			// Transmit the error value to the parent func
+			cost, err = coster.Cost(un.Costs, c.Aptitudes)
+			if err != nil {
+				return err
+			}
+			c.Spent += cost
+		}
 		return nil
 	}
 	
@@ -272,18 +314,43 @@ func (c *Character) ApplyUpgrade(up parser.Upgrade, un universe.Universe) error 
 			talent.Name = fmt.Sprintf("%s: %s", name, speciality)
 		}
 	
-		// Look for the talent with the given name in the character's talents,
-		// and apply the modification
+		// Look for the talent with the given name in 
+		// the character's talents, and apply the modification
 		for s := range c.Talents {
 			if s.Name == talent.Name {
 				
 				// Change the value of the talent of index s
 				c.Talents[s]++
+				coster = s
+		
+				// Pay for it
+				if !payed && coster != nil && err == nil {
+					var cost int
+					// Transmit the error value to the parent func
+					cost, err = coster.Cost(un.Costs, c.Aptitudes)
+					if err != nil {
+						return err
+					}
+					c.Spent += cost
+				}
 				return nil
 			}
 		}
+		
 		// Create the talent of index *talent
 		c.Talents[&talent] = 1
+		coster = &talent
+		
+		// Pay for it
+		if !payed && coster != nil && err == nil {
+			var cost int
+			// Transmit the error value to the parent func
+			cost, err = coster.Cost(un.Costs, c.Aptitudes)
+			if err != nil {
+				return err
+			}
+			c.Spent += cost
+		}
 		return nil
 	}
 	
@@ -295,4 +362,41 @@ func (c *Character) ApplyUpgrade(up parser.Upgrade, un universe.Universe) error 
 	c.Rules = append(c.Rules, rule)
 	
 	return nil
+}
+
+// Debug prints the current values of the character
+func (c Character) Debug() {
+	
+	w := new(tabwriter.Writer)
+
+	// Format in tab-separated columns.
+	w.Init(os.Stdout, 4, 8, 0, '\t', 0)
+	
+	fmt.Fprintf(w, "Name\t%s\n", c.Name)
+	for label, history := range c.Histories {
+		fmt.Fprintf(w, "%s\t%s\n", label, history.Name)
+	}
+	fmt.Fprintf(w, "Tarot\t%s\n", c.Tarot.Name)
+	fmt.Fprintf(w, "\nExperience:\t%d/%d\n", c.Spent, c.Experience)
+	fmt.Fprintf(w, "\nCharacteristics\n")
+	for c, value := range c.Characteristics {
+		fmt.Fprintf(w, "%s\t%d\n", c.Name, value)
+	}
+	fmt.Fprintf(w, "\nAptitudes\n")
+	for _, a := range c.Aptitudes {
+		fmt.Fprintf(w, "\t%s\n", a)
+	}
+	fmt.Fprintf(w, "\nTalents\n")
+	for t, v := range c.Talents {
+		fmt.Fprintf(w, "%s\t%d\n", t.Name, v)
+	}
+	fmt.Fprintf(w, "\nSkills\n")
+	for s, v := range c.Skills {
+		fmt.Fprintf(w, "%s\t%d\n", s.Name, v)
+	}
+	fmt.Fprintf(w, "\nRules\n")
+	for _, r := range c.Rules {
+		fmt.Fprintf(w, "%s\t%s\n", r.Name, r.Description)
+	}
+	w.Flush()
 }

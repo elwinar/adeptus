@@ -12,11 +12,11 @@ const (
 	// InvalidKeyValuePair is returned when a header line isn't of the right format
 	InvalidKeyValuePair = 100
 
-	// UnknownKey is returned when the header key isn't a valid one
-	UnknownKey = 101
+	// EmptyMetaKey is returned when the meta has an empty key
+	EmptyMetaKey = 101
 
-	// InvalidMeta is returned when the meta value isn't valid
-	InvalidMeta = 102
+	// EmptyMetaValue is returned when the meta has an empty value
+	EmptyMetaValue = 102
 
 	// InvalidOptions is returned when the options provided are not allowed
 	InvalidOptions = 103

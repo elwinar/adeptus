@@ -303,75 +303,77 @@
             ]
         }
     ],
-    "Origins": [
-        {
-            "Name": "Tilea",
-            "Upgrades": [
-                [
-                    {
-                        "Mark": "-",
-                        "Name": "general"
-                    }
-                ],
-                [
-                    {
-                        "Mark": "-",
-                        "Name": "agility"
-                    }
-                ]
-            ]
-        }
-    ],
-    "Backgrounds": [
-        {
-            "Name": "Cleric",
-            "Upgrades": [
-                [
-                    {
-                        "Mark": "-",
-                        "Name": "social"
-                    }
-                ]
-            ]
-        }
-    ],
-    "Roles": [
-        {
-            "Name": "Warrior",
-            "Upgrades": [
-                [
-                    {
-                        "Mark": "-",
-                        "Name": "weapon skill"
-                    }
-                ],
-                [
-                    {
-                        "Mark": "-",
-                        "Name": "ballistic skill"
-                    }
-                ],
-                [
-                    {
-                        "Mark": "-",
-                        "Name": "offence"
-                    }
-                ],
-                [
-                    {
-                        "Mark": "-",
-                        "Name": "defence"
-                    }
-                ],
-                [
-                    {
-                        "Mark": "-",
-                        "Name": "strength"
-                    }
-                ]
-            ]
-        }
-    ],
+    "Histories": {
+		"origin": [
+			{
+				"Name": "Tilea",
+				"Upgrades": [
+					[
+						{
+							"Mark": "-",
+							"Name": "general"
+						}
+					],
+					[
+						{
+							"Mark": "-",
+							"Name": "agility"
+						}
+					]
+				]
+			}
+		],
+		"background": [
+			{
+				"Name": "Cleric",
+				"Upgrades": [
+					[
+						{
+							"Mark": "-",
+							"Name": "social"
+						}
+					]
+				]
+			}
+		],
+		"role": [
+			{
+				"Name": "Warrior",
+				"Upgrades": [
+					[
+						{
+							"Mark": "-",
+							"Name": "weapon skill"
+						}
+					],
+					[
+						{
+							"Mark": "-",
+							"Name": "ballistic skill"
+						}
+					],
+					[
+						{
+							"Mark": "-",
+							"Name": "offence"
+						}
+					],
+					[
+						{
+							"Mark": "-",
+							"Name": "defence"
+						}
+					],
+					[
+						{
+							"Mark": "-",
+							"Name": "strength"
+						}
+					]
+				]
+			}
+		]
+	},
     "Tarots": [
         {
             "Name": "Mutation without, corruption within.",

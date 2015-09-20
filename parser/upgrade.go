@@ -23,6 +23,7 @@ type Upgrade struct {
 	Mark string
 	Name string
 	Cost *int
+	Line int
 }
 
 // parseUpgrade generate an upgrade from a raw line. The line must not be empty.
@@ -103,5 +104,6 @@ func parseUpgrade(line line) (Upgrade, error) {
 		Mark: mark,
 		Name: strings.Join(fields, " "),
 		Cost: cost,
+		Line: line.Number,
 	}, nil
 }

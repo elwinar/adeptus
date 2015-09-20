@@ -2,7 +2,7 @@ package universe
 
 // Tarot is a character's trait providing him alterations.
 type Tarot struct {
-	history
+	History
 
 	// Min is the lowest value of the tarot range.
 	Min int

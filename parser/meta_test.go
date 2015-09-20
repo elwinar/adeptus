@@ -47,10 +47,10 @@ func Test_NewMeta(t *testing.T) {
 	}
 }
 
-func mustNewMeta(name string) *Meta {
+func mustNewMeta(name string) Meta {
 	m, err := NewMeta(name)
 	if err != nil {
 		panic(err)
 	}
-	return &m
+	return m
 }
