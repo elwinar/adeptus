@@ -10,16 +10,9 @@ type Skill struct {
 // Cost returns the cost of the skill given the character's aptitudes and the current tier.
 func (s Skill) Cost(matrix CostMatrix, aptitudes []Aptitude) (int, error) {
 
-	// count matches
-	var m int
-	for _, a := range aptitudes {
-		for _, sa := range s.Aptitudes {
-			if a == sa {
-				m++
-			}
-		}
-	}
+	// Retrieve the number of matching aptitudes between the character's aptitudes and the skill's aptitudes
+	matching := countMatches(aptitudes, s.Aptitudes)
 
 	// Return the price of the upgrade as determined by the cost matrix.
-	return matrix.Price("skill", m, s.Tier)
+	return matrix.Price("skill", matching, s.Tier)
 }

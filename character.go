@@ -11,7 +11,7 @@ import (
 // Character is the type representing a role playing character
 type Character struct {
 	Name            string
-	Aptitudes		[]universe.Aptitude
+	Aptitudes       []universe.Aptitude
 	Origin          universe.Origin
 	Background      universe.Background
 	Role            universe.Role
@@ -98,17 +98,17 @@ func NewCharacter(u universe.Universe, s parser.Sheet) (*Character, error) {
 		// Associate the characteristic and it' value to the characteristics map
 		characteristics[&char] = value
 	}
-	
+
 	// Apply the meta from the header.
-	
+
 	// Apply the sessions.
 
 	return &Character{
-		Name:       name,
-		Origin:     origin,
-		Background: background,
-		Role:       role,
-		Tarot:      tarot,
+		Name:            name,
+		Origin:          origin,
+		Background:      background,
+		Role:            role,
+		Tarot:           tarot,
 		Characteristics: characteristics,
 	}, nil
 }

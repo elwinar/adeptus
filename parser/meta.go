@@ -1,6 +1,6 @@
 package parser
 
-import(
+import (
 	"fmt"
 	"strings"
 )
@@ -12,11 +12,11 @@ type Meta struct {
 }
 
 func NewMeta(raw string) (Meta, error) {
-	
+
 	if strings.Contains(raw, "(") {
-			return Meta{}, fmt.Errorf("incorrect meta format")
+		return Meta{}, fmt.Errorf("incorrect meta format")
 	}
-	
+
 	return Meta{
 		Label: raw,
 	}, nil

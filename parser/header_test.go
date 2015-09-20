@@ -57,7 +57,7 @@ func Test_ParseHeader(t *testing.T) {
 				"origin:",
 			},
 			out: Header{
-				Origin:     nil,
+				Origin: nil,
 			},
 			err:   false,
 			panic: false,
@@ -66,7 +66,7 @@ func Test_ParseHeader(t *testing.T) {
 			in: []string{
 				"origin: fail(",
 			},
-			out: Header{},
+			out:   Header{},
 			err:   true,
 			panic: false,
 		},

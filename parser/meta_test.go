@@ -1,32 +1,32 @@
 package parser
 
-import(
+import (
 	"reflect"
 	"testing"
 )
 
 func Test_NewMeta(t *testing.T) {
 	cases := []struct {
-		in    string
-		out   Meta
-		err   bool
+		in  string
+		out Meta
+		err bool
 	}{
 		{
-			in:    "",
-			out:   Meta{},
-			err:   false,
+			in:  "",
+			out: Meta{},
+			err: false,
 		},
 		{
-			in:    "something",
-			out:   Meta{
+			in: "something",
+			out: Meta{
 				Label: "something",
 			},
-			err:   false,
+			err: false,
 		},
 	}
-	
+
 	for i, c := range cases {
-		
+
 		out, err := NewMeta(c.in)
 
 		if (err != nil) != c.err {
@@ -48,9 +48,9 @@ func Test_NewMeta(t *testing.T) {
 }
 
 func mustNewMeta(name string) *Meta {
-		m, err := NewMeta(name)
-		if err != nil {
-				panic(err)
-		}
-		return &m
+	m, err := NewMeta(name)
+	if err != nil {
+		panic(err)
+	}
+	return &m
 }

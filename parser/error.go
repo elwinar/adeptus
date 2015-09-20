@@ -17,7 +17,7 @@ const (
 
 	// InvalidMeta is returned when the meta value isn't valid
 	InvalidMeta = 102
-	
+
 	// InvalidOptions is returned when the options provided are not allowed
 	InvalidOptions = 103
 

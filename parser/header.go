@@ -37,34 +37,34 @@ func parseHeader(block []line) (Header, error) {
 		if !in(key, []string{"name", "origin", "background", "role", "tarot"}) {
 			return Header{}, NewError(line.Number, UnknownKey)
 		}
-		
+
 		// Retrieve the name.
 		if key == "name" {
 			name = value
 			continue
 		}
-		
+
 		// Create new meta.
 		m, err := NewMeta(value)
 		if err != nil {
 			return Header{}, NewError(line.Number, InvalidOptions)
 		}
-		
+
 		// If the label is empty, the meta is nil. No need to retrieve pointer.
 		if len(m.Label) == 0 {
 			continue
 		}
-		
+
 		// Associate the proper key to the meta.
 		switch key {
-			case "origin":
-				origin = &m
-			case "background":
-				background = &m
-			case "role":
-				role = &m
-			case "tarot":
-				tarot = &m
+		case "origin":
+			origin = &m
+		case "background":
+			background = &m
+		case "role":
+			role = &m
+		case "tarot":
+			tarot = &m
 		}
 	}
 

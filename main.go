@@ -74,7 +74,7 @@ func Display(ctx *cli.Context) {
 	// Open and parse the universe.
 	reader, err = os.Open("universe.json")
 	if err != nil {
-		log.Printf("cannot open universe: \n", err)
+		log.Printf("cannot open universe: %s\n", err)
 		return
 	}
 
