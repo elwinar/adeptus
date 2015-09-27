@@ -2,12 +2,12 @@ package main
 
 import (
 	"fmt"
-	// 	"strconv"
 	"os"
 	"text/tabwriter"
 
 	"github.com/elwinar/adeptus/parser"
 	"github.com/elwinar/adeptus/universe"
+	"github.com/bradfitz/slice"
 )
 
 // Character is the type representing a role playing character
@@ -222,6 +222,19 @@ func (c *Character) ApplyUpgrade(up parser.Upgrade, un universe.Universe) error 
 		c.Aptitudes = append(c.Aptitudes, aptitude)
 		return nil
 	}
+	
+	// Sort aptitudes by name and remove duplicates
+	slice.Sort(c.Aptitudes, func(i, j int) bool {
+		return c.Aptitudes[i] < c.Aptitudes[j]
+	});
+	var aptitudes []universe.Aptitude
+	for _, a := range c.Aptitudes {
+		if len(aptitudes) != 0 && aptitudes[len(aptitudes) - 1] == a {
+			continue
+		}
+		aptitudes = append(aptitudes, a)
+	}
+	c.Aptitudes = aptitudes
 
 	// Identify skill or talent.
 	name, speciality, err := SplitUpgrade(up.Name)
