@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"strconv"
+// 	"strconv"
 	"text/tabwriter"
 	"os"
 
@@ -13,8 +13,7 @@ import (
 // Character is the type representing a role playing character
 type Character struct {
 	Name            string
-	Histories		map[string]universe.History
-	Tarot           universe.Tarot
+	Histories		map[string][]universe.History
 	Aptitudes       []universe.Aptitude
 	Characteristics map[*universe.Characteristic]int
 	Skills			map[*universe.Skill]int
@@ -83,28 +82,27 @@ func NewCharacter(u universe.Universe, s parser.Sheet) (*Character, error) {
 	c.Gauges = make(map[*universe.Gauge]int)	
 	
 	// Apply each Meta.
-	c.Histories = make(map[string]universe.History)
-	metasLoop:
+	c.Histories = make(map[string][]universe.History)
 	for typ, meta := range h.Metas {
 		
 		// Treat specific case of tarot
-		if typ == "tarot" {
-
-			dice, err := strconv.Atoi(meta.Label)
-			if err != nil {
-				return nil, fmt.Errorf("expecting numeric tarot")
-			} 
-			tarot, found := u.FindTarot(dice)
-			if !found {
-				return nil, fmt.Errorf("tarot %s not found", dice)
-			}
-			err = c.ApplyHistory(tarot.History, u)
-			if err != nil {
-				return nil, err
-			}
-			c.Tarot = tarot
-			continue metasLoop
-		}
+// 		if typ == "tarot" {
+// 
+// 			dice, err := strconv.Atoi(meta.Label)
+// 			if err != nil {
+// 				return nil, fmt.Errorf("expecting numeric tarot")
+// 			} 
+// 			tarot, found := u.FindTarot(dice)
+// 			if !found {
+// 				return nil, fmt.Errorf("tarot %s not found", dice)
+// 			}
+// 			err = c.ApplyHistory(tarot.History, u)
+// 			if err != nil {
+// 				return nil, err
+// 			}
+// 			c.Tarot = tarot
+// 			continue metasLoop
+// 		}
 		
 		histories, found := u.Histories[typ]
 		
@@ -113,22 +111,28 @@ func NewCharacter(u universe.Universe, s parser.Sheet) (*Character, error) {
 			return nil, fmt.Errorf("undefined history %s in universe", typ)
 		}
 		
-		// Search the hystory corresponding to the provided meta
-		for _, h := range histories {
-			if meta.Label != h.Name {
-				continue
-			}
-			
-			// Apply the history
-			c.Histories[typ] = h
-			err := c.ApplyHistory(h, u)
-			if err != nil {
-				return nil, err
-			}
-			
-			continue metasLoop
+		c.Histories[typ] = []universe.History{}
+		
+		metasLoop:
+		for _, m := range meta {
+		
+				// Search the history corresponding to the provided meta
+				for _, h := range histories {
+					if m.Label != h.Name {
+						continue
+					}
+					
+					// Apply the history
+					c.Histories[typ] = append(c.Histories[typ], h)
+					err := c.ApplyHistory(h, u)
+					if err != nil {
+						return nil, err
+					}
+					
+					continue metasLoop
+				}
+				return nil, fmt.Errorf("history %s not defined for history type %s in universe", m.Label, typ)
 		}
-		return nil, fmt.Errorf("history %s not defined for history type %s in universe", meta.Label, typ)
 	}
 
 	// Apply the sessions.
@@ -373,10 +377,11 @@ func (c Character) Debug() {
 	w.Init(os.Stdout, 4, 8, 0, '\t', 0)
 	
 	fmt.Fprintf(w, "Name\t%s\n", c.Name)
-	for label, history := range c.Histories {
-		fmt.Fprintf(w, "%s\t%s\n", label, history.Name)
+	for label, histories := range c.Histories {
+		for _, history := range histories {
+			fmt.Fprintf(w, "%s\t%s\n", label, history.Name)
+		}
 	}
-	fmt.Fprintf(w, "Tarot\t%s\n", c.Tarot.Name)
 	fmt.Fprintf(w, "\nExperience:\t%d/%d\n", c.Spent, c.Experience)
 	fmt.Fprintf(w, "\nCharacteristics\n")
 	for c, value := range c.Characteristics {
