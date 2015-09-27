@@ -9,7 +9,7 @@ import (
 
 // Universe represents a set of configuration, often refered as data or database.
 type Universe struct {
-	Histories		map[string][]History
+	Histories       map[string][]History
 	Tarots          []Tarot
 	Aptitudes       []Aptitude
 	Characteristics []Characteristic
@@ -34,14 +34,14 @@ func ParseUniverse(file io.Reader) (Universe, error) {
 	if err != nil {
 		return Universe{}, fmt.Errorf("unable to parse universe: %s", err.Error())
 	}
-	
+
 	// Check the aptitudes in Skills, Characteristics and Talents are defined in the universe.
 	observed := make(map[Aptitude]struct{})
-	
+
 	// For each aptitude of each characteristic.
-	for _, c := range universe.Characteristics{
+	for _, c := range universe.Characteristics {
 		for _, a := range c.Aptitudes {
-			
+
 			// Add the aptitude to the slice of observed aptitudes.
 			_, f := observed[a]
 			if !f {
@@ -49,11 +49,11 @@ func ParseUniverse(file io.Reader) (Universe, error) {
 			}
 		}
 	}
-	
+
 	// For each aptitude of each skill.
-	for _, c := range universe.Skills{
+	for _, c := range universe.Skills {
 		for _, a := range c.Aptitudes {
-			
+
 			// Add the aptitude to the slice of observed aptitudes.
 			_, f := observed[a]
 			if !f {
@@ -61,11 +61,11 @@ func ParseUniverse(file io.Reader) (Universe, error) {
 			}
 		}
 	}
-	
+
 	// For each aptitude of each talent.
-	for _, c := range universe.Talents{
+	for _, c := range universe.Talents {
 		for _, a := range c.Aptitudes {
-			
+
 			// Add the aptitude to the slice of observed aptitudes.
 			_, f := observed[a]
 			if !f {
@@ -73,22 +73,22 @@ func ParseUniverse(file io.Reader) (Universe, error) {
 			}
 		}
 	}
-	
+
 	// Check all aptitudes defined by universe are used at least once.
-	checkDefined:
-	for _, a := range universe.Aptitudes{
-		for o, _ := range observed {
+checkDefined:
+	for _, a := range universe.Aptitudes {
+		for o := range observed {
 			if a == o {
 				continue checkDefined
 			}
 		}
 		return Universe{}, fmt.Errorf("aptitude %s defined by universe but not used", a)
 	}
-	
+
 	// Check all aptitudes defined by universe are used at least once.
-	checkObserved:
-	for o, _ := range observed {
-		for _, a := range universe.Aptitudes{
+checkObserved:
+	for o := range observed {
+		for _, a := range universe.Aptitudes {
 			if a == o {
 				continue checkObserved
 			}
@@ -149,12 +149,12 @@ func (u Universe) FindAptitude(label string) (Aptitude, bool) {
 
 // FindHistory returns the history corresponding to the given label
 func (u Universe) FindHistory(typ string, label string) (History, bool, error) {
-	
+
 	histories, found := u.Histories[typ]
 	if !found {
-			return History{}, false, fmt.Errorf("undefined history type %s in universe.")
+		return History{}, false, fmt.Errorf("undefined history type %s in universe", typ)
 	}
-	
+
 	for _, history := range histories {
 		if history.Name == label {
 			return history, true, nil

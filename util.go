@@ -41,32 +41,33 @@ func IdentifyCharacteristic(label string) (string, int, string, error) {
 	return name, value, operand, nil
 }
 
-// ApplyCharacteristicUpgrade returns the new value of origin after application an upgrade
+// ApplyCharacteristicUpgrade returns the new value of origin after application an upgrade.
 func ApplyCharacteristicUpgrade(before int, sign string, upgrade int) int {
 	switch sign {
-		case "+":
-			before += upgrade
-		case "-":
-			before += upgrade
-		case "=":
-			before = upgrade
-		default:
-			panic(fmt.Sprintf("unrecognized sign %s", sign))
+	case "+":
+		before += upgrade
+	case "-":
+		before += upgrade
+	case "=":
+		before = upgrade
+	default:
+		panic(fmt.Sprintf("unrecognized sign %s", sign))
 	}
 	return before
 }
 
+// SplitUpgrade returns the name and speciality of an upgrade.
 func SplitUpgrade(label string) (string, string, error) {
-	
+
 	// Check if the skill has a speciality
 	splits := strings.Split(label, ":")
 	if len(splits) > 2 {
 		return "", "", fmt.Errorf(`incorrect format for upgrade "%s": expecting name or name: speciality`, label)
 	}
-	
+
 	// Get name.
 	name := splits[0]
-	
+
 	// Get speciality.
 	var speciality string
 	if len(splits) == 2 {
