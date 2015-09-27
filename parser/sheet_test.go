@@ -137,7 +137,7 @@ WP 25
 	- Awesomeskill
 `),
 			out: Sheet{},
-			err:   true,
+			err: true,
 		},
 		{
 			in: strings.NewReader(`Name: Someone
@@ -154,19 +154,19 @@ WP 25
 `),
 			out: Sheet{
 				Header: Header{
-					Name:       "Someone",
-					Metas:		map[string][]Meta{
+					Name: "Someone",
+					Metas: map[string][]Meta{
 						"origin": {
-							    mustNewMeta("Somewhere"),
+							mustNewMeta("Somewhere"),
 						},
 						"background": {
-								mustNewMeta("Something"),
+							mustNewMeta("Something"),
 						},
 						"role": {
-								mustNewMeta("Warmonger"),
+							mustNewMeta("Warmonger"),
 						},
 						"tarot": {
-								mustNewMeta("XXI"),
+							mustNewMeta("XXI"),
 						},
 					},
 				},

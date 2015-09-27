@@ -1,6 +1,7 @@
 package parser
 
 import (
+	"fmt"
 	"testing"
 )
 
@@ -21,7 +22,7 @@ func Test_NewError(t *testing.T) {
 func Test_Error_Error(t *testing.T) {
 	err := NewError(0, InsuficientData)
 
-	if err.Error() != "line 0: 0" {
+	if err.Error() != fmt.Sprintf("line 0: %s", errorMsgs[InsuficientData]) {
 		t.Logf("invalid output: %s", err.Error())
 		t.Fail()
 	}

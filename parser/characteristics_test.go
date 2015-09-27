@@ -125,7 +125,7 @@ func Test_parseCharacteristics(t *testing.T) {
 	for i, c := range cases {
 		in := []line{}
 		for number, text := range c.in {
-			in = append(in, newLine(text, number +1))
+			in = append(in, newLine(text, number+1))
 		}
 
 		out, err, panic := func() (out Characteristics, err error, panic bool) {

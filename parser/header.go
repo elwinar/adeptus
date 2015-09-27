@@ -5,8 +5,8 @@ import "strings"
 // Header is the first block of the sheet, and define the character with its
 // name, origin, etc.
 type Header struct {
-	Name       string
-	Metas	   map[string][]Meta
+	Name  string
+	Metas map[string][]Meta
 }
 
 // ParseHeader generate a Header from a block of lines. The block must not be
@@ -29,12 +29,12 @@ func parseHeader(block []line) (Header, error) {
 		}
 		key := strings.ToLower(strings.TrimSpace(strings.ToLower(fields[0])))
 		value := strings.TrimSpace(fields[1])
-		
+
 		// Check key is not empty
 		if len(key) == 0 {
 			return Header{}, NewError(line.Number, EmptyMetaKey)
 		}
-		
+
 		// Check value is not empty
 		if len(value) == 0 {
 			return Header{}, NewError(line.Number, EmptyMetaValue)
@@ -45,27 +45,27 @@ func parseHeader(block []line) (Header, error) {
 			name = value
 			continue
 		}
-		
+
 		// Check the meta is unique.
 		_, found := metas[key]
 		if found {
 			return Header{}, NewError(line.Number, DuplicateMeta)
 		}
-		
+
 		// Retrieve coma separated values.
 		metas[key] = []Meta{}
 		splits := strings.Split(value, ",")
 		for _, s := range splits {
-				meta, err := NewMeta(strings.TrimSpace(s))
-				if err != nil {
-					return Header{}, NewError(line.Number, InvalidOptions)
-				}
-				metas[key] = append(metas[key], meta)
+			meta, err := NewMeta(strings.TrimSpace(s))
+			if err != nil {
+				return Header{}, NewError(line.Number, InvalidOptions)
+			}
+			metas[key] = append(metas[key], meta)
 		}
 	}
 
 	return Header{
-		Name:       name,
-		Metas:		metas,
+		Name:  name,
+		Metas: metas,
 	}, nil
 }
