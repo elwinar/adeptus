@@ -85,25 +85,6 @@ checkCharacteristics:
 	c.Histories = make(map[string][]universe.History)
 	for typ, meta := range h.Metas {
 
-		// Treat specific case of tarot
-		// 		if typ == "tarot" {
-		//
-		// 			dice, err := strconv.Atoi(meta.Label)
-		// 			if err != nil {
-		// 				return nil, fmt.Errorf("expecting numeric tarot")
-		// 			}
-		// 			tarot, found := u.FindTarot(dice)
-		// 			if !found {
-		// 				return nil, fmt.Errorf("tarot %s not found", dice)
-		// 			}
-		// 			err = c.ApplyHistory(tarot.History, u)
-		// 			if err != nil {
-		// 				return nil, err
-		// 			}
-		// 			c.Tarot = tarot
-		// 			continue metasLoop
-		// 		}
-
 		histories, found := u.Histories[typ]
 
 		// Check the history type exists in universe.

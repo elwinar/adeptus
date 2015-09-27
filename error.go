@@ -20,9 +20,6 @@ const (
 	// UndefinedRole is returned when the role is not defined
 	UndefinedRole = 005
 
-	// UndefinedTarot is returned when the tarot is not defined
-	UndefinedTarot = 006
-
 	// NotFoundUniverse is returned when the universe file cannot be opened
 	NotFoundUniverse = 100
 
