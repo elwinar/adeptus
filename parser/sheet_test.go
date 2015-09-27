@@ -155,11 +155,19 @@ WP 25
 			out: Sheet{
 				Header: Header{
 					Name:       "Someone",
-					Metas:		map[string]Meta{
-						"origin":     mustNewMeta("Somewhere"),
-						"background": mustNewMeta("Something"),
-						"role":       mustNewMeta("Warmonger"),
-						"tarot":       mustNewMeta("XXI"),
+					Metas:		map[string][]Meta{
+						"origin": {
+							    mustNewMeta("Somewhere"),
+						},
+						"background": {
+								mustNewMeta("Something"),
+						},
+						"role": {
+								mustNewMeta("Warmonger"),
+						},
+						"tarot": {
+								mustNewMeta("XXI"),
+						},
 					},
 				},
 				Characteristics: Characteristics{
@@ -167,6 +175,7 @@ WP 25
 						Mark: "-",
 						Name: "WP 25",
 						Cost: nil,
+						Line: 7,
 					},
 				},
 				Sessions: []Session{
@@ -179,11 +188,13 @@ WP 25
 								Mark: "*",
 								Name: "BULLSHIT +5",
 								Cost: IntP(250),
+								Line: 10,
 							},
 							Upgrade{
 								Mark: "-",
 								Name: "Awesomeskill",
 								Cost: nil,
+								Line: 11,
 							},
 						},
 					},

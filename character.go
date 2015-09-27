@@ -31,6 +31,15 @@ func NewCharacter(u universe.Universe, s parser.Sheet) (*Character, error) {
 	// Create the character.
 	c := &Character{}
 
+	// Alias Header.
+	h := s.Header
+
+	// Retrieve the name from the sheet header.
+	if len(h.Name) == 0 {
+		return nil, fmt.Errorf("empty name")
+	}
+	c.Name = h.Name
+
 	// Apply the initial characteristics from the sheet.
 	c.Characteristics = make(map[*universe.Characteristic]int)
 	for _, characteristic := range s.Characteristics {
@@ -71,16 +80,7 @@ func NewCharacter(u universe.Universe, s parser.Sheet) (*Character, error) {
 	// Make the character's gauges, skills and talents maps
 	c.Skills = make(map[*universe.Skill]int)
 	c.Talents = make(map[*universe.Talent]int)
-	c.Gauges = make(map[*universe.Gauge]int)
-
-	h := s.Header
-
-	// Retrieve the name from the sheet header.
-	if len(h.Name) == 0 {
-		return nil, fmt.Errorf("empty name")
-	}
-	c.Name = h.Name
-	
+	c.Gauges = make(map[*universe.Gauge]int)	
 	
 	// Apply each Meta.
 	c.Histories = make(map[string]universe.History)

@@ -92,6 +92,7 @@ func Test_parseCharacteristics(t *testing.T) {
 					Mark: "-",
 					Name: "WP 25",
 					Cost: nil,
+					Line: 1,
 				},
 			},
 			err:   false,
@@ -107,11 +108,13 @@ func Test_parseCharacteristics(t *testing.T) {
 					Mark: "-",
 					Name: "STR 25",
 					Cost: nil,
+					Line: 1,
 				},
 				Upgrade{
 					Mark: "-",
 					Name: "WP 25",
 					Cost: nil,
+					Line: 2,
 				},
 			},
 			err:   false,
@@ -122,7 +125,7 @@ func Test_parseCharacteristics(t *testing.T) {
 	for i, c := range cases {
 		in := []line{}
 		for number, text := range c.in {
-			in = append(in, newLine(text, number))
+			in = append(in, newLine(text, number +1))
 		}
 
 		out, err, panic := func() (out Characteristics, err error, panic bool) {
