@@ -6,65 +6,70 @@ import (
 	"strconv"
 )
 
-// CostMatrix is matrix of upgrade costs
+// CostMatrix is matrix of upgrade costs.
 type CostMatrix struct {
-	Fares map[string]map[int]map[int]int
+	fares map[string]map[int]map[int]int
 }
 
-// costMatrixJSON is the Json representation of the matrix
+// costMatrixJSON is the Json representation of the matrix.
 type costMatrixJSON map[string]map[string]map[string]int
 
-// Price returns the cost in the matrix corresponding to the given type, matches and tier
-func (c CostMatrix) Price(tpe string, matches int, tier int) (int, error) {
+// Price returns the cost in the matrix corresponding to the given type, matches and tier.
+func (c CostMatrix) Price(typ string, matches int, tier int) (int, error) {
 
 	var f bool
 
-	// retrieve type matrix
-	_, f = c.Fares[tpe]
+	// Check if the upgrade type is listed in the matrix.
+	_, f = c.fares[typ]
 	if !f {
-		return 0, fmt.Errorf("undefined cost: %s", tpe)
+		return 0, fmt.Errorf("undefined cost for type %s", typ)
 	}
 
-	// retrieve matches matrix
-	_, f = c.Fares[tpe][matches]
+	// Check if the number of matching aptitudes is in the matrix.
+	_, f = c.fares[typ][matches]
 	if !f {
-		return 0, fmt.Errorf("undefined cost: %s x %d matches", tpe, matches)
+		return 0, fmt.Errorf("undefined cost for type %s with %d matching aptitudes", typ, matches)
 	}
 
-	// retrieve tiers matrix
-	cost, f := c.Fares[tpe][matches][tier]
+	// Get the cost corresponding to the upgrade's tier.
+	cost, f := c.fares[typ][matches][tier]
 	if !f {
-		return 0, fmt.Errorf("undefined cost: type %s x %d matches x %d tier", tpe, matches, tier)
+		return 0, fmt.Errorf("undefined cost for type %s with %d matching aptitudes on tier %d", typ, matches, tier)
 	}
 
 	return cost, nil
 }
 
-// MarshalJSON implements the Marshaller interface
+// MarshalJSON return the JSON representation of the cost matrix.
+// Implements the Marshaller interface.
 func (c *CostMatrix) MarshalJSON() ([]byte, error) {
 
 	jMatrix := costMatrixJSON{}
 
-	// make types
-	for tpe, matches := range c.Fares {
-		jMatrix[tpe] = make(map[string]map[string]int)
+	// For each upgrade type of the matrix.
+	for typ, matches := range c.fares {
 
-		// make matches
+		// Instanciate the correponding map of matching aptitudes.
+		jMatrix[typ] = make(map[string]map[string]int)
+
+		// For each number of matching aptitudes.
 		for match, tiers := range matches {
+
+			// Instanciate the map of tiers costs.
 			m := strconv.Itoa(match)
-			jMatrix[tpe][m] = make(map[string]int)
+			jMatrix[typ][m] = make(map[string]int)
 
-			// make tiers
+			// For each cost.
 			for tier, cost := range tiers {
-				t := strconv.Itoa(tier)
 
-				// make costs
-				jMatrix[tpe][m][t] = cost
+				// Add the corresponding cost to the transient matrix.
+				t := strconv.Itoa(tier)
+				jMatrix[typ][m][t] = cost
 			}
 		}
 	}
 
-	// transform json matrix to raw bytes
+	// Marshal the transient structure to the returned JSON object.
 	raw, err := json.Marshal(jMatrix)
 	if err != nil {
 		return nil, err
@@ -73,39 +78,45 @@ func (c *CostMatrix) MarshalJSON() ([]byte, error) {
 	return raw, nil
 }
 
-// UnmarshalJSON implements the Unmarshaller interface
+// UnmarshalJSON parse the JSON representation of a cost matrix.
+// Implements the Unmarshaller interface.
 func (c *CostMatrix) UnmarshalJSON(raw []byte) error {
 
-	// parse as json matrix
+	// Unmarshal to the transient structure.
 	jMatrix := costMatrixJSON{}
 	err := json.Unmarshal(raw, &jMatrix)
 	if err != nil {
 		return err
 	}
 
-	c.Fares = make(map[string]map[int]map[int]int)
+	// Initialize the matrix map.
+	c.fares = make(map[string]map[int]map[int]int)
 
-	// make types
-	for tpe, matches := range jMatrix {
-		c.Fares[tpe] = make(map[int]map[int]int)
+	// For each upgrade type of the matrix.
+	for typ, matches := range jMatrix {
 
-		// make matches
+		// Initialize the map of matching aptitudes.
+		c.fares[typ] = make(map[int]map[int]int)
+
+		// For each number of matching aptitudes.
 		for match, tiers := range matches {
+
+			// Initialize the map of tiers costs.
 			m, err := strconv.Atoi(match)
 			if err != nil {
 				return err
 			}
-			c.Fares[tpe][m] = make(map[int]int)
+			c.fares[typ][m] = make(map[int]int)
 
-			// make tiers
+			// For each cost.
 			for tier, cost := range tiers {
+
+				// Add the corresponding cost to the matrix.
 				t, err := strconv.Atoi(tier)
 				if err != nil {
 					return err
 				}
-
-				// make costs
-				c.Fares[tpe][m][t] = cost
+				c.fares[typ][m][t] = cost
 			}
 		}
 	}

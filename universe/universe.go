@@ -5,16 +5,11 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
-	"strconv"
-	"strings"
 )
 
-// Universe represents a set of configuration, often refered as data or database
+// Universe represents a set of configuration, often refered as data or database.
 type Universe struct {
-	Origins         []Origin
-	Backgrounds     []Background
-	Roles           []Role
-	Tarots          []Tarot
+	Histories       map[string][]History
 	Aptitudes       []Aptitude
 	Characteristics []Characteristic
 	Gauges          []Gauge
@@ -23,7 +18,8 @@ type Universe struct {
 	Costs           CostMatrix
 }
 
-// ParseUniverse load an universe from a plain JSON file. It returns a well-formed universe that describe all the components of a game setting.
+// ParseUniverse load an universe from a plain JSON file.
+// It returns a well-formed universe that describe all the components of a game setting.
 func ParseUniverse(file io.Reader) (Universe, error) {
 
 	// open and parse universe
@@ -38,99 +34,131 @@ func ParseUniverse(file io.Reader) (Universe, error) {
 		return Universe{}, fmt.Errorf("unable to parse universe: %s", err.Error())
 	}
 
+	// Check the aptitudes in Skills, Characteristics and Talents are defined in the universe.
+	observed := make(map[Aptitude]struct{})
+
+	// For each aptitude of each characteristic.
+	for _, c := range universe.Characteristics {
+		for _, a := range c.Aptitudes {
+
+			// Add the aptitude to the slice of observed aptitudes.
+			_, f := observed[a]
+			if !f {
+				observed[a] = struct{}{}
+			}
+		}
+	}
+
+	// For each aptitude of each skill.
+	for _, c := range universe.Skills {
+		for _, a := range c.Aptitudes {
+
+			// Add the aptitude to the slice of observed aptitudes.
+			_, f := observed[a]
+			if !f {
+				observed[a] = struct{}{}
+			}
+		}
+	}
+
+	// For each aptitude of each talent.
+	for _, c := range universe.Talents {
+		for _, a := range c.Aptitudes {
+
+			// Add the aptitude to the slice of observed aptitudes.
+			_, f := observed[a]
+			if !f {
+				observed[a] = struct{}{}
+			}
+		}
+	}
+
+	// Check all aptitudes defined by universe are used at least once.
+checkDefined:
+	for _, a := range universe.Aptitudes {
+		for o := range observed {
+			if a == o {
+				continue checkDefined
+			}
+		}
+		return Universe{}, fmt.Errorf("aptitude %s defined by universe but not used", a)
+	}
+
+	// Check all aptitudes defined by universe are used at least once.
+checkObserved:
+	for o := range observed {
+		for _, a := range universe.Aptitudes {
+			if a == o {
+				continue checkObserved
+			}
+		}
+		return Universe{}, fmt.Errorf("aptitude %s used by universe but not defined", o)
+	}
+
 	return universe, nil
 }
 
-// FindCharacteristic returns the characteristic related to the label and it's value, plus an error if none is found
-func (u Universe) FindCharacteristic(label string) (Characteristic, string, error) {
+// FindCharacteristic returns the characteristic correponding to the given label or a zero-value, and a boolean indicating if it was found.
+func (u Universe) FindCharacteristic(label string) (Characteristic, bool) {
 
-	// harmonize charactersitic format
-	splits := strings.Fields(label)
-
-	// characteristic improperly formated
-	if len(splits) != 2 {
-		return Characteristic{}, "", fmt.Errorf("incorrect characteristic format %s", label)
-	}
-
-	// check the value is clean
-	_, err := strconv.Atoi(splits[1])
-	if err != nil {
-		return Characteristic{}, "", fmt.Errorf("%s is not a correct characteristic value", splits[1])
-	}
-
-	// retrieve the characteristic
-	l := strings.ToLower(splits[0])
-	for _, c := range u.Characteristics {
-		n := strings.ToLower(c.Name)
-
-		// characteristic found, return it and it's stringy value
-		if n == l {
-			return c, splits[1], nil
+	for _, characteristic := range u.Characteristics {
+		if characteristic.Name == label {
+			return characteristic, true
 		}
 	}
-	return Characteristic{}, "", fmt.Errorf("undefined characteristic %s", label)
+
+	return Characteristic{}, false
 }
 
-// FindSkill returns the skill related to the label and it's speciality, plus an error if none is found
-func (u Universe) FindSkill(label string) (Skill, string, error) {
+// FindSkill returns the skill corresponding to the given label or a zero-value, and a boolean indicating if it was found.
+func (u Universe) FindSkill(label string) (Skill, bool) {
 
-	// retrieve label
-	splits := strings.Split(label, ":")
-
-	if len(splits) > 2 {
-		return Skill{}, "", fmt.Errorf("incorrect skill format %s", label)
+	for _, skill := range u.Skills {
+		if skill.Name == label {
+			return skill, true
+		}
 	}
 
-	// retrieve the skill
-	l := strings.ToLower(splits[0])
-	for _, s := range u.Skills {
-		n := strings.ToLower(s.Name)
-
-		// skill not found
-		if n != l {
-			continue
-		}
-
-		// skill found, return it and it's stringy value
-		var spec string
-		if len(splits) == 2 {
-			spec = splits[1]
-		}
-
-		return s, spec, nil
-	}
-
-	return Skill{}, "", fmt.Errorf("undefined skill %s", label)
+	return Skill{}, false
 }
 
-// FindTalent returns the talent related to the label and it's speciality, plus an error if none is found
-func (u Universe) FindTalent(label string) (Talent, string, error) {
+// FindTalent returns the talent corresponding to the given label or a zero value, and a boolean indicating if it was found.
+func (u Universe) FindTalent(label string) (Talent, bool) {
 
-	// retrieve label
-	splits := strings.Split(label, ":")
-
-	if len(splits) > 2 {
-		return Talent{}, "", fmt.Errorf("incorrect talent format %s", label)
+	for _, talent := range u.Talents {
+		if talent.Name == label {
+			return talent, true
+		}
 	}
 
-	// retrieve the talent
-	l := strings.ToLower(splits[0])
-	for _, t := range u.Talents {
-		n := strings.ToLower(t.Name)
+	return Talent{}, false
+}
 
-		// talent not found
-		if n != l {
-			continue
+// FindAptitude returns the aptitude corresponding to the given label or a zero value, and a boolean indicating if it was found.
+func (u Universe) FindAptitude(label string) (Aptitude, bool) {
+
+	for _, aptitude := range u.Aptitudes {
+		if string(aptitude) == label {
+			return aptitude, true
 		}
-
-		// talent found, return it and it's stringy value
-		var spec string
-		if len(splits) == 2 {
-			spec = splits[1]
-		}
-
-		return t, spec, nil
 	}
 
-	return Talent{}, "", fmt.Errorf("undefined talent %s", label)
+	return Aptitude(""), false
+}
+
+// FindHistory returns the history corresponding to the given label
+func (u Universe) FindHistory(typ string, label string) (History, bool, error) {
+
+	histories, found := u.Histories[typ]
+	if !found {
+		return History{}, false, fmt.Errorf("undefined history type %s in universe", typ)
+	}
+
+	for _, history := range histories {
+		if history.Name == label {
+			return history, true, nil
+		}
+	}
+
+	return History{}, false, nil
 }

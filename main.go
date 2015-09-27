@@ -4,7 +4,8 @@ import (
 	"log"
 	"os"
 
-	"adeptus/parser"
+	"github.com/elwinar/adeptus/parser"
+	"github.com/elwinar/adeptus/universe"
 
 	"github.com/codegangsta/cli"
 )
@@ -54,24 +55,37 @@ func main() {
 	}
 }
 
-// Display character sheet
+// Display character sheet.
 func Display(ctx *cli.Context) {
 
-	// Open and parse character sheet
+	// Open and parse character sheet.
 	reader, err := os.Open(ctx.String("character"))
 	if err != nil {
-		log.Printf("undefined character: %s\n", err)
+		log.Printf("cannot open character sheet: %s\n", err)
 		return
 	}
 
 	sheet, err := parser.ParseSheet(reader)
 	if err != nil {
-		log.Printf("error character sheet: %s\n", err)
+		log.Printf("unable to load character sheet: %s\n", err)
 		return
 	}
 
-	// Create character with the seet
-	character, err := NewCharacter(sheet)
+	// Open and parse the universe.
+	reader, err = os.Open("universe.json")
+	if err != nil {
+		log.Printf("cannot open universe: %s\n", err)
+		return
+	}
+
+	universe, err := universe.ParseUniverse(reader)
+	if err != nil {
+		log.Printf("unable to load universe: %s\n", err)
+		return
+	}
+
+	// Create character with the sheet
+	character, err := NewCharacter(universe, sheet)
 	if err != nil {
 		log.Printf("unable to create character: %s\n", err)
 		return

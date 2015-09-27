@@ -39,6 +39,7 @@ func parseCharacteristics(block []line) (Characteristics, error) {
 			Mark: "-",
 			Name: strings.Join(splits, " "),
 			Cost: nil,
+			Line: line.Number,
 		}
 
 		// Add the characteristic to the list

@@ -126,6 +126,22 @@ WP 25
 		{
 			in: strings.NewReader(`Name: Someone
 Origin: Somewhere
+Background: 
+Role: Warmonger
+Tarot: XXI
+
+WP 25
+
+2015/06/01 Creation [500]
+	* BULLSHIT +5 [250]
+	- Awesomeskill
+`),
+			out: Sheet{},
+			err: true,
+		},
+		{
+			in: strings.NewReader(`Name: Someone
+Origin: Somewhere
 Background: Something
 Role: Warmonger
 Tarot: XXI
@@ -138,17 +154,28 @@ WP 25
 `),
 			out: Sheet{
 				Header: Header{
-					Name:       "Someone",
-					Origin:     NewMeta("Somewhere"),
-					Background: NewMeta("Something"),
-					Role:       NewMeta("Warmonger"),
-					Tarot:      NewMeta("XXI"),
+					Name: "Someone",
+					Metas: map[string][]Meta{
+						"origin": {
+							mustNewMeta("Somewhere"),
+						},
+						"background": {
+							mustNewMeta("Something"),
+						},
+						"role": {
+							mustNewMeta("Warmonger"),
+						},
+						"tarot": {
+							mustNewMeta("XXI"),
+						},
+					},
 				},
 				Characteristics: Characteristics{
 					Upgrade{
 						Mark: "-",
 						Name: "WP 25",
 						Cost: nil,
+						Line: 7,
 					},
 				},
 				Sessions: []Session{
@@ -161,11 +188,13 @@ WP 25
 								Mark: "*",
 								Name: "BULLSHIT +5",
 								Cost: IntP(250),
+								Line: 10,
 							},
 							Upgrade{
 								Mark: "-",
 								Name: "Awesomeskill",
 								Cost: nil,
+								Line: 11,
 							},
 						},
 					},

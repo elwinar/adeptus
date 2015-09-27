@@ -248,16 +248,19 @@ func Test_parseSession(t *testing.T) {
 						Mark: "*",
 						Name: "WP +5",
 						Cost: nil,
+						Line: 2,
 					},
 					Upgrade{
 						Mark: "*",
 						Name: "WS +5",
 						Cost: nil,
+						Line: 3,
 					},
 					Upgrade{
 						Mark: "*",
 						Name: "BS +5",
 						Cost: nil,
+						Line: 4,
 					},
 				},
 			},
@@ -278,7 +281,7 @@ func Test_parseSession(t *testing.T) {
 	for i, c := range cases {
 		in := []line{}
 		for number, text := range c.in {
-			in = append(in, newLine(text, number))
+			in = append(in, newLine(text, number+1))
 		}
 
 		out, err, panic := func() (out Session, err error, panic bool) {
