@@ -10,7 +10,6 @@ import (
 // Universe represents a set of configuration, often refered as data or database.
 type Universe struct {
 	Histories       map[string][]History
-	Tarots          []Tarot
 	Aptitudes       []Aptitude
 	Characteristics []Characteristic
 	Gauges          []Gauge
@@ -162,16 +161,4 @@ func (u Universe) FindHistory(typ string, label string) (History, bool, error) {
 	}
 
 	return History{}, false, nil
-}
-
-// FindTarot returns the tarot corresponding to the given value or a zero value, and a boolean indicating if a tarot exist for this dice.
-func (u Universe) FindTarot(dice int) (Tarot, bool) {
-
-	for _, tarot := range u.Tarots {
-		if tarot.Min <= dice && dice <= tarot.Max {
-			return tarot, true
-		}
-	}
-
-	return Tarot{}, false
 }
