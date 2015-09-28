@@ -4,9 +4,6 @@ import (
 	"log"
 	"os"
 
-	"github.com/elwinar/adeptus/parser"
-	"github.com/elwinar/adeptus/universe"
-
 	"github.com/codegangsta/cli"
 )
 
@@ -34,20 +31,6 @@ func main() {
 	}
 	app.Action = Display
 
-	app.Commands = []cli.Command{
-		{
-			Name:   "history",
-			Usage:  "Displays the history of the character.",
-			Action: History,
-			Flags: []cli.Flag{
-				cli.StringFlag{
-					Name:  "character, c",
-					Usage: "The filepath to the character sheet.",
-				},
-			},
-		},
-	}
-
 	err := app.Run(os.Args)
 	if err != nil {
 		log.Println(err)
@@ -65,22 +48,22 @@ func Display(ctx *cli.Context) {
 		return
 	}
 
-	sheet, err := parser.ParseSheet(reader)
+	sheet, err := ParseSheet(reader)
 	if err != nil {
 		log.Printf("unable to load character sheet: %s\n", err)
 		return
 	}
 
-	// Open and parse the universe.
+	// Open and parse the universe
 	reader, err = os.Open("universe.json")
 	if err != nil {
-		log.Printf("cannot open universe: %s\n", err)
+		log.Printf("cannot open  %s\n", err)
 		return
 	}
 
-	universe, err := universe.ParseUniverse(reader)
+	universe, err := ParseUniverse(reader)
 	if err != nil {
-		log.Printf("unable to load universe: %s\n", err)
+		log.Printf("unable to load  %s\n", err)
 		return
 	}
 
@@ -94,6 +77,3 @@ func Display(ctx *cli.Context) {
 	character.Debug()
 
 }
-
-// History show the history of the character
-func History(ctx *cli.Context) {}

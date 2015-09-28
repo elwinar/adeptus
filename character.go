@@ -5,27 +5,26 @@ import (
 	"os"
 	"text/tabwriter"
 
-	"github.com/elwinar/adeptus/parser"
-	"github.com/elwinar/adeptus/universe"
 	"github.com/bradfitz/slice"
+	"github.com/elwinar/adeptus/universe"
 )
 
 // Character is the type representing a role playing character
 type Character struct {
 	Name            string
-	Histories       map[string][]universe.History
-	Aptitudes       []universe.Aptitude
-	Characteristics map[*universe.Characteristic]int
-	Skills          map[*universe.Skill]int
-	Talents         map[*universe.Talent]int
-	Gauges          map[*universe.Gauge]int
-	Rules           []universe.Rule
+	Histories       map[string][]History
+	Aptitudes       []Aptitude
+	Characteristics map[*Characteristic]int
+	Skills          map[*Skill]int
+	Talents         map[*Talent]int
+	Gauges          map[*Gauge]int
+	Rules           []Rule
 	Experience      int
 	Spent           int
 }
 
 // NewCharacter creates a new character given a sheet
-func NewCharacter(u universe.Universe, s parser.Sheet) (*Character, error) {
+func NewCharacter(u Universe, s Sheet) (*Character, error) {
 
 	// Create the character.
 	c := &Character{}
@@ -40,7 +39,7 @@ func NewCharacter(u universe.Universe, s parser.Sheet) (*Character, error) {
 	c.Name = h.Name
 
 	// Apply the initial characteristics from the sheet.
-	c.Characteristics = make(map[*universe.Characteristic]int)
+	c.Characteristics = make(map[*Characteristic]int)
 	for _, characteristic := range s.Characteristics {
 
 		// Identify name and value.
@@ -49,7 +48,7 @@ func NewCharacter(u universe.Universe, s parser.Sheet) (*Character, error) {
 			return nil, err
 		}
 
-		// Retrieve characteristic from universe given it's name.
+		// Retrieve characteristic from given it's name.
 		char, found := u.FindCharacteristic(name)
 		if !found {
 			return nil, fmt.Errorf("undefined characteristic %s", name)
@@ -65,7 +64,7 @@ func NewCharacter(u universe.Universe, s parser.Sheet) (*Character, error) {
 		c.Characteristics[&char] = value
 	}
 
-	// Check all characteristics from universe are defined for the character
+	// Check all characteristics from are defined for the character
 checkCharacteristics:
 	for _, u := range u.Characteristics {
 		for c := range c.Characteristics {
@@ -73,26 +72,26 @@ checkCharacteristics:
 				continue checkCharacteristics
 			}
 		}
-		return nil, fmt.Errorf("charactersitic %s of universe not defined for character", u.Name)
+		return nil, fmt.Errorf("charactersitic %s of not defined for character", u.Name)
 	}
 
 	// Make the character's gauges, skills and talents maps
-	c.Skills = make(map[*universe.Skill]int)
-	c.Talents = make(map[*universe.Talent]int)
-	c.Gauges = make(map[*universe.Gauge]int)
+	c.Skills = make(map[*Skill]int)
+	c.Talents = make(map[*Talent]int)
+	c.Gauges = make(map[*Gauge]int)
 
 	// Apply each Meta.
-	c.Histories = make(map[string][]universe.History)
+	c.Histories = make(map[string][]History)
 	for typ, meta := range h.Metas {
 
 		histories, found := u.Histories[typ]
 
-		// Check the history type exists in universe.
+		// Check the history type exists in
 		if !found {
 			return nil, fmt.Errorf("undefined history %s in universe", typ)
 		}
 
-		c.Histories[typ] = []universe.History{}
+		c.Histories[typ] = []History{}
 
 	metasLoop:
 		for _, m := range meta {
@@ -139,7 +138,7 @@ checkCharacteristics:
 }
 
 // ApplyHistory changes the character's trait according to the history values
-func (c *Character) ApplyHistory(h universe.History, u universe.Universe) error {
+func (c *Character) ApplyHistory(h History, u Universe) error {
 
 	// For each upgrade associated to the history, apply each option.
 	for _, upgrades := range h.Upgrades {
@@ -154,11 +153,11 @@ func (c *Character) ApplyHistory(h universe.History, u universe.Universe) error 
 }
 
 // ApplyUpgrade changes the character's trait according to the given upgrade
-func (c *Character) ApplyUpgrade(up parser.Upgrade, un universe.Universe) error {
+func (c *Character) ApplyUpgrade(up Upgrade, un Universe) error {
 
 	// Defer payment of upgrade
 	var payed bool
-	var coster universe.Coster
+	var coster Coster
 
 	// Pay the upgrade.
 	switch {
@@ -183,7 +182,7 @@ func (c *Character) ApplyUpgrade(up parser.Upgrade, un universe.Universe) error 
 		// Check the characteristic exists.
 		characteristic, found := un.FindCharacteristic(name)
 		if !found {
-			return fmt.Errorf(`universe provides upgrade "%s" but does not define the charactersitic "%s"`, up.Name, name)
+			return fmt.Errorf(`provides upgrade "%s" but does not define the charactersitic "%s"`, up.Name, name)
 		}
 
 		// Apply the modification to the character's characteristic.
@@ -222,14 +221,14 @@ func (c *Character) ApplyUpgrade(up parser.Upgrade, un universe.Universe) error 
 		c.Aptitudes = append(c.Aptitudes, aptitude)
 		return nil
 	}
-	
+
 	// Sort aptitudes by name and remove duplicates
 	slice.Sort(c.Aptitudes, func(i, j int) bool {
 		return c.Aptitudes[i] < c.Aptitudes[j]
-	});
+	})
 	var aptitudes []universe.Aptitude
 	for _, a := range c.Aptitudes {
-		if len(aptitudes) != 0 && aptitudes[len(aptitudes) - 1] == a {
+		if len(aptitudes) != 0 && aptitudes[len(aptitudes)-1] == a {
 			continue
 		}
 		aptitudes = append(aptitudes, a)
@@ -352,7 +351,7 @@ func (c *Character) ApplyUpgrade(up parser.Upgrade, un universe.Universe) error 
 	}
 
 	// It's a special rule
-	rule := universe.Rule{
+	rule := Rule{
 		Name:        name,
 		Description: speciality,
 	}
