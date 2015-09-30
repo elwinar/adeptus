@@ -1,6 +1,6 @@
 package main
 
-// Rule represent a special rule, which are generally home-made additions to the 
+// Rule represent a special rule, which are generally home-made additions to the
 type Rule struct {
 	Name        string
 	Description string

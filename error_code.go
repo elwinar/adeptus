@@ -5,79 +5,79 @@ type ErrorCode int
 
 const (
 	// InsuficientData is returned when the sheet does not contain the minimal two mandatory blocks
-	InsuficientData = 000
+	InsuficientData ErrorCode = 000
 
 	// InvalidKeyValuePair is returned when a header line isn't of the right format
-	InvalidKeyValuePair = 100
+	InvalidKeyValuePair ErrorCode = 100
 
 	// EmptyMetaKey is returned when the meta has an empty key
-	EmptyMetaKey = 101
+	EmptyMetaKey ErrorCode = 101
 
 	// EmptyMetaValue is returned when the meta has an empty value
-	EmptyMetaValue = 102
+	EmptyMetaValue ErrorCode = 102
 
 	// InvalidOptions is returned when the options provided are not allowed
-	InvalidOptions = 103
+	InvalidOptions ErrorCode = 103
 
 	// DuplicateMeta is returned when a meta is specified more than once
-	DuplicateMeta = 104
+	DuplicateMeta ErrorCode = 104
 
 	// NoDate is returned when no date of the right format is found in the headline
-	NoDate = 200
+	NoDate ErrorCode = 200
 
 	// InvalidReward is returned when the reward of a headline isn't correctly formed
-	InvalidReward = 201
+	InvalidReward ErrorCode = 201
 
 	// RewardAlreadyFound is returned when two or more rewards are found for the same headline
-	RewardAlreadyFound = 202
+	RewardAlreadyFound ErrorCode = 202
 
 	// WrongRewardPosition is returned when the reward isn't on the second or last position of a headline
-	WrongRewardPosition = 203
+	WrongRewardPosition ErrorCode = 203
 
 	// InvalidUpgrade is returned when the upgrade format is invalid
-	InvalidUpgrade = 300
+	InvalidUpgrade ErrorCode = 300
 
 	// InvalidMark is returned when the mark of an upgrade isn't recognized
-	InvalidMark = 301
+	InvalidMark ErrorCode = 301
 
 	// InvalidCost is returned when the cost of an upgrade isn't correctly formed
-	InvalidCost = 302
+	InvalidCost ErrorCode = 302
 
 	// CostAlreadyFound is returned when two or more costs are found for the same upgrade
-	CostAlreadyFound = 303
+	CostAlreadyFound ErrorCode = 303
 
 	// WrongCostPosition is returned when the cost isn't on the second or last position of an upgrade
-	WrongCostPosition = 304
+	WrongCostPosition ErrorCode = 304
 
 	// EmptyName is returned when the name of an upgrade is empty
-	EmptyName = 305
+	EmptyName ErrorCode = 305
 
 	// InvalidCharacteristicFormat is returned when the characteristic format is incorrect
-	InvalidCharacteristicFormat = 400
+	InvalidCharacteristicFormat ErrorCode = 400
 
 	// NotIntegerCharacteristicValue is returned when the characteristic value is not a positive integer
-	NotIntegerCharacteristicValue = 401
+	NotIntegerCharacteristicValue ErrorCode = 401
 
 	// UndefinedName is returned when character's name is not defined
-	UndefinedName = 500
+	UndefinedName ErrorCode = 500
 
 	// UndefinedUniverse is returned when the is not defined
-	UndefinedUniverse = 501
+	UndefinedUniverse ErrorCode = 501
 
 	// UndefinedOrigin is returned when the origin is not defined
-	UndefinedOrigin = 503
+	UndefinedOrigin ErrorCode = 503
 
 	// UndefinedBackground is returned when the background is not defined
-	UndefinedBackground = 504
+	UndefinedBackground ErrorCode = 504
 
 	// UndefinedRole is returned when the role is not defined
-	UndefinedRole = 505
+	UndefinedRole ErrorCode = 505
 
 	// NotFoundUniverse is returned when the file cannot be opened
-	NotFoundUniverse = 600
+	NotFoundUniverse ErrorCode = 600
 
 	// InvalidUniverse is returned when the is not a valid json file
-	InvalidUniverse = 601
+	InvalidUniverse ErrorCode = 601
 )
 
 // errorMsgs contains the messages associated to the error codes.

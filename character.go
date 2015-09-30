@@ -6,7 +6,6 @@ import (
 	"text/tabwriter"
 
 	"github.com/bradfitz/slice"
-	"github.com/elwinar/adeptus/universe"
 )
 
 // Character is the type representing a role playing character
@@ -226,7 +225,7 @@ func (c *Character) ApplyUpgrade(up Upgrade, un Universe) error {
 	slice.Sort(c.Aptitudes, func(i, j int) bool {
 		return c.Aptitudes[i] < c.Aptitudes[j]
 	})
-	var aptitudes []universe.Aptitude
+	var aptitudes []Aptitude
 	for _, a := range c.Aptitudes {
 		if len(aptitudes) != 0 && aptitudes[len(aptitudes)-1] == a {
 			continue

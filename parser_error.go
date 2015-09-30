@@ -2,13 +2,13 @@ package main
 
 import "fmt"
 
-// Error is an error encountered when parsing the sheet
+// ParserError is an error encountered when parsing the sheet
 type ParserError struct {
 	Line int
 	Code ErrorCode
 }
 
-// NewError build a new error from the line and error code
+// NewParserError build a new error from the line and error code
 func NewParserError(line int, code ErrorCode) ParserError {
 	return ParserError{
 		Line: line,
