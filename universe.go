@@ -9,7 +9,7 @@ import (
 
 // Universe represents a set of configuration, often refered as data or database.
 type Universe struct {
-	Histories       map[string][]History
+	Backgrounds     map[string][]Background
 	Aptitudes       []Aptitude
 	Characteristics []Characteristic
 	Gauges          []Gauge
@@ -153,12 +153,12 @@ func (u Universe) FindAptitude(label string) (Aptitude, bool) {
 	return Aptitude(""), false
 }
 
-// FindHistory returns the history corresponding to the given label
-func (u Universe) FindHistory(typ string, label string) (History, bool, error) {
+// FindBackground returns the history corresponding to the given label
+func (u Universe) FindBackground(typ string, label string) (Background, bool, error) {
 
-	histories, found := u.Histories[typ]
+	histories, found := u.Backgrounds[typ]
 	if !found {
-		return History{}, false, fmt.Errorf("undefined history type %s in universe", typ)
+		return Background{}, false, fmt.Errorf("undefined history type %s in universe", typ)
 	}
 
 	for _, history := range histories {
@@ -167,5 +167,5 @@ func (u Universe) FindHistory(typ string, label string) (History, bool, error) {
 		}
 	}
 
-	return History{}, false, nil
+	return Background{}, false, nil
 }

@@ -12,7 +12,7 @@ import (
 // Character is the type representing a role playing character
 type Character struct {
 	Name            string
-	Histories       map[string][]History
+	Backgrounds     map[string][]Background
 	Aptitudes       []Aptitude
 	Characteristics map[*Characteristic]int
 	Skills          map[*Skill]int
@@ -81,17 +81,17 @@ checkCharacteristics:
 	c.Gauges = make(map[*Gauge]int)
 
 	// Apply each Meta.
-	c.Histories = make(map[string][]History)
+	c.Backgrounds = make(map[string][]Background)
 	for typ, meta := range h.Metas {
 
-		histories, found := u.Histories[typ]
+		histories, found := u.Backgrounds[typ]
 
 		// Check the history type exists in
 		if !found {
 			return nil, fmt.Errorf("undefined history %s in universe", typ)
 		}
 
-		c.Histories[typ] = []History{}
+		c.Backgrounds[typ] = []Background{}
 
 	metasLoop:
 		for _, m := range meta {
@@ -103,8 +103,8 @@ checkCharacteristics:
 				}
 
 				// Apply the history
-				c.Histories[typ] = append(c.Histories[typ], h)
-				err := c.ApplyHistory(h, u)
+				c.Backgrounds[typ] = append(c.Backgrounds[typ], h)
+				err := c.ApplyBackground(h, u)
 				if err != nil {
 					return nil, err
 				}
@@ -137,8 +137,8 @@ checkCharacteristics:
 	return c, nil
 }
 
-// ApplyHistory changes the character's trait according to the history values
-func (c *Character) ApplyHistory(h History, u Universe) error {
+// ApplyBackground changes the character's trait according to the history values
+func (c *Character) ApplyBackground(h Background, u Universe) error {
 
 	// For each upgrade associated to the history, apply each option.
 	for _, upgrades := range h.Upgrades {
