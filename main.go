@@ -49,7 +49,7 @@ func Display(ctx *cli.Context) {
 	// Open and parse the universe
 	u, err := os.Open(ctx.GlobalString("universe"))
 	if err != nil {
-		log.Printf("cannot open  %s\n", err)
+		log.Println("error:", "unable to open universe:", err)
 		return
 	}
 	defer func() {
@@ -57,14 +57,14 @@ func Display(ctx *cli.Context) {
         }()
 	universe, err := ParseUniverse(u)
 	if err != nil {
-		log.Printf("unable to load  %s\n", err)
+		log.Println("error:", "corrupted universe:", err)
 		return
 	}
 
 	// Open and parse character sheet.
 	c, err := os.Open(ctx.String("character"))
 	if err != nil {
-		log.Printf("cannot open character sheet: %s\n", err)
+		log.Println("error:", "unable to open character sheet:", err)
 		return
 	}
 	defer func() {
@@ -72,14 +72,14 @@ func Display(ctx *cli.Context) {
         }()
 	sheet, err := ParseSheet(c)
 	if err != nil {
-		log.Printf("unable to load character sheet: %s\n", err)
+		log.Println("error:", "corrupted character sheet:", err)
 		return
 	}
 
 	// Create character with the sheet
 	character, err := NewCharacter(universe, sheet)
 	if err != nil {
-		log.Printf("unable to create character: %s\n", err)
+		log.Println("error:",  "unable to create character:", err)
 		return
 	}
 
