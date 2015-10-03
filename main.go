@@ -28,6 +28,11 @@ func main() {
 			Name:  "character, c",
 			Usage: "The filepath to the character sheet.",
 		},
+		cli.StringFlag{
+			Name:  "universe, u",
+			Usage: "The filepath to the character universe.",
+                        Value: "universe.json",
+		},
 	}
 	app.Action = Display
 
@@ -41,29 +46,33 @@ func main() {
 // Display character sheet.
 func Display(ctx *cli.Context) {
 
-	// Open and parse character sheet.
-	reader, err := os.Open(ctx.String("character"))
-	if err != nil {
-		log.Printf("cannot open character sheet: %s\n", err)
-		return
-	}
-
-	sheet, err := ParseSheet(reader)
-	if err != nil {
-		log.Printf("unable to load character sheet: %s\n", err)
-		return
-	}
-
 	// Open and parse the universe
-	reader, err = os.Open("universe.json")
+	u, err := os.Open(ctx.GlobalString("universe"))
 	if err != nil {
 		log.Printf("cannot open  %s\n", err)
 		return
 	}
-
-	universe, err := ParseUniverse(reader)
+	defer func() {
+            _ = u.Close()
+        }()
+	universe, err := ParseUniverse(u)
 	if err != nil {
 		log.Printf("unable to load  %s\n", err)
+		return
+	}
+
+	// Open and parse character sheet.
+	c, err := os.Open(ctx.String("character"))
+	if err != nil {
+		log.Printf("cannot open character sheet: %s\n", err)
+		return
+	}
+	defer func() {
+            _ = c.Close()
+        }()
+	sheet, err := ParseSheet(c)
+	if err != nil {
+		log.Printf("unable to load character sheet: %s\n", err)
 		return
 	}
 
