@@ -25,19 +25,25 @@ func parseHeader(block []line) (Header, error) {
 		// Parse the field as a key and value.
 		fields := strings.Split(line.Text, ":")
 		if len(fields) != 2 {
-			return Header{}, NewParserError(line.Number, InvalidKeyValuePair)
+			return Header{}, NewError(InvalidPairKeyValue, line.Number)
 		}
 		key := strings.ToLower(strings.TrimSpace(strings.ToLower(fields[0])))
 		value := strings.TrimSpace(fields[1])
 
 		// Check key is not empty
 		if len(key) == 0 {
-			return Header{}, NewParserError(line.Number, EmptyMetaKey)
+			return Header{}, NewError(EmptyKey, line.Number)
 		}
 
 		// Check value is not empty
 		if len(value) == 0 {
-			return Header{}, NewParserError(line.Number, EmptyMetaValue)
+			return Header{}, NewError(EmptyValue, line.Number)
+		}
+
+		// Check the meta is unique.
+		_, found := metas[key]
+		if found {
+			return Header{}, NewError(DuplicateMeta, line.Number, key)
 		}
 
 		// Retrieve the name.
@@ -46,19 +52,13 @@ func parseHeader(block []line) (Header, error) {
 			continue
 		}
 
-		// Check the meta is unique.
-		_, found := metas[key]
-		if found {
-			return Header{}, NewParserError(line.Number, DuplicateMeta)
-		}
-
 		// Retrieve coma separated values.
 		metas[key] = []Meta{}
 		splits := strings.Split(value, ",")
 		for _, s := range splits {
 			meta, err := NewMeta(strings.TrimSpace(s))
 			if err != nil {
-				return Header{}, NewParserError(line.Number, InvalidOptions)
+				return Header{}, err
 			}
 			metas[key] = append(metas[key], meta)
 		}

@@ -7,24 +7,24 @@ import (
 )
 
 // IdentifyCharacteristic returns the name, the value and the operand of a characteristic upgrade given it's label
-func IdentifyCharacteristic(label string) (string, int, string, error) {
+func IdentifyCharacteristic(u Upgrade) (string, int, string, error) {
 
 	// Check the characteristic contains a name and a value.
-	splits := strings.Fields(label)
+	splits := strings.Fields(u.Name)
 	if len(splits) != 2 {
-		return "", 0, "", fmt.Errorf(`incorrect format for characteristic "%s": expecting name and value`, label)
+		return "", 0, "", NewError(InvalidCharacteristicFormat, u.Line)
 	}
 
 	// Retrieve the name
 	name := splits[0]
 	if name != strings.ToUpper(name) {
-		return "", 0, "", fmt.Errorf(`characteristic "%s" name must be upper case`, label)
+		return "", 0, "", NewError(InvalidCharacteristicCase, u.Line)
 	}
 
 	// Retrieve the value
 	value, err := strconv.Atoi(splits[1])
 	if err != nil {
-		return "", 0, "", fmt.Errorf(`incorrect value for characteristic "%s"`, label)
+		return "", 0, "", NewError(InvalidCharacteristicValue, u.Line)
 	}
 
 	// Retrive the operand
@@ -54,27 +54,6 @@ func ApplyCharacteristicUpgrade(before int, sign string, upgrade int) int {
 		panic(fmt.Sprintf("unrecognized sign %s", sign))
 	}
 	return before
-}
-
-// SplitUpgrade returns the name and speciality of an upgrade.
-func SplitUpgrade(label string) (string, string, error) {
-
-	// Check if the skill has a speciality
-	splits := strings.Split(label, ":")
-	if len(splits) > 2 {
-		return "", "", fmt.Errorf(`incorrect format for upgrade "%s": expecting name or name: speciality`, label)
-	}
-
-	// Get name.
-	name := splits[0]
-
-	// Get speciality.
-	var speciality string
-	if len(splits) == 2 {
-		speciality = splits[1]
-	}
-
-	return name, speciality, nil
 }
 
 // countMatches return the number of matching aptitudes from two slices.

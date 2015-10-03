@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"strings"
 )
 
@@ -9,16 +8,18 @@ import (
 type Meta struct {
 	Label   string
 	Options []string
+	Line    int
 }
 
 // NewMeta returns a meta with name and options given the label.
-func NewMeta(raw string) (Meta, error) {
+func NewMeta(l line) (Meta, error) {
 
 	if strings.Contains(raw, "(") {
-		return Meta{}, fmt.Errorf("incorrect meta format")
+		return Meta{}, NewError(InvalidOptions, l.Number)
 	}
 
 	return Meta{
 		Label: raw,
+                Line: l.Number,
 	}, nil
 }

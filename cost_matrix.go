@@ -22,19 +22,19 @@ func (c CostMatrix) Price(typ string, matches int, tier int) (int, error) {
 	// Check if the upgrade type is listed in the matrix.
 	_, f = c.fares[typ]
 	if !f {
-		return 0, fmt.Errorf("undefined cost for type %s", typ)
+		return 0, NewError(UndefinedTypeCost, typ)
 	}
 
 	// Check if the number of matching aptitudes is in the matrix.
 	_, f = c.fares[typ][matches]
 	if !f {
-		return 0, fmt.Errorf("undefined cost for type %s with %d matching aptitudes", typ, matches)
+		return 0, NewError(UndefinedMatchCost, typ, matches)
 	}
 
 	// Get the cost corresponding to the upgrade's tier.
 	cost, f := c.fares[typ][matches][tier]
 	if !f {
-		return 0, fmt.Errorf("undefined cost for type %s with %d matching aptitudes on tier %d", typ, matches, tier)
+		return 0, NewError(UndefinedTierCost, typ, matches, tier)
 	}
 
 	return cost, nil

@@ -25,82 +25,118 @@ func ParseUniverse(file io.Reader) (Universe, error) {
 	// Open and parse universe.
 	raw, err := ioutil.ReadAll(file)
 	if err != nil {
-		return Universe{}, fmt.Errorf("unable to read  %s", err.Error())
+		return Universe{}, err
 	}
-
 	universe := Universe{}
 	err = json.Unmarshal(raw, &universe)
 	if err != nil {
-		return Universe{}, fmt.Errorf("unable to parse  %s", err.Error())
+		return Universe{}, err
 	}
 
 	// Add the type value to each history defined.
-	for typ, histories := range universe.Histories {
-		for i, _ := range histories {
-			universe.Histories[typ][i].Type = typ
+	for typ, backgrounds := range universe.Backgrounds {
+		for i, _ := range backgrounds {
+			universe.Backgrounds[typ][i].Type = typ
 		}
 	}
+	
+	// Sort the universe slices.
+	slice.Sort(universe.Aptitudes, func(i, j int) bool {
+                return universe.Aptitudes[i] < universe.Aptitudes[j]
+        })
+        
+        slice.Sort(universe.Characteristics, func(i, j int) bool {
+                return universe.Characteristics[i] < universe.Characteristics[j]
+        })
+        
+        slice.Sort(universe.Gauges, func(i, j int) bool {
+                return universe.Gauges[i] < universe.Gauges[j]
+        })
+        
+        slice.Sort(universe.Skills, func(i, j int) bool {
+                return universe.Skills[i] < universe.Skills[j]
+        })
+        
+        slice.Sort(universe.Talents, func(i, j int) bool {
+                return universe.Talents[i] < universe.Talents[j]
+        })
+        
+        for k, b := range universe.Backgrounds {
+                slice.Sort(universe.Backgrounds[k], func(i, j int) bool {
+                        return universe.Background[k][i] < universe.Background[k][j]
+                }
+        }
 
-	// Check the aptitudes in Skills, Characteristics and Talents are defined in the universe.
-	observed := make(map[Aptitude]struct{})
+	// Check the aptitudes used in the universe.
+	used := []Aptitude{}
 
-	// For each aptitude of each characteristic.
+	// Search for used aptitudes in Characteristics.
 	for _, c := range universe.Characteristics {
 		for _, a := range c.Aptitudes {
-
-			// Add the aptitude to the slice of observed aptitudes.
-			_, f := observed[a]
-			if !f {
-				observed[a] = struct{}{}
-			}
+                        used = append(used, a)
 		}
 	}
 
-	// For each aptitude of each skill.
+	// Search for used aptitudes in Skills.
 	for _, c := range universe.Skills {
 		for _, a := range c.Aptitudes {
-
-			// Add the aptitude to the slice of observed aptitudes.
-			_, f := observed[a]
-			if !f {
-				observed[a] = struct{}{}
-			}
+                        used = append(used, a)
 		}
 	}
 
-	// For each aptitude of each talent.
+	// Search for used aptitudes in Talents.
 	for _, c := range universe.Talents {
 		for _, a := range c.Aptitudes {
-
-			// Add the aptitude to the slice of observed aptitudes.
-			_, f := observed[a]
-			if !f {
-				observed[a] = struct{}{}
-			}
+                        used = append(used, a)
 		}
 	}
-
-	// Check all aptitudes defined by are used at least once.
-checkDefined:
-	for _, a := range universe.Aptitudes {
-		for o := range observed {
-			if a == o {
-				continue checkDefined
-			}
-		}
-		return Universe{}, fmt.Errorf("aptitude %s defined by but not used", a)
-	}
-
-	// Check all aptitudes defined by are used at least once.
-checkObserved:
-	for o := range observed {
-		for _, a := range universe.Aptitudes {
-			if a == o {
-				continue checkObserved
-			}
-		}
-		return Universe{}, fmt.Errorf("aptitude %s used by but not defined", o)
-	}
+        
+	// Sort the used slice to compare it with the universe aptitudes slice.
+	slice.Sort(used, func(i, j int) bool {
+                return used[i] < used[j]
+        })
+        
+        // Remove duplicates on used aptitudes.
+        k := 0
+        for k < len(used) -1 {
+                
+                if used[k] == used[k+1] {
+                        used = append(used[:k], used[k+1:]...)
+                        continue
+                }
+                k++
+        }
+        
+        // Loop on both aptitudes slices.
+        var i, j int
+        for i < len(universe.Aptitudes) && j < len(used) {
+            
+                // The aptitude does not exist in both slices.
+                if universe.Aptitudes[i] != universe.Aptitudes[j] {
+                        break
+                }
+                i++
+                j++
+        }
+        
+        // Look for diffences in the slices.
+        switch {
+            // The universe uses more aptitudes than it defines.
+            case len(universe.Aptitudes) < len(used):
+                return Universe{}, NewError(UndefinedAptitude, used[len(used) -1])
+                    
+            // The aptitude is used but not defined.
+            case universe.Aptitudes[i] > used[j]:
+                    return Universe{}, NewError(UndefinedAptitude, used[j])
+                
+            // The universe defines some unused aptitudes.
+            case len(universe.Aptitudes) > len(used):
+                return Universe{}, NewError(UnusedAptitude, universe.Aptitudes[len(universe.Aptitudes) -1])
+                       
+            // The aptitude is defined used but is not used.
+            case universe.Aptitudes[i] < used[j]:
+                    return Universe{}, NewError(UnusedAptitude, universe.Aptitudes[i])
+        }
 
 	return universe, nil
 }
@@ -158,7 +194,7 @@ func (u Universe) FindBackground(typ string, label string) (Background, bool, er
 
 	histories, found := u.Backgrounds[typ]
 	if !found {
-		return Background{}, false, fmt.Errorf("undefined history type %s in universe", typ)
+		return Background{}, false, NewError(UndefinedBackgroud, typ)
 	}
 
 	for _, history := range histories {

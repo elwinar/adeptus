@@ -31,11 +31,8 @@ func NewCharacter(u Universe, s Sheet) (*Character, error) {
 
 	// Alias Header.
 	h := s.Header
-
-	// Retrieve the name from the sheet header.
-	if len(h.Name) == 0 {
-		return nil, fmt.Errorf("empty name")
-	}
+	
+	// Retrieve character's name.
 	c.Name = h.Name
 
 	// Apply the initial characteristics from the sheet.
@@ -43,28 +40,28 @@ func NewCharacter(u Universe, s Sheet) (*Character, error) {
 	for _, characteristic := range s.Characteristics {
 
 		// Identify name and value.
-		name, value, _, err := IdentifyCharacteristic(characteristic.Name)
+		name, value, _, err := IdentifyCharacteristic(characteristic)
 		if err != nil {
 			return nil, err
 		}
 
-		// Retrieve characteristic from given it's name.
+		// Retrieve characteristic from universe given it's name.
 		char, found := u.FindCharacteristic(name)
 		if !found {
-			return nil, fmt.Errorf("undefined characteristic %s", name)
+			return nil, NewError(UndefinedCharacteristic, characteristic.Line)
 		}
 
 		// Check the characteristic is not set twice
 		_, found = c.Characteristics[&char]
 		if found {
-			return nil, fmt.Errorf("characteristic %s previously defined in character sheet", name)
+			return nil, NewError(DuplicateCharacteristic, characteristic.Line)
 		}
 
 		// Associate the characteristic and it' value to the characteristics map
 		c.Characteristics[&char] = value
 	}
 
-	// Check all characteristics from are defined for the character
+	// Check all characteristics are defined for the character
 checkCharacteristics:
 	for _, u := range u.Characteristics {
 		for c := range c.Characteristics {
@@ -72,7 +69,7 @@ checkCharacteristics:
 				continue checkCharacteristics
 			}
 		}
-		return nil, fmt.Errorf("charactersitic %s of not defined for character", u.Name)
+		return nil, NewError(MissingCharacteristic, u.Name)
 	}
 
 	// Make the character's gauges, skills and talents maps
@@ -82,36 +79,41 @@ checkCharacteristics:
 
 	// Apply each Meta.
 	c.Backgrounds = make(map[string][]Background)
-	for typ, meta := range h.Metas {
+	for typ, metas := range h.Metas {
+            
+                if len(metas) == 0 {
+                        panic(fmt.Sprintf("empty metas for type %s", typ))
+                }
+                line := metas[0].Line
 
-		histories, found := u.Backgrounds[typ]
+		bagrounds, found := u.Backgrounds[typ]
 
 		// Check the history type exists in
 		if !found {
-			return nil, fmt.Errorf("undefined history %s in universe", typ)
+			return nil, NewError(UndefinedBackgroundType, line, typ)
 		}
 
 		c.Backgrounds[typ] = []Background{}
 
 	metasLoop:
-		for _, m := range meta {
+		for _, meta := range metas {
 
 			// Search the history corresponding to the provided meta
-			for _, h := range histories {
-				if m.Label != h.Name {
+			for _, b := range bagrounds {
+				if meta.Label != b.Name {
 					continue
 				}
 
 				// Apply the history
-				c.Backgrounds[typ] = append(c.Backgrounds[typ], h)
-				err := c.ApplyBackground(h, u)
+				c.Backgrounds[typ] = append(c.Backgrounds[typ], b)
+				err := c.ApplyBackground(b, u)
 				if err != nil {
 					return nil, err
 				}
 
 				continue metasLoop
 			}
-			return nil, fmt.Errorf("history %s not defined for history type %s in universe", m.Label, typ)
+			return nil, NewError(UndefinedBackgroundValue, line, b.Label, typ)
 		}
 	}
 
@@ -165,7 +167,7 @@ func (c *Character) ApplyUpgrade(up Upgrade, un Universe) error {
 	// Upgrade is free.
 	case up.Mark == "-":
 		if up.Cost != nil {
-			return fmt.Errorf(`unexpected cost on upgrade line %d: mark "-" expects no cost value`, up.Line)
+                        return NewError(MismatchMarkCost, up.Line)
 		}
 		payed = true
 
@@ -182,7 +184,7 @@ func (c *Character) ApplyUpgrade(up Upgrade, un Universe) error {
 		// Check the characteristic exists.
 		characteristic, found := un.FindCharacteristic(name)
 		if !found {
-			return fmt.Errorf(`provides upgrade "%s" but does not define the charactersitic "%s"`, up.Name, name)
+			return NewError(UndefinedCharacteristic, up.Line)
 		}
 
 		// Apply the modification to the character's characteristic.
@@ -222,7 +224,7 @@ func (c *Character) ApplyUpgrade(up Upgrade, un Universe) error {
 		return nil
 	}
 
-	// Sort aptitudes by name and remove duplicates
+	// Sort aptitudes by name and remove duplicates.
 	slice.Sort(c.Aptitudes, func(i, j int) bool {
 		return c.Aptitudes[i] < c.Aptitudes[j]
 	})
