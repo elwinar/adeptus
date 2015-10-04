@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"strings"
 	"text/tabwriter"
 
 	"github.com/bradfitz/slice"
@@ -359,40 +360,95 @@ func (c *Character) ApplyUpgrade(up Upgrade, un Universe) error {
 	return nil
 }
 
-// Debug prints the current values of the character
-func (c Character) Debug() {
+// Print the character sheet on the screen
+func (c Character) Print() {
+	// Print the name
+	fmt.Printf("%s\t%s\n", theme.Title("Name"), c.Name)
 
-	w := new(tabwriter.Writer)
+	// Print the histories
+	histories := []History{}
+	for _, histories_ := range c.Histories {
+		histories = append(histories, histories_...)
+	}
 
-	// Format in tab-separated columns.
-	w.Init(os.Stdout, 4, 8, 0, '\t', 0)
+	slice.Sort(histories, func(i, j int) bool {
+		if histories[i].Type != histories[j].Type {
+			return histories[i].Type < histories[j].Type
+		}
 
-	fmt.Fprintf(w, "Name\t%s\n", c.Name)
-	for label, histories := range c.Histories {
-		for _, history := range histories {
-			fmt.Fprintf(w, "%s\t%s\n", label, history.Name)
+		return histories[i].Name < histories[j].Name
+	})
+
+	for _, history := range histories {
+		fmt.Printf("%s\t%s\n", theme.Title(strings.Title(history.Type)), strings.Title(history.Name))
+	}
+
+	// Print the experience
+	fmt.Printf("\n%s\t%d/%d\n", theme.Title("Experience"), c.Spent, c.Experience)
+
+	// Print the characteristics
+	fmt.Printf("\n%s\n", theme.Title("Characteristics"))
+
+	characteristics := []*Characteristic{}
+	for characteristic, _ := range c.Characteristics {
+		characteristics = append(characteristics, characteristic)
+	}
+
+	slice.Sort(characteristics, func(i, j int) bool {
+		return characteristics[i].Name < characteristics[j].Name
+	})
+
+	for _, characteristic := range characteristics {
+		fmt.Printf("%s\t%s\n", characteristic.Name, theme.Value(c.Characteristics[characteristic]))
+	}
+
+	// Print the talents
+	fmt.Printf("\n%s\n", theme.Title("Talents"))
+
+	talents := []*Talent{}
+	for talent, _ := range c.Talents {
+		talents = append(talents, talent)
+	}
+
+	slice.Sort(talents, func(i, j int) bool {
+		return talents[i].Name < talents[j].Name
+	})
+
+	for _, talent := range talents {
+		if c.Talents[talent] != 1 {
+			fmt.Printf("%s (%s)\n", strings.Title(talent.Name), theme.Value(c.Talents[talent]))
+		} else {
+			fmt.Printf("%s\n", strings.Title(talent.Name))
 		}
 	}
-	fmt.Fprintf(w, "\nExperience:\t%d/%d\n", c.Spent, c.Experience)
-	fmt.Fprintf(w, "\nCharacteristics\n")
-	for c, value := range c.Characteristics {
-		fmt.Fprintf(w, "%s\t%d\n", c.Name, value)
+
+	// Print the skills using a tabwriter
+	fmt.Printf("\n%s\n", theme.Title("Skills"))
+
+	skills := []*Skill{}
+	for skill, _ := range c.Skills {
+		skills = append(skills, skill)
 	}
-	fmt.Fprintf(w, "\nAptitudes\n")
-	for _, a := range c.Aptitudes {
-		fmt.Fprintf(w, "\t%s\n", a)
+
+	slice.Sort(skills, func(i, j int) bool {
+		return skills[i].Name < skills[j].Name
+	})
+
+	w := tabwriter.NewWriter(os.Stdout, 10, 1, 2, ' ', 0)
+	for _, skill := range skills {
+		fmt.Fprintf(w, "%s\t%s\n", strings.Title(skill.Name), theme.Value(c.Skills[skill]))
 	}
-	fmt.Fprintf(w, "\nTalents\n")
-	for t, v := range c.Talents {
-		fmt.Fprintf(w, "%s\t%d\n", t.Name, v)
+	w.Flush()
+
+	// Print the special rules
+	fmt.Printf("\n%s\n", theme.Title("Rules"))
+
+	rules := c.Rules
+	slice.Sort(rules, func(i, j int) bool {
+		return rules[i].Name < rules[j].Name
+	})
+
+	for _, rule := range rules {
+		fmt.Printf("%s\t%s\n", strings.Title(rule.Name), rule.Description)
 	}
-	fmt.Fprintf(w, "\nSkills\n")
-	for s, v := range c.Skills {
-		fmt.Fprintf(w, "%s\t%d\n", s.Name, v)
-	}
-	fmt.Fprintf(w, "\nRules\n")
-	for _, r := range c.Rules {
-		fmt.Fprintf(w, "%s\t%s\n", r.Name, r.Description)
-	}
-	_ = w.Flush()
 }

@@ -19,10 +19,10 @@ type Universe struct {
 }
 
 // ParseUniverse load an from a plain JSON file.
-// It returns a well-formed that describe all the components of a game setting.
+// It returns a well-formed universe that describe all the components of a game setting.
 func ParseUniverse(file io.Reader) (Universe, error) {
 
-	// open and parse universe
+	// Open and parse universe.
 	raw, err := ioutil.ReadAll(file)
 	if err != nil {
 		return Universe{}, fmt.Errorf("unable to read  %s", err.Error())
@@ -34,7 +34,14 @@ func ParseUniverse(file io.Reader) (Universe, error) {
 		return Universe{}, fmt.Errorf("unable to parse  %s", err.Error())
 	}
 
-	// Check the aptitudes in Skills, Characteristics and Talents are defined in the
+	// Add the type value to each history defined.
+	for typ, histories := range universe.Histories {
+		for i, _ := range histories {
+			universe.Histories[typ][i].Type = typ
+		}
+	}
+
+	// Check the aptitudes in Skills, Characteristics and Talents are defined in the universe.
 	observed := make(map[Aptitude]struct{})
 
 	// For each aptitude of each characteristic.
