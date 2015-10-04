@@ -12,7 +12,7 @@ func main() {
 
 	app.Name = "adeptus"
 	app.Usage = "Compiles character sheet for Dark Heresy 2.0 related systems."
-	app.Version = "alpha"
+	app.Version = "1.0"
 	app.Authors = []cli.Author{
 		{
 			Name:  "Romain Baugue",

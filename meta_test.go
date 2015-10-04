@@ -27,7 +27,7 @@ func Test_NewMeta(t *testing.T) {
 
 	for i, c := range cases {
 
-		out, err := NewMeta(c.in)
+		out, err := NewMeta(newLine(c.in, 0))
 
 		if (err != nil) != c.err {
 			if err == nil {
@@ -47,8 +47,8 @@ func Test_NewMeta(t *testing.T) {
 	}
 }
 
-func mustNewMeta(name string) Meta {
-	m, err := NewMeta(name)
+func newMeta(name string) Meta {
+	m, err := NewMeta(newLine(name, 0))
 	if err != nil {
 		panic(err)
 	}

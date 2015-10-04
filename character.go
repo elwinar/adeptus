@@ -367,22 +367,22 @@ func (c Character) Print() {
 	// Print the name
 	fmt.Printf("%s\t%s\n", theme.Title("Name"), c.Name)
 
-	// Print the histories
-	histories := []History{}
-	for _, histories_ := range c.Histories {
-		histories = append(histories, histories_...)
+	// Print the backgrounds
+	backgrounds := []Background{}
+	for _, list := range c.Backgrounds {
+		backgrounds = append(backgrounds, list...)
 	}
 
-	slice.Sort(histories, func(i, j int) bool {
-		if histories[i].Type != histories[j].Type {
-			return histories[i].Type < histories[j].Type
+	slice.Sort(backgrounds, func(i, j int) bool {
+		if backgrounds[i].Type != backgrounds[j].Type {
+			return backgrounds[i].Type < backgrounds[j].Type
 		}
 
-		return histories[i].Name < histories[j].Name
+		return backgrounds[i].Name < backgrounds[j].Name
 	})
 
-	for _, history := range histories {
-		fmt.Printf("%s\t%s\n", theme.Title(strings.Title(history.Type)), strings.Title(history.Name))
+	for _, background := range backgrounds {
+		fmt.Printf("%s\t%s\n", theme.Title(strings.Title(background.Type)), strings.Title(background.Name))
 	}
 
 	// Print the experience
