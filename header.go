@@ -25,25 +25,25 @@ func parseHeader(block []line) (Header, error) {
 		// Parse the field as a key and value.
 		fields := strings.Split(line.Text, ":")
 		if len(fields) != 2 {
-			return Header{}, NewError(InvalidPairKeyValue, line.Number)
+			return Header{}, NewError(InvalidHeaderLine, line.Number)
 		}
 		key := strings.ToLower(strings.TrimSpace(strings.ToLower(fields[0])))
 		value := strings.TrimSpace(fields[1])
 
 		// Check key is not empty
 		if len(key) == 0 {
-			return Header{}, NewError(EmptyKey, line.Number)
+			return Header{}, NewError(EmptyHeaderKey, line.Number)
 		}
 
 		// Check value is not empty
 		if len(value) == 0 {
-			return Header{}, NewError(EmptyValue, line.Number)
+			return Header{}, NewError(EmptyHeaderValue, line.Number)
 		}
 
 		// Check the meta is unique.
 		_, found := metas[key]
 		if found {
-			return Header{}, NewError(DuplicateMeta, line.Number, key)
+			return Header{}, NewError(DuplicateHeaderLine, line.Number, key)
 		}
 
 		// Retrieve the name.
@@ -56,7 +56,8 @@ func parseHeader(block []line) (Header, error) {
 		metas[key] = []Meta{}
 		splits := strings.Split(value, ",")
 		for _, s := range splits {
-			meta, err := NewMeta(strings.TrimSpace(s))
+			l := newLine(strings.TrimSpace(s), line.Number)
+			meta, err := NewMeta(l)
 			if err != nil {
 				return Header{}, err
 			}

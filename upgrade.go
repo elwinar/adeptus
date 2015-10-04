@@ -43,7 +43,7 @@ func parseUpgrade(line line) (Upgrade, error) {
 
 	// Parse the mark
 	if !in(fields[0], []string{MarkDefault, MarkSpecial, MarkFree}) {
-		return Upgrade{}, NewError(InvalidMark, line.Number)
+		return Upgrade{}, NewError(InvalidUpgradeMark, line.Number)
 	}
 	mark := fields[0]
 
@@ -56,7 +56,7 @@ func parseUpgrade(line line) (Upgrade, error) {
 		// If one end has the brackets but not the other, that's an error:
 		// brackets does by pairs, and are forbidden in the title
 		if strings.HasPrefix(field, "[") != strings.HasSuffix(field, "]") {
-			return Upgrade{}, NewError(InvalidCost, line.Number)
+			return Upgrade{}, NewError(InvalidUpgradeCost, line.Number)
 		}
 
 		// If the brackets are absents, that's not a cost, so skip the field.
@@ -68,12 +68,12 @@ func parseUpgrade(line line) (Upgrade, error) {
 
 		// There can be only one cost on the line
 		if cost != nil {
-			return Upgrade{}, NewError(CostAlreadyFound, line.Number)
+			return Upgrade{}, NewError(DuplicateUpgradeCost, line.Number)
 		}
 
 		// Check position of the cost
 		if i != 0 && i != len(fields)-1 {
-			return Upgrade{}, NewError(WrongCostPosition, line.Number)
+			return Upgrade{}, NewError(BadUpgradeCostPosition, line.Number)
 		}
 
 		// Trim the field to get the raw cost
@@ -82,12 +82,12 @@ func parseUpgrade(line line) (Upgrade, error) {
 		// Parse the cost
 		c, err := strconv.Atoi(raw)
 		if err != nil {
-			return Upgrade{}, NewError(InvalidCost, line.Number)
+			return Upgrade{}, NewError(InvalidUpgradeCost, line.Number)
 		}
 
 		// Check the cost is positive
 		if c < 0 {
-			return Upgrade{}, NewError(InvalidCost, line.Number)
+			return Upgrade{}, NewError(InvalidUpgradeCost, line.Number)
 		}
 		cost = &c
 
@@ -97,7 +97,7 @@ func parseUpgrade(line line) (Upgrade, error) {
 
 	// The remaining line is the name of the upgrade
 	if len(fields) == 0 {
-		return Upgrade{}, NewError(EmptyName, line.Number)
+		return Upgrade{}, NewError(UndefinedUpgradeName, line.Number)
 	}
 
 	return Upgrade{

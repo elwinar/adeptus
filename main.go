@@ -31,7 +31,7 @@ func main() {
 		cli.StringFlag{
 			Name:  "universe, u",
 			Usage: "The filepath to the character universe.",
-                        Value: "universe.json",
+			Value: "universe.json",
 		},
 	}
 	app.Action = Display
@@ -53,8 +53,8 @@ func Display(ctx *cli.Context) {
 		return
 	}
 	defer func() {
-            _ = u.Close()
-        }()
+		_ = u.Close()
+	}()
 	universe, err := ParseUniverse(u)
 	if err != nil {
 		log.Println("error:", "corrupted universe:", err)
@@ -68,8 +68,8 @@ func Display(ctx *cli.Context) {
 		return
 	}
 	defer func() {
-            _ = c.Close()
-        }()
+		_ = c.Close()
+	}()
 	sheet, err := ParseSheet(c)
 	if err != nil {
 		log.Println("error:", "corrupted character sheet:", err)
@@ -79,7 +79,7 @@ func Display(ctx *cli.Context) {
 	// Create character with the sheet
 	character, err := NewCharacter(universe, sheet)
 	if err != nil {
-		log.Println("error:",  "unable to create character:", err)
+		log.Println("error:", "unable to create character:", err)
 		return
 	}
 

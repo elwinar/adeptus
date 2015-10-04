@@ -18,7 +18,7 @@ func IdentifyCharacteristic(u Upgrade) (string, int, string, error) {
 	// Retrieve the name
 	name := splits[0]
 	if name != strings.ToUpper(name) {
-		return "", 0, "", NewError(InvalidCharacteristicCase, u.Line)
+		return "", 0, "", NewError(InvalidCharacteristicFormat, u.Line)
 	}
 
 	// Retrieve the value

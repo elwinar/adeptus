@@ -28,11 +28,11 @@ func parseCharacteristics(block []line) (Characteristics, error) {
 
 		// Check the value is numeric
 		if strings.ContainsAny(splits[1], "+|-") {
-			return Characteristics{}, NewError(NotIntegerCharacteristicValue, line.Number)
+			return Characteristics{}, NewError(InvalidCharacteristicValue, line.Number)
 		}
 		_, err := strconv.Atoi(splits[1])
 		if err != nil {
-			return Characteristics{}, NewError(NotIntegerCharacteristicValue, line.Number)
+			return Characteristics{}, NewError(InvalidCharacteristicValue, line.Number)
 		}
 
 		u := Upgrade{

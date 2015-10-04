@@ -31,7 +31,7 @@ func NewCharacter(u Universe, s Sheet) (*Character, error) {
 
 	// Alias Header.
 	h := s.Header
-	
+
 	// Retrieve character's name.
 	c.Name = h.Name
 
@@ -80,15 +80,15 @@ checkCharacteristics:
 	// Apply each Meta.
 	c.Backgrounds = make(map[string][]Background)
 	for typ, metas := range h.Metas {
-            
-                if len(metas) == 0 {
-                        panic(fmt.Sprintf("empty metas for type %s", typ))
-                }
-                line := metas[0].Line
+
+		if len(metas) == 0 {
+			panic(fmt.Sprintf("empty metas for type %s", typ))
+		}
+		line := metas[0].Line
 
 		bagrounds, found := u.Backgrounds[typ]
 
-		// Check the history type exists in
+		// Check the background type exists in universe.
 		if !found {
 			return nil, NewError(UndefinedBackgroundType, line, typ)
 		}
@@ -98,13 +98,13 @@ checkCharacteristics:
 	metasLoop:
 		for _, meta := range metas {
 
-			// Search the history corresponding to the provided meta
+			// Search the background corresponding to the provided meta.
 			for _, b := range bagrounds {
 				if meta.Label != b.Name {
 					continue
 				}
 
-				// Apply the history
+				// Apply the background.
 				c.Backgrounds[typ] = append(c.Backgrounds[typ], b)
 				err := c.ApplyBackground(b, u)
 				if err != nil {
@@ -113,7 +113,7 @@ checkCharacteristics:
 
 				continue metasLoop
 			}
-			return nil, NewError(UndefinedBackgroundValue, line, b.Label, typ)
+			return nil, NewError(UndefinedBackgroundValue, line, meta.Label, typ)
 		}
 	}
 
@@ -167,7 +167,7 @@ func (c *Character) ApplyUpgrade(up Upgrade, un Universe) error {
 	// Upgrade is free.
 	case up.Mark == "-":
 		if up.Cost != nil {
-                        return NewError(MismatchMarkCost, up.Line)
+			return NewError(MismatchMarkCost, up.Line)
 		}
 		payed = true
 
@@ -178,7 +178,7 @@ func (c *Character) ApplyUpgrade(up Upgrade, un Universe) error {
 	}
 
 	// Identify characteristic.
-	name, value, sign, err := IdentifyCharacteristic(up.Name)
+	name, value, sign, err := IdentifyCharacteristic(up)
 	if err == nil {
 
 		// Check the characteristic exists.
@@ -238,7 +238,7 @@ func (c *Character) ApplyUpgrade(up Upgrade, un Universe) error {
 	c.Aptitudes = aptitudes
 
 	// Identify skill or talent.
-	name, speciality, err := SplitUpgrade(up.Name)
+	name, speciality, err := up.Split()
 	if err != nil {
 		return err
 	}
