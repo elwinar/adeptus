@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/bradfitz/slice"
 )
@@ -363,7 +364,7 @@ func (c Character) Print() {
 
 	for label, histories := range c.Histories {
 		for _, history := range histories {
-			fmt.Printf("%s\t%s\n", theme.Title(label), history.Name)
+			fmt.Printf("%s\t%s\n", theme.Title(strings.Title(label)), strings.Title(history.Name))
 		}
 	}
 
@@ -382,7 +383,7 @@ func (c Character) Print() {
 	fmt.Printf("\n%s\n", theme.Title("Talents"))
 	for t, v := range c.Talents {
 		if v != 1 {
-			fmt.Printf("- %s %s\n", t.Name, theme.Value(v))
+			fmt.Printf("- %s (%s)\n", t.Name, theme.Value(v))
 		} else {
 			fmt.Printf("- %s\n", t.Name)
 		}
@@ -390,11 +391,11 @@ func (c Character) Print() {
 
 	fmt.Printf("\n%s\n", theme.Title("Skills"))
 	for s, v := range c.Skills {
-		fmt.Printf("- %s %s\n", s.Name, theme.Value(v))
+		fmt.Printf("- %s\t%s\n", s.Name, theme.Value(v))
 	}
 
 	fmt.Printf("\n%s\n", theme.Title("Rules"))
 	for _, r := range c.Rules {
-		fmt.Printf("- %s %s\n", r.Name, theme.Value(r.Description))
+		fmt.Printf("- %s\t%s\n", r.Name, theme.Value(r.Description))
 	}
 }
