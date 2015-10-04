@@ -74,6 +74,6 @@ func Display(ctx *cli.Context) {
 		return
 	}
 
-	character.Debug()
-
+	// Print the character sheet on screen
+	character.Print()
 }

@@ -2,8 +2,6 @@ package main
 
 import (
 	"fmt"
-	"os"
-	"text/tabwriter"
 
 	"github.com/bradfitz/slice"
 )
@@ -359,40 +357,44 @@ func (c *Character) ApplyUpgrade(up Upgrade, un Universe) error {
 	return nil
 }
 
-// Debug prints the current values of the character
-func (c Character) Debug() {
+// Print the character sheet on the screen
+func (c Character) Print() {
+	fmt.Printf("%s\t%s\n", theme.Title("Name"), c.Name)
 
-	w := new(tabwriter.Writer)
-
-	// Format in tab-separated columns.
-	w.Init(os.Stdout, 4, 8, 0, '\t', 0)
-
-	fmt.Fprintf(w, "Name\t%s\n", c.Name)
 	for label, histories := range c.Histories {
 		for _, history := range histories {
-			fmt.Fprintf(w, "%s\t%s\n", label, history.Name)
+			fmt.Printf("%s\t%s\n", theme.Title(label), history.Name)
 		}
 	}
-	fmt.Fprintf(w, "\nExperience:\t%d/%d\n", c.Spent, c.Experience)
-	fmt.Fprintf(w, "\nCharacteristics\n")
+
+	fmt.Printf("\n%s\t%d/%d\n", theme.Title("Experience"), c.Spent, c.Experience)
+
+	fmt.Printf("\n%s\n", theme.Title("Characteristics"))
 	for c, value := range c.Characteristics {
-		fmt.Fprintf(w, "%s\t%d\n", c.Name, value)
+		fmt.Printf("%s\t%s\n", c.Name, theme.Value(value))
 	}
-	fmt.Fprintf(w, "\nAptitudes\n")
+
+	fmt.Printf("\n%s\n", theme.Title("Aptitudes"))
 	for _, a := range c.Aptitudes {
-		fmt.Fprintf(w, "\t%s\n", a)
+		fmt.Printf("- %s\n", a)
 	}
-	fmt.Fprintf(w, "\nTalents\n")
+
+	fmt.Printf("\n%s\n", theme.Title("Talents"))
 	for t, v := range c.Talents {
-		fmt.Fprintf(w, "%s\t%d\n", t.Name, v)
+		if v != 1 {
+			fmt.Printf("- %s %s\n", t.Name, theme.Value(v))
+		} else {
+			fmt.Printf("- %s\n", t.Name)
+		}
 	}
-	fmt.Fprintf(w, "\nSkills\n")
+
+	fmt.Printf("\n%s\n", theme.Title("Skills"))
 	for s, v := range c.Skills {
-		fmt.Fprintf(w, "%s\t%d\n", s.Name, v)
+		fmt.Printf("- %s %s\n", s.Name, theme.Value(v))
 	}
-	fmt.Fprintf(w, "\nRules\n")
+
+	fmt.Printf("\n%s\n", theme.Title("Rules"))
 	for _, r := range c.Rules {
-		fmt.Fprintf(w, "%s\t%s\n", r.Name, r.Description)
+		fmt.Printf("- %s %s\n", r.Name, theme.Value(r.Description))
 	}
-	_ = w.Flush()
 }
