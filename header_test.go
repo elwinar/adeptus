@@ -87,10 +87,10 @@ func Test_ParseHeader(t *testing.T) {
 				Name: "successful name",
 				Metas: map[string][]Meta{
 					"role": {
-						newMeta("successful role"),
+						newMeta("successful role", 0),
 					},
 					"tarot": {
-						newMeta("successful tarot"),
+						newMeta("successful tarot", 2),
 					},
 				},
 			},

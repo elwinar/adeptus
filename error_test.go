@@ -15,9 +15,9 @@ func Test_NewError(t *testing.T) {
 }
 
 func Test_Error_Error(t *testing.T) {
-	err := NewError(UnusedAptitude)
+	err := NewError(UnusedAptitude, "test")
 
-	if err.Error() != fmt.Sprintf("line 0: %s", errorMsgs[UnusedAptitude]) {
+	if err.Error() != fmt.Sprintf(errorMsgs[UnusedAptitude], "test") {
 		t.Logf("invalid output: %s", err.Error())
 		t.Fail()
 	}

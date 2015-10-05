@@ -9,3 +9,11 @@ func IntP(i int) *int {
 func StringP(s string) *string {
 	return &s
 }
+
+func newMeta(name string) Meta {
+	m, err := NewMeta(newLine(name, 0))
+	if err != nil {
+		panic(err)
+	}
+	return m
+}
