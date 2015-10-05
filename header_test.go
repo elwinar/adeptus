@@ -70,7 +70,11 @@ func Test_ParseHeader(t *testing.T) {
 				Name: "successful name",
 				Metas: map[string][]Meta{
 					"role": {
-						newMeta("successful role"),
+						Meta{
+							Label:   "successful role",
+							Line:    1,
+							Options: nil,
+						},
 					},
 				},
 			},
@@ -87,10 +91,18 @@ func Test_ParseHeader(t *testing.T) {
 				Name: "successful name",
 				Metas: map[string][]Meta{
 					"role": {
-						newMeta("successful role", 0),
+						Meta{
+							Label:   "successful role",
+							Line:    1,
+							Options: nil,
+						},
 					},
 					"tarot": {
-						newMeta("successful tarot", 2),
+						Meta{
+							Label:   "successful tarot",
+							Line:    3,
+							Options: nil,
+						},
 					},
 				},
 			},
@@ -106,8 +118,14 @@ func Test_ParseHeader(t *testing.T) {
 				Name: "successful name",
 				Metas: map[string][]Meta{
 					"role": {
-						newMeta("successful role"),
-						newMeta("second role"),
+						Meta{
+							Label: "successful role",
+							Line:  1,
+						},
+						Meta{
+							Label: "second role",
+							Line:  1,
+						},
 					},
 				},
 			},
@@ -123,7 +141,10 @@ func Test_ParseHeader(t *testing.T) {
 				Name: "successful name",
 				Metas: map[string][]Meta{
 					"role": {
-						newMeta("successful role"),
+						Meta{
+							Label: "successful role",
+							Line:  1,
+						},
 					},
 				},
 			},
@@ -144,7 +165,7 @@ func Test_ParseHeader(t *testing.T) {
 	for i, c := range cases {
 		in := []line{}
 		for number, text := range c.in {
-			in = append(in, newLine(text, number))
+			in = append(in, newLine(text, number+1))
 		}
 
 		out, err, panic := func() (out Header, err error, panic bool) {

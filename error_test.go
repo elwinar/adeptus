@@ -22,3 +22,15 @@ func Test_Error_Error(t *testing.T) {
 		t.Fail()
 	}
 }
+
+func Test_Error_PanicIfNotFound(t *testing.T) {
+	defer func() {
+		if e := recover(); e != nil {
+			return
+		}
+		t.Fail()
+	}()
+
+	err := NewError(ErrorCode(-1))
+	err.Error()
+}

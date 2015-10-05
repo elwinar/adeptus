@@ -10,8 +10,8 @@ func StringP(s string) *string {
 	return &s
 }
 
-func newMeta(name string) Meta {
-	m, err := NewMeta(newLine(name, 0))
+func newMeta(text string) Meta {
+	m, err := NewMeta(newLine(text, 0))
 	if err != nil {
 		panic(err)
 	}
