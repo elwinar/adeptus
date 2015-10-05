@@ -23,16 +23,16 @@ func parseCharacteristics(block []line) (Characteristics, error) {
 		// The line should be made of label and value
 		splits := strings.Fields(line.Text)
 		if len(splits) != 2 {
-			return Characteristics{}, NewParserError(line.Number, InvalidCharacteristicFormat)
+			return Characteristics{}, NewError(InvalidCharacteristicFormat, line.Number)
 		}
 
 		// Check the value is numeric
 		if strings.ContainsAny(splits[1], "+|-") {
-			return Characteristics{}, NewParserError(line.Number, NotIntegerCharacteristicValue)
+			return Characteristics{}, NewError(InvalidCharacteristicValue, line.Number)
 		}
 		_, err := strconv.Atoi(splits[1])
 		if err != nil {
-			return Characteristics{}, NewParserError(line.Number, NotIntegerCharacteristicValue)
+			return Characteristics{}, NewError(InvalidCharacteristicValue, line.Number)
 		}
 
 		u := Upgrade{

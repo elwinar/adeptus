@@ -6,24 +6,31 @@ import (
 )
 
 func Test_NewError(t *testing.T) {
-	err := NewError(0, InsuficientData)
+	err := NewError(UnusedAptitude)
 
-	if err.Line != 0 {
-		t.Logf("invalid line number: expected %d, got %d", 0, err.Line)
-		t.Fail()
-	}
-
-	if err.Code != InsuficientData {
-		t.Logf("invalid code: expected %d, got %d", InsuficientData, err.Code)
+	if err.Code != UnusedAptitude {
+		t.Logf("invalid code: expected %d, got %d", UnusedAptitude, err.Code)
 		t.Fail()
 	}
 }
 
 func Test_Error_Error(t *testing.T) {
-	err := NewError(0, InsuficientData)
+	err := NewError(UnusedAptitude, "test")
 
-	if err.Error() != fmt.Sprintf("line 0: %s", errorMsgs[InsuficientData]) {
+	if err.Error() != fmt.Sprintf(errorMsgs[UnusedAptitude], "test") {
 		t.Logf("invalid output: %s", err.Error())
 		t.Fail()
 	}
+}
+
+func Test_Error_PanicIfNotFound(t *testing.T) {
+	defer func() {
+		if e := recover(); e != nil {
+			return
+		}
+		t.Fail()
+	}()
+
+	err := NewError(ErrorCode(-1))
+	err.Error()
 }

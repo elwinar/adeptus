@@ -38,12 +38,12 @@ func parseUpgrade(line line) (Upgrade, error) {
 
 	// The minimum number of fields is 2
 	if len(fields) < 2 {
-		return Upgrade{}, NewParserError(line.Number, InvalidUpgrade)
+		return Upgrade{}, NewError(InvalidUpgrade, line.Number)
 	}
 
 	// Parse the mark
 	if !in(fields[0], []string{MarkDefault, MarkSpecial, MarkFree}) {
-		return Upgrade{}, NewParserError(line.Number, InvalidMark)
+		return Upgrade{}, NewError(InvalidUpgradeMark, line.Number)
 	}
 	mark := fields[0]
 
@@ -56,7 +56,7 @@ func parseUpgrade(line line) (Upgrade, error) {
 		// If one end has the brackets but not the other, that's an error:
 		// brackets does by pairs, and are forbidden in the title
 		if strings.HasPrefix(field, "[") != strings.HasSuffix(field, "]") {
-			return Upgrade{}, NewParserError(line.Number, InvalidCost)
+			return Upgrade{}, NewError(InvalidUpgradeCost, line.Number)
 		}
 
 		// If the brackets are absents, that's not a cost, so skip the field.
@@ -68,12 +68,12 @@ func parseUpgrade(line line) (Upgrade, error) {
 
 		// There can be only one cost on the line
 		if cost != nil {
-			return Upgrade{}, NewParserError(line.Number, CostAlreadyFound)
+			return Upgrade{}, NewError(DuplicateUpgradeCost, line.Number)
 		}
 
 		// Check position of the cost
 		if i != 0 && i != len(fields)-1 {
-			return Upgrade{}, NewParserError(line.Number, WrongCostPosition)
+			return Upgrade{}, NewError(BadUpgradeCostPosition, line.Number)
 		}
 
 		// Trim the field to get the raw cost
@@ -82,12 +82,12 @@ func parseUpgrade(line line) (Upgrade, error) {
 		// Parse the cost
 		c, err := strconv.Atoi(raw)
 		if err != nil {
-			return Upgrade{}, NewParserError(line.Number, InvalidCost)
+			return Upgrade{}, NewError(InvalidUpgradeCost, line.Number)
 		}
 
 		// Check the cost is positive
 		if c < 0 {
-			return Upgrade{}, NewParserError(line.Number, InvalidCost)
+			return Upgrade{}, NewError(InvalidUpgradeCost, line.Number)
 		}
 		cost = &c
 
@@ -97,7 +97,7 @@ func parseUpgrade(line line) (Upgrade, error) {
 
 	// The remaining line is the name of the upgrade
 	if len(fields) == 0 {
-		return Upgrade{}, NewParserError(line.Number, EmptyName)
+		return Upgrade{}, NewError(UndefinedUpgradeName, line.Number)
 	}
 
 	return Upgrade{
@@ -106,4 +106,25 @@ func parseUpgrade(line line) (Upgrade, error) {
 		Cost: cost,
 		Line: line.Number,
 	}, nil
+}
+
+// Split returns the name and speciality of an upgrade.
+func (u Upgrade) Split() (string, string, error) {
+
+	// Check if the skill has a speciality
+	splits := strings.Split(u.Name, ":")
+	if len(splits) > 2 {
+		return "", "", NewError(InvalidUpgrade, u.Line)
+	}
+
+	// Get name.
+	name := splits[0]
+
+	// Get speciality.
+	var speciality string
+	if len(splits) == 2 {
+		speciality = splits[1]
+	}
+
+	return name, speciality, nil
 }

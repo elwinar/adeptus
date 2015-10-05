@@ -157,16 +157,32 @@ WP 25
 					Name: "Someone",
 					Metas: map[string][]Meta{
 						"origin": {
-							mustNewMeta("Somewhere"),
+							Meta{
+								Label:   "Somewhere",
+								Line:    2,
+								Options: nil,
+							},
 						},
 						"background": {
-							mustNewMeta("Something"),
+							Meta{
+								Label:   "Something",
+								Line:    3,
+								Options: nil,
+							},
 						},
 						"role": {
-							mustNewMeta("Warmonger"),
+							Meta{
+								Label:   "Warmonger",
+								Line:    4,
+								Options: nil,
+							},
 						},
 						"tarot": {
-							mustNewMeta("XXI"),
+							Meta{
+								Label:   "XXI",
+								Line:    5,
+								Options: nil,
+							},
 						},
 					},
 				},

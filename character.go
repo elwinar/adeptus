@@ -12,7 +12,7 @@ import (
 // Character is the type representing a role playing character
 type Character struct {
 	Name            string
-	Histories       map[string][]History
+	Backgrounds     map[string][]Background
 	Aptitudes       []Aptitude
 	Characteristics map[*Characteristic]int
 	Skills          map[*Skill]int
@@ -32,10 +32,7 @@ func NewCharacter(u Universe, s Sheet) (*Character, error) {
 	// Alias Header.
 	h := s.Header
 
-	// Retrieve the name from the sheet header.
-	if len(h.Name) == 0 {
-		return nil, fmt.Errorf("empty name")
-	}
+	// Retrieve character's name.
 	c.Name = h.Name
 
 	// Apply the initial characteristics from the sheet.
@@ -43,28 +40,28 @@ func NewCharacter(u Universe, s Sheet) (*Character, error) {
 	for _, characteristic := range s.Characteristics {
 
 		// Identify name and value.
-		name, value, _, err := IdentifyCharacteristic(characteristic.Name)
+		name, value, _, err := IdentifyCharacteristic(characteristic)
 		if err != nil {
 			return nil, err
 		}
 
-		// Retrieve characteristic from given it's name.
+		// Retrieve characteristic from universe given it's name.
 		char, found := u.FindCharacteristic(name)
 		if !found {
-			return nil, fmt.Errorf("undefined characteristic %s", name)
+			return nil, NewError(UndefinedCharacteristic, characteristic.Line)
 		}
 
 		// Check the characteristic is not set twice
 		_, found = c.Characteristics[&char]
 		if found {
-			return nil, fmt.Errorf("characteristic %s previously defined in character sheet", name)
+			return nil, NewError(DuplicateCharacteristic, characteristic.Line)
 		}
 
 		// Associate the characteristic and it' value to the characteristics map
 		c.Characteristics[&char] = value
 	}
 
-	// Check all characteristics from are defined for the character
+	// Check all characteristics are defined for the character
 checkCharacteristics:
 	for _, u := range u.Characteristics {
 		for c := range c.Characteristics {
@@ -72,7 +69,7 @@ checkCharacteristics:
 				continue checkCharacteristics
 			}
 		}
-		return nil, fmt.Errorf("charactersitic %s of not defined for character", u.Name)
+		return nil, NewError(MissingCharacteristic, u.Name)
 	}
 
 	// Make the character's gauges, skills and talents maps
@@ -81,37 +78,42 @@ checkCharacteristics:
 	c.Gauges = make(map[*Gauge]int)
 
 	// Apply each Meta.
-	c.Histories = make(map[string][]History)
-	for typ, meta := range h.Metas {
+	c.Backgrounds = make(map[string][]Background)
+	for typ, metas := range h.Metas {
 
-		histories, found := u.Histories[typ]
+		if len(metas) == 0 {
+			panic(fmt.Sprintf("empty metas for type %s", typ))
+		}
+		line := metas[0].Line
 
-		// Check the history type exists in
+		bagrounds, found := u.Backgrounds[typ]
+
+		// Check the background type exists in universe.
 		if !found {
-			return nil, fmt.Errorf("undefined history %s in universe", typ)
+			return nil, NewError(UndefinedBackgroundType, line, typ)
 		}
 
-		c.Histories[typ] = []History{}
+		c.Backgrounds[typ] = []Background{}
 
 	metasLoop:
-		for _, m := range meta {
+		for _, meta := range metas {
 
-			// Search the history corresponding to the provided meta
-			for _, h := range histories {
-				if m.Label != h.Name {
+			// Search the background corresponding to the provided meta.
+			for _, b := range bagrounds {
+				if meta.Label != b.Name {
 					continue
 				}
 
-				// Apply the history
-				c.Histories[typ] = append(c.Histories[typ], h)
-				err := c.ApplyHistory(h, u)
+				// Apply the background.
+				c.Backgrounds[typ] = append(c.Backgrounds[typ], b)
+				err := c.ApplyBackground(b, u)
 				if err != nil {
 					return nil, err
 				}
 
 				continue metasLoop
 			}
-			return nil, fmt.Errorf("history %s not defined for history type %s in universe", m.Label, typ)
+			return nil, NewError(UndefinedBackgroundValue, line, meta.Label, typ)
 		}
 	}
 
@@ -137,8 +139,8 @@ checkCharacteristics:
 	return c, nil
 }
 
-// ApplyHistory changes the character's trait according to the history values
-func (c *Character) ApplyHistory(h History, u Universe) error {
+// ApplyBackground changes the character's trait according to the history values
+func (c *Character) ApplyBackground(h Background, u Universe) error {
 
 	// For each upgrade associated to the history, apply each option.
 	for _, upgrades := range h.Upgrades {
@@ -165,7 +167,7 @@ func (c *Character) ApplyUpgrade(up Upgrade, un Universe) error {
 	// Upgrade is free.
 	case up.Mark == "-":
 		if up.Cost != nil {
-			return fmt.Errorf(`unexpected cost on upgrade line %d: mark "-" expects no cost value`, up.Line)
+			return NewError(MismatchMarkCost, up.Line)
 		}
 		payed = true
 
@@ -176,13 +178,13 @@ func (c *Character) ApplyUpgrade(up Upgrade, un Universe) error {
 	}
 
 	// Identify characteristic.
-	name, value, sign, err := IdentifyCharacteristic(up.Name)
+	name, value, sign, err := IdentifyCharacteristic(up)
 	if err == nil {
 
 		// Check the characteristic exists.
 		characteristic, found := un.FindCharacteristic(name)
 		if !found {
-			return fmt.Errorf(`provides upgrade "%s" but does not define the charactersitic "%s"`, up.Name, name)
+			return NewError(UndefinedCharacteristic, up.Line)
 		}
 
 		// Apply the modification to the character's characteristic.
@@ -222,7 +224,7 @@ func (c *Character) ApplyUpgrade(up Upgrade, un Universe) error {
 		return nil
 	}
 
-	// Sort aptitudes by name and remove duplicates
+	// Sort aptitudes by name and remove duplicates.
 	slice.Sort(c.Aptitudes, func(i, j int) bool {
 		return c.Aptitudes[i] < c.Aptitudes[j]
 	})
@@ -236,7 +238,7 @@ func (c *Character) ApplyUpgrade(up Upgrade, un Universe) error {
 	c.Aptitudes = aptitudes
 
 	// Identify skill or talent.
-	name, speciality, err := SplitUpgrade(up.Name)
+	name, speciality, err := up.Split()
 	if err != nil {
 		return err
 	}
@@ -365,22 +367,22 @@ func (c Character) Print() {
 	// Print the name
 	fmt.Printf("%s\t%s\n", theme.Title("Name"), c.Name)
 
-	// Print the histories
-	histories := []History{}
-	for _, histories_ := range c.Histories {
-		histories = append(histories, histories_...)
+	// Print the backgrounds
+	backgrounds := []Background{}
+	for _, list := range c.Backgrounds {
+		backgrounds = append(backgrounds, list...)
 	}
 
-	slice.Sort(histories, func(i, j int) bool {
-		if histories[i].Type != histories[j].Type {
-			return histories[i].Type < histories[j].Type
+	slice.Sort(backgrounds, func(i, j int) bool {
+		if backgrounds[i].Type != backgrounds[j].Type {
+			return backgrounds[i].Type < backgrounds[j].Type
 		}
 
-		return histories[i].Name < histories[j].Name
+		return backgrounds[i].Name < backgrounds[j].Name
 	})
 
-	for _, history := range histories {
-		fmt.Printf("%s\t%s\n", theme.Title(strings.Title(history.Type)), strings.Title(history.Name))
+	for _, background := range backgrounds {
+		fmt.Printf("%s\t%s\n", theme.Title(strings.Title(background.Type)), strings.Title(background.Name))
 	}
 
 	// Print the experience

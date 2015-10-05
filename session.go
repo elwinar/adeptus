@@ -61,7 +61,7 @@ func parseSession(block []line) (Session, error) {
 
 	// If we have an error, that's because no format matched
 	if err != nil {
-		return Session{}, NewParserError(headline.Number, NoDate)
+		return Session{}, NewError(UndefinedSessionDate, headline.Number)
 	}
 
 	// Remove the date from the fields
@@ -74,7 +74,7 @@ func parseSession(block []line) (Session, error) {
 		// If one end has the brackets but not the other, that's an error:
 		// brackets does by pairs, and are forbidden in the title
 		if strings.HasPrefix(field, "[") != strings.HasSuffix(field, "]") {
-			return Session{}, NewParserError(headline.Number, InvalidReward)
+			return Session{}, NewError(InvalidSessionReward, headline.Number)
 		}
 
 		// If the brackets are absents, that's not a reward, so skip the field.
@@ -86,12 +86,12 @@ func parseSession(block []line) (Session, error) {
 
 		// There can be only one reward on the line
 		if reward != nil {
-			return Session{}, NewParserError(headline.Number, RewardAlreadyFound)
+			return Session{}, NewError(DuplicateSessionReward, headline.Number)
 		}
 
 		// Check position of the reward
 		if i != 0 && i != len(fields)-1 {
-			return Session{}, NewParserError(headline.Number, WrongRewardPosition)
+			return Session{}, NewError(BadSessionRewardPosition, headline.Number)
 		}
 
 		// Trim the field to get the raw reward
@@ -100,7 +100,7 @@ func parseSession(block []line) (Session, error) {
 		// Parse the reward
 		r, err := strconv.Atoi(raw)
 		if err != nil {
-			return Session{}, NewParserError(headline.Number, InvalidReward)
+			return Session{}, NewError(InvalidSessionReward, headline.Number)
 		}
 		reward = &r
 
