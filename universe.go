@@ -4,8 +4,6 @@ import (
 	"encoding/json"
 	"io"
 	"io/ioutil"
-
-	"github.com/bradfitz/slice"
 )
 
 // Universe represents a set of configuration, often refered as data or database.
@@ -33,110 +31,12 @@ func ParseUniverse(file io.Reader) (Universe, error) {
 	if err != nil {
 		return Universe{}, err
 	}
-	
+
 	// Add the type value to each history defined.
 	for typ, backgrounds := range universe.Backgrounds {
 		for i, _ := range backgrounds {
 			universe.Backgrounds[typ][i].Type = typ
 		}
-	}
-	
-	// Sort the universe slices.
-	slice.Sort(universe.Aptitudes, func(i, j int) bool {
-		return universe.Aptitudes[i] < universe.Aptitudes[j]
-	})
-
-	slice.Sort(universe.Characteristics, func(i, j int) bool {
-		return universe.Characteristics[i].Name < universe.Characteristics[j].Name
-	})
-
-	slice.Sort(universe.Gauges, func(i, j int) bool {
-		return universe.Gauges[i].Name < universe.Gauges[j].Name
-	})
-
-	slice.Sort(universe.Skills, func(i, j int) bool {
-		return universe.Skills[i].Name < universe.Skills[j].Name
-	})
-
-	slice.Sort(universe.Talents, func(i, j int) bool {
-		return universe.Talents[i].Name < universe.Talents[j].Name
-	})
-
-	for k := range universe.Backgrounds {
-		slice.Sort(universe.Backgrounds[k], func(i, j int) bool {
-			return universe.Backgrounds[k][i].Name < universe.Backgrounds[k][j].Name
-		})
-	}
-
-	// Check the aptitudes used in the universe.
-	used := []Aptitude{}
-
-	// Search for used aptitudes in Characteristics.
-	for _, c := range universe.Characteristics {
-		for _, a := range c.Aptitudes {
-			used = append(used, a)
-		}
-	}
-
-	// Search for used aptitudes in Skills.
-	for _, c := range universe.Skills {
-		for _, a := range c.Aptitudes {
-			used = append(used, a)
-		}
-	}
-
-	// Search for used aptitudes in Talents.
-	for _, c := range universe.Talents {
-		for _, a := range c.Aptitudes {
-			used = append(used, a)
-		}
-	}
-
-	// Sort the used slice to compare it with the universe aptitudes slice.
-	slice.Sort(used, func(i, j int) bool {
-		return used[i] < used[j]
-	})
-
-	// Remove duplicates on used aptitudes.
-	k := 0
-	for k < len(used)-1 {
-
-		if used[k] == used[k+1] {
-			used = append(used[:k], used[k+1:]...)
-			continue
-		}
-		k++
-	}
-
-	// Loop on both aptitudes slices.
-	var i, j int
-	for i < len(universe.Aptitudes) && j < len(used) {
-
-		// The aptitude does not exist in both slices.
-		if universe.Aptitudes[i] != universe.Aptitudes[j] {
-			break
-		}
-		i++
-		j++
-	}
-
-	// Look for diffences in the slices.
-	switch {
-	// The universe uses more aptitudes than it defines.
-	case len(universe.Aptitudes) < len(used):
-		return Universe{}, NewError(UndefinedAptitude, used[len(used)-1])
-
-	// The aptitude is used but not defined.
-	case universe.Aptitudes[i] > used[j]:
-		return Universe{}, NewError(UndefinedAptitude, used[j])
-
-	// The universe defines some unused aptitudes.
-	case len(universe.Aptitudes) > len(used):
-		return Universe{}, NewError(UnusedAptitude, universe.Aptitudes[len(universe.Aptitudes)-1])
-
-	// The aptitude is defined used but is not used.
-	case universe.Aptitudes[i] < used[j]:
-		return Universe{}, NewError(UnusedAptitude, universe.Aptitudes[i])
 	}
 
 	return universe, nil
