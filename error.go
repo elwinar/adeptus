@@ -9,48 +9,42 @@ type ErrorCode int
 
 // Here is the list of defined error codes.
 const (
-	UnusedAptitude    ErrorCode = 000
-	UndefinedAptitude ErrorCode = 001
+	InvalidCharacterSheet ErrorCode = iota
 
-	InvalidCharacterSheet ErrorCode = 100
+	InvalidHeaderLine
+	EmptyHeaderKey
+	EmptyHeaderValue
+	DuplicateHeaderLine
+	InvalidBackgroundOptions
+	UndefinedBackgroundType
+	UndefinedBackgroundValue
 
-	InvalidHeaderLine        ErrorCode = 200
-	EmptyHeaderKey           ErrorCode = 201
-	EmptyHeaderValue         ErrorCode = 202
-	DuplicateHeaderLine      ErrorCode = 203
-	InvalidBackgroundOptions ErrorCode = 204
-	UndefinedBackgroundType  ErrorCode = 205
-	UndefinedBackgroundValue ErrorCode = 206
+	UndefinedSessionDate
+	InvalidSessionReward
+	DuplicateSessionReward
+	BadSessionRewardPosition
 
-	UndefinedSessionDate     ErrorCode = 300
-	InvalidSessionReward     ErrorCode = 301
-	DuplicateSessionReward   ErrorCode = 302
-	BadSessionRewardPosition ErrorCode = 303
+	InvalidUpgrade
+	UndefinedUpgradeName
+	InvalidUpgradeMark
+	InvalidUpgradeCost
+	DuplicateUpgradeCost
+	BadUpgradeCostPosition
+	MismatchMarkCost
 
-	InvalidUpgrade         ErrorCode = 400
-	UndefinedUpgradeName   ErrorCode = 401
-	InvalidUpgradeMark     ErrorCode = 402
-	InvalidUpgradeCost     ErrorCode = 403
-	DuplicateUpgradeCost   ErrorCode = 404
-	BadUpgradeCostPosition ErrorCode = 405
-	MismatchMarkCost       ErrorCode = 406
+	InvalidCharacteristicFormat
+	InvalidCharacteristicValue
+	UndefinedCharacteristic
+	DuplicateCharacteristic
+	MissingCharacteristic
 
-	InvalidCharacteristicFormat ErrorCode = 500
-	InvalidCharacteristicValue  ErrorCode = 501
-	UndefinedCharacteristic     ErrorCode = 502
-	DuplicateCharacteristic     ErrorCode = 503
-	MissingCharacteristic       ErrorCode = 504
-
-	UndefinedTypeCost  ErrorCode = 600
-	UndefinedMatchCost ErrorCode = 601
-	UndefinedTierCost  ErrorCode = 602
+	UndefinedTypeCost
+	UndefinedMatchCost
+	UndefinedTierCost
 )
 
 // errorMsgs contains the messages associated to the error codes.
 var errorMsgs = map[ErrorCode]string{
-
-	UnusedAptitude:    `the aptitude %s is defined but not used by the universe`,
-	UndefinedAptitude: `the aptitude %s is used but not defined by the universe`,
 
 	InvalidCharacterSheet: `the character sheet requires at least a header block and a characteristic block`,
 

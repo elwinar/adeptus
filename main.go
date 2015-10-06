@@ -1,7 +1,7 @@
 package main
 
 import (
-	"log"
+	"fmt"
 	"os"
 
 	"github.com/codegangsta/cli"
@@ -38,7 +38,7 @@ func main() {
 
 	err := app.Run(os.Args)
 	if err != nil {
-		log.Println(err)
+		fmt.Println(err)
 		return
 	}
 }
@@ -49,38 +49,38 @@ func Display(ctx *cli.Context) {
 	// Open and parse the universe
 	u, err := os.Open(ctx.GlobalString("universe"))
 	if err != nil {
-		log.Println("error:", "unable to open universe:", err)
-		return
+		fmt.Println(theme.Error("unable to open universe:"), err)
+                os.Exit(1)
 	}
 	defer func() {
 		_ = u.Close()
 	}()
 	universe, err := ParseUniverse(u)
 	if err != nil {
-		log.Println("error:", "corrupted universe:", err)
-		return
+		fmt.Println(theme.Error("corrupted universe:"), err)
+                os.Exit(1)
 	}
 
 	// Open and parse character sheet.
 	c, err := os.Open(ctx.String("character"))
 	if err != nil {
-		log.Println("error:", "unable to open character sheet:", err)
-		return
+		fmt.Println(theme.Error("unable to open character sheet:"), err)
+                os.Exit(1)
 	}
 	defer func() {
 		_ = c.Close()
 	}()
 	sheet, err := ParseSheet(c)
 	if err != nil {
-		log.Println("error:", "corrupted character sheet:", err)
-		return
+		fmt.Println(theme.Error("corrupted character sheet:"), err)
+                os.Exit(1)
 	}
 
 	// Create character with the sheet
 	character, err := NewCharacter(universe, sheet)
 	if err != nil {
-		log.Println("error:", "unable to create character:", err)
-		return
+		fmt.Println(theme.Error("unable to create character:"), err)
+                os.Exit(1)
 	}
 
 	// Print the character sheet on screen
