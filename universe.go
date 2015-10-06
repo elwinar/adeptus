@@ -42,6 +42,35 @@ func ParseUniverse(file io.Reader) (Universe, error) {
 	return universe, nil
 }
 
+func (u Universe) FindCoster(label string) (Coster, bool) {
+	characteristic, found := u.FindCharacteristic(label)
+	if found {
+		return characteristic, true
+	}
+
+	skill, found := u.FindSkill(label)
+	if found {
+		return characteristic, true
+	}
+
+	talent, found := u.FindTalent(label)
+	if found {
+		return characteristic, true
+	}
+
+	aptitude, found := u.FindAptitude(label)
+	if found {
+		return characteristic, true
+	}
+
+	gauge, found := u.FindGauge(label)
+	if found {
+		return gauge, true
+	}
+
+	return nil, false
+}
+
 // FindCharacteristic returns the characteristic correponding to the given label or a zero-value, and a boolean indicating if it was found.
 func (u Universe) FindCharacteristic(label string) (Characteristic, bool) {
 
@@ -55,6 +84,7 @@ func (u Universe) FindCharacteristic(label string) (Characteristic, bool) {
 }
 
 // FindSkill returns the skill corresponding to the given label or a zero-value, and a boolean indicating if it was found.
+// TODO: search for speciality
 func (u Universe) FindSkill(label string) (Skill, bool) {
 
 	for _, skill := range u.Skills {
@@ -67,6 +97,7 @@ func (u Universe) FindSkill(label string) (Skill, bool) {
 }
 
 // FindTalent returns the talent corresponding to the given label or a zero value, and a boolean indicating if it was found.
+// TODO: search for speciality
 func (u Universe) FindTalent(label string) (Talent, bool) {
 
 	for _, talent := range u.Talents {
@@ -88,6 +119,18 @@ func (u Universe) FindAptitude(label string) (Aptitude, bool) {
 	}
 
 	return Aptitude(""), false
+}
+
+// FindGauge returns the gauge corresponding to the given label or a zero value, and a boolean indicating if it was found.
+func (u Universe) FindGauge(label string) (Gauge, bool) {
+
+	for _, gauge := range u.Gauges {
+		if gauge.Name == label {
+			return gauge, true
+		}
+	}
+
+	return Gauge{}, false
 }
 
 // FindBackground returns the background corresponding to the given label

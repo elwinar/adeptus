@@ -5,14 +5,18 @@ type Characteristic struct {
 	Name      string
 	Aptitudes []Aptitude
 	Tier      int
+	Value     int
 }
 
 // Cost returns the cost of a standard characteristic upgrade given the character's aptitudes and the characteristic current tier.
-func (c Characteristic) Cost(matrix CostMatrix, aptitudes []Aptitude) (int, error) {
+func (c Characteristic) Cost(u Universe, character Character) (int, error) {
 
-	// Retrieve the number of matching aptitudes between the character's aptitudes and the characteristic's aptitudes
-	matching := countMatches(aptitudes, c.Aptitudes)
+	// If the characteristic isn't defined, the cost is always 0. This happens
+	// (presumably) only on the header upgrades.
+	if _, found := character.Characteristics[c.Name]; !found {
+		return 0, nil
+	}
 
 	// Return the price as determined by the cost matrix.
-	return matrix.Price("characteristic", matching, c.Tier)
+	return matrix.Price("characteristic", character.CountMatchingAptitudes(c.Aptitudes), character.Characteristics[c.Name].Tier+1)
 }

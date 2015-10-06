@@ -6,14 +6,21 @@ type Talent struct {
 	Aptitudes    []Aptitude
 	Tier         int
 	Requirements []Requirement
+	Speciality   string
+	Value        int
 }
 
 // Cost returns the cost of the talent given the character's aptitudes and the current tier.
-func (t Talent) Cost(matrix CostMatrix, aptitudes []Aptitude) (int, error) {
+func (t Talent) Cost(u Universe, character Character) (int, error) {
 
-	// Retrieve the number of matching aptitudes between the character's aptitudes and the talent's aptitudes
-	matching := countMatches(aptitudes, t.Aptitudes)
+	// Return the price as determined by the cost matrix.
+	return matrix.Price("talent", character.CountMatchingAptitudes(t.Aptitudes), t.Tier)
+}
 
-	// Return the price of the upgrade as determined by the cost matrix.
-	return matrix.Price("talent", matching, t.Tier)
+// FullName return the name of the talent and it's speciality if defined.
+func (t Talent) FullName() string {
+	if len(t.Speciality) == 0 {
+		return t.Name
+	}
+	return fmt.Sprintf("%s: %s", t.Name, t.Speciality)
 }
