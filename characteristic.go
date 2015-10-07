@@ -9,7 +9,7 @@ type Characteristic struct {
 }
 
 // Cost returns the cost of a standard characteristic upgrade given the character's aptitudes and the characteristic current tier.
-func (c Characteristic) Cost(u Universe, character Character) (int, error) {
+func (c Characteristic) Cost(universe Universe, character Character) (int, error) {
 
 	// If the characteristic isn't defined, the cost is always 0. This happens
 	// (presumably) only on the header upgrades.
@@ -18,5 +18,5 @@ func (c Characteristic) Cost(u Universe, character Character) (int, error) {
 	}
 
 	// Return the price as determined by the cost matrix.
-	return matrix.Price("characteristic", character.CountMatchingAptitudes(c.Aptitudes), character.Characteristics[c.Name].Tier+1)
+	return universe.Costs.Price("characteristic", character.CountMatchingAptitudes(c.Aptitudes), character.Characteristics[c.Name].Tier+1)
 }

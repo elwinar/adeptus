@@ -13,7 +13,7 @@ type Skill struct {
 }
 
 // Cost returns the cost of the skill given the character's aptitudes and the current tier.
-func (s Skill) Cost(u Universe, character Character) (int, error) {
+func (s Skill) Cost(universe Universe, character Character) (int, error) {
 
 	// If the skill isn't defined, set the current tier to 0.
 	tier := 0
@@ -22,7 +22,7 @@ func (s Skill) Cost(u Universe, character Character) (int, error) {
 	}
 
 	// Return the price as determined by the cost matrix.
-	return matrix.Price("skill", character.CountMatchingAptitudes(s.Aptitudes), tier+1)
+	return universe.Costs.Price("skill", character.CountMatchingAptitudes(s.Aptitudes), tier+1)
 }
 
 // FullName return the name of the skill and it's speciality if defined.

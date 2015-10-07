@@ -1,5 +1,7 @@
 package main
 
+import "fmt"
+
 // Talent is a character's trait.
 type Talent struct {
 	Name         string
@@ -11,10 +13,10 @@ type Talent struct {
 }
 
 // Cost returns the cost of the talent given the character's aptitudes and the current tier.
-func (t Talent) Cost(u Universe, character Character) (int, error) {
+func (t Talent) Cost(universe Universe, character Character) (int, error) {
 
 	// Return the price as determined by the cost matrix.
-	return matrix.Price("talent", character.CountMatchingAptitudes(t.Aptitudes), t.Tier)
+	return universe.Costs.Price("talent", character.CountMatchingAptitudes(t.Aptitudes), t.Tier)
 }
 
 // FullName return the name of the talent and it's speciality if defined.
