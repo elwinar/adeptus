@@ -4,5 +4,5 @@ package main
 type Background struct {
 	Type     string
 	Name     string
-	Upgrades [][]Upgrade
+	Upgrades []string
 }

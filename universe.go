@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"io"
 	"io/ioutil"
+	"strings"
 )
 
 // Universe represents a set of configuration, often refered as data or database.
@@ -50,17 +51,17 @@ func (u Universe) FindCoster(label string) (Coster, bool) {
 
 	skill, found := u.FindSkill(label)
 	if found {
-		return characteristic, true
+		return skill, true
 	}
 
 	talent, found := u.FindTalent(label)
 	if found {
-		return characteristic, true
+		return talent, true
 	}
 
 	aptitude, found := u.FindAptitude(label)
 	if found {
-		return characteristic, true
+		return aptitude, true
 	}
 
 	gauge, found := u.FindGauge(label)
@@ -74,8 +75,13 @@ func (u Universe) FindCoster(label string) (Coster, bool) {
 // FindCharacteristic returns the characteristic correponding to the given label or a zero-value, and a boolean indicating if it was found.
 func (u Universe) FindCharacteristic(label string) (Characteristic, bool) {
 
+	// Characteristics upgrades are defined by a name and a value, separated by a space, so we need to look for the first
+	// part of the label.
+	// Examples: STR +5, FEL -1, TOU 40.
+	name := strings.Split(label, " ")[0]
+
 	for _, characteristic := range u.Characteristics {
-		if characteristic.Name == label {
+		if characteristic.Name == name {
 			return characteristic, true
 		}
 	}

@@ -24,6 +24,83 @@ type Character struct {
 	Spent           int
 }
 
+// NewCharacter creates a new character from the given sheet and universe.
+func NewCharacter(universe Universe, sheet Sheet) (Character, error) {
+
+	// Create a character
+	c := Character{
+		Name:            sheet.Header.Name,
+		Backgrounds:     make(map[string]Background),
+		Aptitudes:       make(map[string]Aptitude),
+		Characteristics: make(map[string]Characteristic),
+		Skills:          make(map[string]Skill),
+		Talents:         make(map[string]Talent),
+		Gauges:          make(map[string]Gauge),
+		Rules:           make(map[string]Rule),
+		Experience:      0,
+		Spent:           0,
+	}
+
+	// The characteristics described in the header of the sheet are parsed as upgrades
+	for _, upgrade := range sheet.Characteristics {
+
+		// Get the characteristic from the universe
+		characteristic, found := universe.FindCharacteristic(upgrade.Name)
+		if !found {
+			return c, NewError(UndefinedCharacteristic, upgrade.Line)
+		}
+
+		// Check it is not already applied
+		_, found = c.Characteristics[characteristic.Name]
+		if found {
+			return c, NewError(DuplicateCharacteristic, upgrade.Line)
+		}
+
+		// Apply the upgrade
+		err := c.ApplyCharacteristicUpgrade(characteristic, upgrade)
+		if err != nil {
+			return c, err
+		}
+	}
+
+	// Next are the backgrounds
+	for typ, metas := range sheet.Header.Metas {
+
+		for _, meta := range metas {
+
+			// Find the background corresponding to the meta
+			background, err := universe.FindBackground(typ, meta.Label)
+			if err != nil {
+				return c, err
+			}
+
+			err = c.ApplyBackground(background, universe)
+			if err != nil {
+				return c, err
+			}
+		}
+	}
+
+	// Next are the sessions
+	for _, session := range sheet.Sessions {
+
+		// Apply the experience gain if needed
+		if session.Reward != nil {
+			c.Experience += *session.Reward
+		}
+
+		// Apply each upgrade in order
+		for _, upgrade := range session.Upgrades {
+			err := c.ApplyUpgrade(upgrade, universe)
+			if err != nil {
+				return c, err
+			}
+		}
+	}
+
+	return c, nil
+}
+
 // CountMatchingAptitudes return the number of aptitudes of the given slice
 // that are in the character's aptitudes.
 func (character Character) CountMatchingAptitudes(aptitudes []Aptitude) int {
@@ -40,13 +117,17 @@ func (character Character) CountMatchingAptitudes(aptitudes []Aptitude) int {
 // ApplyBackground changes the character's trait according to the history values
 func (character *Character) ApplyBackground(background Background, universe Universe) error {
 
+	cost := 0
+
 	// For each upgrade associated to the history, apply each option.
-	for _, upgrades := range background.Upgrades {
-		for _, upgrade := range upgrades {
-			err := character.ApplyUpgrade(upgrade, universe)
-			if err != nil {
-				return err
-			}
+	for _, upgrade := range background.Upgrades {
+		err := character.ApplyUpgrade(Upgrade{
+			Mark: MarkSpecial,
+			Name: upgrade,
+			Cost: &cost,
+		}, universe)
+		if err != nil {
+			return err
 		}
 	}
 	return nil
