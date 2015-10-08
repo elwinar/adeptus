@@ -38,7 +38,7 @@ const (
 	UndefinedCharacteristic
 	DuplicateCharacteristic
 	MissingCharacteristic
-	
+
 	InvalidGaugeValue
 
 	UndefinedTypeCost

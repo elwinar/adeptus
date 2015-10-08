@@ -35,7 +35,7 @@ func ParseUniverse(file io.Reader) (Universe, error) {
 
 	// Add the type value to each history defined.
 	for typ, backgrounds := range universe.Backgrounds {
-		for i, _ := range backgrounds {
+		for i := range backgrounds {
 			universe.Backgrounds[typ][i].Type = typ
 		}
 	}
