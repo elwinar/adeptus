@@ -6,9 +6,9 @@ import (
 
 // Meta is a header and a collection of associated options.
 type Meta struct {
-	Label   string
-	Options []string
-	Line    int
+	Label   string   `json:"label"`
+	Options []string `json:"options"`
+	Line    int      `json:"-"`
 }
 
 // NewMeta returns a meta with name and options given the label.

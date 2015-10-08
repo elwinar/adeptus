@@ -9,13 +9,13 @@ import (
 
 // Universe represents a set of configuration, often refered as data or database.
 type Universe struct {
-	Backgrounds     map[string][]Background
-	Aptitudes       []Aptitude
-	Characteristics []Characteristic
-	Gauges          []Gauge
-	Skills          []Skill
-	Talents         []Talent
-	Costs           CostMatrix
+	Backgrounds     map[string][]Background `json:"backgrounds"`
+	Aptitudes       []Aptitude              `json:"aptitudes"`
+	Characteristics []Characteristic        `json:"characteristics"`
+	Gauges          []Gauge                 `json:"gauges"`
+	Skills          []Skill                 `json:"skills"`
+	Talents         []Talent                `json:"talents"`
+	Costs           CostMatrix              `json:"costs"`
 }
 
 // ParseUniverse load an from a plain JSON file.

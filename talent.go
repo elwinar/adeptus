@@ -4,12 +4,12 @@ import "fmt"
 
 // Talent is a character's trait.
 type Talent struct {
-	Name         string
-	Aptitudes    []Aptitude
-	Tier         int
-	Requirements []Requirement
-	Speciality   string
-	Value        int
+	Name         string        `json:"name"`
+	Aptitudes    []Aptitude    `json:"aptitudes"`
+	Tier         int           `json:"tier"`
+	Requirements []Requirement `json:"requirements"`
+	Speciality   string        `json:"-"`
+	Value        int           `json:"-"`
 }
 
 // Cost returns the cost of the talent given the character's aptitudes and the current tier.

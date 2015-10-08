@@ -5,8 +5,8 @@ package main
 // and the type of attributes that generally aren't bought by spending
 // experience points.
 type Gauge struct {
-	Name  string
-	Value int
+	Name  string `json:"name"`
+	Value int    `json:"-"`
 }
 
 // Cost returns 0, a gauge has no calculated cost.
