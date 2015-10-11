@@ -354,26 +354,6 @@ func (character Character) Print() {
 		fmt.Printf("%s\t%s\n", gauge.Name, theme.Value(gauge.Value))
 	}
 
-	// Print the talents
-	fmt.Printf("\n%s\n", theme.Title("Talents"))
-
-	talents := []Talent{}
-	for _, talent := range character.Talents {
-		talents = append(talents, talent)
-	}
-
-	slice.Sort(talents, func(i, j int) bool {
-		return talents[i].Name < talents[j].Name
-	})
-
-	for _, talent := range talents {
-		if talent.Value != 1 {
-			fmt.Printf("%s (%s)\n", strings.Title(talent.Name), theme.Value(talent.Value))
-		} else {
-			fmt.Printf("%s\n", strings.Title(talent.Name))
-		}
-	}
-
 	// Print the skills using a tabwriter
 	fmt.Printf("\n%s\n", theme.Title("Skills"))
 
@@ -383,14 +363,34 @@ func (character Character) Print() {
 	}
 
 	slice.Sort(skills, func(i, j int) bool {
-		return skills[i].Name < skills[j].Name
+		return skills[i].FullName() < skills[j].FullName()
 	})
 
 	w := tabwriter.NewWriter(os.Stdout, 10, 1, 2, ' ', 0)
 	for _, skill := range skills {
-		fmt.Fprintf(w, "%s\t%s\n", strings.Title(skill.Name), theme.Value(skill.Tier))
+		fmt.Fprintf(w, "%s\t+%s\n", strings.Title(skill.FullName()), theme.Value(skill.Tier*10))
 	}
 	w.Flush()
+
+	// Print the talents
+	fmt.Printf("\n%s\n", theme.Title("Talents"))
+
+	talents := []Talent{}
+	for _, talent := range character.Talents {
+		talents = append(talents, talent)
+	}
+
+	slice.Sort(talents, func(i, j int) bool {
+		return talents[i].FullName() < talents[j].FullName()
+	})
+
+	for _, talent := range talents {
+		if talent.Value != 1 {
+			fmt.Printf("%s (%s)\n", strings.Title(talent.FullName()), theme.Value(talent.Value))
+		} else {
+			fmt.Printf("%s\n", strings.Title(talent.FullName()))
+		}
+	}
 
 	// Print the special rules
 	fmt.Printf("\n%s\n", theme.Title("Rules"))
