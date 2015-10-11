@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"strconv"
 	"strings"
 	"text/tabwriter"
 
@@ -12,126 +13,87 @@ import (
 // Character is the type representing a role playing character
 type Character struct {
 	Name            string
-	Backgrounds     map[string][]Background
-	Aptitudes       []Aptitude
-	Characteristics map[*Characteristic]int
-	Skills          map[*Skill]int
-	Talents         map[*Talent]int
-	Gauges          map[*Gauge]int
-	Rules           []Rule
+	Backgrounds     map[string]Background
+	Aptitudes       map[string]Aptitude
+	Characteristics map[string]Characteristic
+	Skills          map[string]Skill
+	Talents         map[string]Talent
+	Gauges          map[string]Gauge
+	Rules           map[string]Rule
 	Experience      int
 	Spent           int
 }
 
-// NewCharacter creates a new character given a sheet
-func NewCharacter(u Universe, s Sheet) (*Character, error) {
+// NewCharacter creates a new character from the given sheet and universe.
+func NewCharacter(universe Universe, sheet Sheet) (Character, error) {
 
-	// Create the character.
-	c := &Character{}
+	// Create a character
+	c := Character{
+		Name:            sheet.Header.Name,
+		Backgrounds:     make(map[string]Background),
+		Aptitudes:       make(map[string]Aptitude),
+		Characteristics: make(map[string]Characteristic),
+		Skills:          make(map[string]Skill),
+		Talents:         make(map[string]Talent),
+		Gauges:          make(map[string]Gauge),
+		Rules:           make(map[string]Rule),
+		Experience:      0,
+		Spent:           0,
+	}
 
-	// Alias Header.
-	h := s.Header
+	// The characteristics described in the header of the sheet are parsed as upgrades
+	for _, upgrade := range sheet.Characteristics {
 
-	// Retrieve character's name.
-	c.Name = h.Name
-
-	// Apply the initial characteristics from the sheet.
-	c.Characteristics = make(map[*Characteristic]int)
-	for _, characteristic := range s.Characteristics {
-
-		// Identify name and value.
-		name, value, _, err := IdentifyCharacteristic(characteristic)
-		if err != nil {
-			return nil, err
-		}
-
-		// Retrieve characteristic from universe given it's name.
-		char, found := u.FindCharacteristic(name)
+		// Get the characteristic from the universe
+		characteristic, found := universe.FindCharacteristic(upgrade.Name)
 		if !found {
-			return nil, NewError(UndefinedCharacteristic, characteristic.Line)
+			return c, NewError(UndefinedCharacteristic, upgrade.Line)
 		}
 
-		// Check the characteristic is not set twice
-		_, found = c.Characteristics[&char]
+		// Check it is not already applied
+		_, found = c.Characteristics[characteristic.Name]
 		if found {
-			return nil, NewError(DuplicateCharacteristic, characteristic.Line)
+			return c, NewError(DuplicateCharacteristic, upgrade.Line)
 		}
 
-		// Associate the characteristic and it' value to the characteristics map
-		c.Characteristics[&char] = value
+		// Apply the upgrade
+		err := c.ApplyCharacteristicUpgrade(characteristic, upgrade)
+		if err != nil {
+			return c, err
+		}
 	}
 
-	// Check all characteristics are defined for the character
-checkCharacteristics:
-	for _, u := range u.Characteristics {
-		for c := range c.Characteristics {
-			if c.Name == u.Name {
-				continue checkCharacteristics
-			}
-		}
-		return nil, NewError(MissingCharacteristic, u.Name)
-	}
+	// Next are the backgrounds
+	for typ, metas := range sheet.Header.Metas {
 
-	// Make the character's gauges, skills and talents maps
-	c.Skills = make(map[*Skill]int)
-	c.Talents = make(map[*Talent]int)
-	c.Gauges = make(map[*Gauge]int)
-
-	// Apply each Meta.
-	c.Backgrounds = make(map[string][]Background)
-	for typ, metas := range h.Metas {
-
-		if len(metas) == 0 {
-			panic(fmt.Sprintf("empty metas for type %s", typ))
-		}
-		line := metas[0].Line
-
-		bagrounds, found := u.Backgrounds[typ]
-
-		// Check the background type exists in universe.
-		if !found {
-			return nil, NewError(UndefinedBackgroundType, line, typ)
-		}
-
-		c.Backgrounds[typ] = []Background{}
-
-	metasLoop:
 		for _, meta := range metas {
 
-			// Search the background corresponding to the provided meta.
-			for _, b := range bagrounds {
-				if meta.Label != b.Name {
-					continue
-				}
-
-				// Apply the background.
-				c.Backgrounds[typ] = append(c.Backgrounds[typ], b)
-				err := c.ApplyBackground(b, u)
-				if err != nil {
-					return nil, err
-				}
-
-				continue metasLoop
+			// Find the background corresponding to the meta
+			background, err := universe.FindBackground(typ, meta.Label)
+			if err != nil {
+				return c, err
 			}
-			return nil, NewError(UndefinedBackgroundValue, line, meta.Label, typ)
+
+			err = c.ApplyBackground(background, universe)
+			if err != nil {
+				return c, err
+			}
 		}
 	}
 
-	// Apply the sessions.
-	for _, s := range s.Sessions {
+	// Next are the sessions
+	for _, session := range sheet.Sessions {
 
-		// Add experience value.
-		if s.Reward != nil {
-			c.Experience += *s.Reward
+		// Apply the experience gain if needed
+		if session.Reward != nil {
+			c.Experience += *session.Reward
 		}
 
-		// For each upgrade.
-		for _, up := range s.Upgrades {
-
-			// Apply the upgrade.
-			err := c.ApplyUpgrade(up, u)
+		// Apply each upgrade in order
+		for _, upgrade := range session.Upgrades {
+			err := c.ApplyUpgrade(upgrade, universe)
 			if err != nil {
-				return nil, err
+				return c, err
 			}
 		}
 	}
@@ -139,266 +101,232 @@ checkCharacteristics:
 	return c, nil
 }
 
-// ApplyBackground changes the character's trait according to the history values
-func (c *Character) ApplyBackground(h Background, u Universe) error {
+// CountMatchingAptitudes return the number of aptitudes of the given slice
+// that are in the character's aptitudes.
+func (character Character) CountMatchingAptitudes(aptitudes []Aptitude) int {
 
-	// For each upgrade associated to the history, apply each option.
-	for _, upgrades := range h.Upgrades {
-		for _, option := range upgrades {
-			err := c.ApplyUpgrade(option, u)
-			if err != nil {
-				return err
-			}
+	count := 0
+	for _, aptitude := range aptitudes {
+		if _, found := character.Aptitudes[string(aptitude)]; found {
+			count++
 		}
 	}
+	return count
+}
+
+// ApplyBackground changes the character's trait according to the history values
+func (character *Character) ApplyBackground(background Background, universe Universe) error {
+
+	cost := 0
+
+	// For each upgrade associated to the history, apply each option.
+	for _, upgrade := range background.Upgrades {
+		err := character.ApplyUpgrade(Upgrade{
+			Mark: MarkSpecial,
+			Name: upgrade,
+			Cost: &cost,
+		}, universe)
+		if err != nil {
+			return err
+		}
+	}
+
+	// Add the background to the character's backgrounds
+	character.Backgrounds[background.Name] = background
+
 	return nil
 }
 
-// ApplyUpgrade changes the character's trait according to the given upgrade
-func (c *Character) ApplyUpgrade(up Upgrade, un Universe) error {
+// ApplyUpgrade changes the character's attributes according to the given upgrade.
+func (character *Character) ApplyUpgrade(upgrade Upgrade, universe Universe) error {
 
-	// Defer payment of upgrade
-	var payed bool
-	var coster Coster
+	var err error
 
-	// Pay the upgrade.
-	switch {
-
-	// Upgrade is free.
-	case up.Mark == "-":
-		if up.Cost != nil {
-			return NewError(MismatchMarkCost, up.Line)
+	// Find the attribute corresponding to the upgrade., and initialize a new
+	// rule if there isn't any.
+	coster, found := universe.FindCoster(upgrade.Name)
+	if !found {
+		coster = Rule{
+			Name: upgrade.Name,
 		}
-		payed = true
-
-	// Cost is hard defined.
-	case up.Cost != nil:
-		c.Spent += *up.Cost
-		payed = true
 	}
 
-	// Identify characteristic.
-	name, value, sign, err := IdentifyCharacteristic(up)
-	if err == nil {
-
-		// Check the characteristic exists.
-		characteristic, found := un.FindCharacteristic(name)
-		if !found {
-			return NewError(UndefinedCharacteristic, up.Line)
+	// If no cost is defined, compute it on the fly.
+	if upgrade.Cost == nil {
+		cost, err := coster.Cost(universe, *character)
+		if err != nil {
+			return err
 		}
 
-		// Apply the modification to the character's characteristic.
-		// The characteristic must have this characteristic
-		for char, v := range c.Characteristics {
-			if char.Name == characteristic.Name {
-
-				// Increment the characteristic Tier.
-				if up.Mark == "*" {
-					char.Tier++
-				}
-
-				// Apply the characteristic.
-				c.Characteristics[char] = ApplyCharacteristicUpgrade(v, sign, value)
-				coster = char
-
-				// Pay for it
-				if !payed && coster != nil && err == nil {
-					var cost int
-					// Transmit the error value to the parent func
-					cost, err = coster.Cost(un.Costs, c.Aptitudes)
-					if err != nil {
-						return err
-					}
-					c.Spent += cost
-				}
-				return nil
-			}
-		}
-		panic(fmt.Sprintf("unidefined characteristic %s for character", characteristic.Name))
+		upgrade.Cost = &cost
 	}
 
-	// Identify aptitude.
-	aptitude, found := un.FindAptitude(up.Name)
-	if found {
-		c.Aptitudes = append(c.Aptitudes, aptitude)
-		return nil
+	// Update the spent experience.
+	character.Spent += *upgrade.Cost
+
+	// Apply the upgrade depending on the target attribute.
+	switch attribute := coster.(type) {
+	case Characteristic:
+		err = character.ApplyCharacteristicUpgrade(attribute, upgrade)
+	case Skill:
+		err = character.ApplySkillUpgrade(attribute, upgrade)
+	case Talent:
+		err = character.ApplyTalentUpgrade(attribute, upgrade)
+	case Aptitude:
+		err = character.ApplyAptitudeUpgrade(attribute, upgrade)
+	case Gauge:
+		err = character.ApplyGaugeUpgrade(attribute, upgrade)
+	case Rule:
+		err = character.ApplyRuleUpgrade(attribute, upgrade)
 	}
 
-	// Sort aptitudes by name and remove duplicates.
-	slice.Sort(c.Aptitudes, func(i, j int) bool {
-		return c.Aptitudes[i] < c.Aptitudes[j]
-	})
-	var aptitudes []Aptitude
-	for _, a := range c.Aptitudes {
-		if len(aptitudes) != 0 && aptitudes[len(aptitudes)-1] == a {
-			continue
-		}
-		aptitudes = append(aptitudes, a)
-	}
-	c.Aptitudes = aptitudes
+	return err
+}
 
-	// Identify skill or talent.
-	name, speciality, err := up.Split()
+func (character *Character) ApplyCharacteristicUpgrade(characteristic Characteristic, upgrade Upgrade) error {
+
+	// Get the attribute from the character's characteristic map.
+	c, found := character.Characteristics[characteristic.Name]
+	if !found {
+		c = characteristic
+	}
+
+	// Increment the tier if the mark is default.
+	if upgrade.Mark == MarkDefault {
+		c.Tier++
+	}
+
+	// Parse the characteristic's upgrade value.
+	raw := strings.TrimSpace(strings.TrimLeft(upgrade.Name, characteristic.Name))
+	value, err := strconv.Atoi(raw)
 	if err != nil {
-		return err
+		return NewError(InvalidCharacteristicValue)
 	}
 
-	// Skill identified.
-	skill, isSkill := un.FindSkill(name)
-
-	if isSkill {
-
-		// The skill has a speciality
-		if len(speciality) != 0 {
-			skill.Name = fmt.Sprintf("%s: %s", name, speciality)
-		}
-
-		// Look for the skill with the given name in the
-		// character's skill, and apply the modification
-		for s := range c.Skills {
-			if s.Name == skill.Name {
-
-				// Increment the skill tier
-				if up.Mark == "*" {
-					s.Tier++
-				}
-
-				// Change the value of the skill of index s
-				c.Skills[s] += 10
-				coster = s
-
-				// Pay for it
-				if !payed && coster != nil && err == nil {
-					var cost int
-					// Transmit the error value to the parent func
-					cost, err = coster.Cost(un.Costs, c.Aptitudes)
-					if err != nil {
-						return err
-					}
-					c.Spent += cost
-				}
-				return nil
-			}
-		}
-
-		// Increment the skill tier
-		if up.Mark == "*" {
-			skill.Tier++
-		}
-
-		// Create the skill of index *skill
-		c.Skills[&skill] = 0
-		coster = &skill
-
-		// Pay for it
-		if !payed && coster != nil && err == nil {
-			var cost int
-			// Transmit the error value to the parent func
-			cost, err = coster.Cost(un.Costs, c.Aptitudes)
-			if err != nil {
-				return err
-			}
-			c.Spent += cost
-		}
-		return nil
+	// Update the characteristic value.
+	if strings.HasPrefix(raw, "+") || strings.HasPrefix(raw, "-") {
+		c.Value += value
+	} else {
+		c.Value = value
 	}
 
-	// Talent identified.
-	talent, isTalent := un.FindTalent(name)
-	if isTalent {
+	character.Characteristics[c.Name] = c
 
-		// The talent has a speciality
-		if len(speciality) != 0 {
-			talent.Name = fmt.Sprintf("%s: %s", name, speciality)
-		}
+	return nil
+}
 
-		// Look for the talent with the given name in
-		// the character's talents, and apply the modification
-		for s := range c.Talents {
-			if s.Name == talent.Name {
+func (character *Character) ApplySkillUpgrade(skill Skill, upgrade Upgrade) error {
 
-				// Change the value of the talent of index s
-				c.Talents[s]++
-				coster = s
-
-				// Pay for it
-				if !payed && coster != nil && err == nil {
-					var cost int
-					// Transmit the error value to the parent func
-					cost, err = coster.Cost(un.Costs, c.Aptitudes)
-					if err != nil {
-						return err
-					}
-					c.Spent += cost
-				}
-				return nil
-			}
-		}
-
-		// Create the talent of index *talent
-		c.Talents[&talent] = 1
-		coster = &talent
-
-		// Pay for it
-		if !payed && coster != nil && err == nil {
-			var cost int
-			// Transmit the error value to the parent func
-			cost, err = coster.Cost(un.Costs, c.Aptitudes)
-			if err != nil {
-				return err
-			}
-			c.Spent += cost
-		}
-		return nil
+	// Get the skill from the character's skill map.
+	s, found := character.Skills[skill.FullName()]
+	if !found {
+		s = skill
 	}
 
-	// It's a special rule
-	rule := Rule{
-		Name:        name,
-		Description: speciality,
+	// Increment the tier if the mark is default.
+	if upgrade.Mark == MarkDefault {
+		s.Tier++
 	}
-	c.Rules = append(c.Rules, rule)
+
+	// Put the skill back on the map.
+	character.Skills[skill.FullName()] = s
+
+	return nil
+}
+
+func (character *Character) ApplyTalentUpgrade(talent Talent, upgrade Upgrade) error {
+
+	// Get the talent from the character.
+	t, found := character.Talents[talent.FullName()]
+	if !found {
+		t = talent
+	}
+
+	// Increment the value of the talent.
+	t.Value++
+
+	// Put it back on the map.
+	character.Talents[talent.FullName()] = t
+
+	return nil
+}
+
+func (character *Character) ApplyAptitudeUpgrade(aptitude Aptitude, upgrade Upgrade) error {
+
+	// Add the aptitude to the character's aptitudes.
+	character.Aptitudes[string(aptitude)] = aptitude
+
+	return nil
+}
+
+func (character *Character) ApplyGaugeUpgrade(gauge Gauge, upgrade Upgrade) error {
+
+	// Get the gauge from the character.
+	g, found := character.Gauges[gauge.Name]
+	if !found {
+		g = gauge
+	}
+
+	// Parse the gauge's upgrade value.
+	raw := strings.TrimSpace(strings.TrimLeft(upgrade.Name, g.Name))
+	value, err := strconv.Atoi(raw)
+	if err != nil {
+		return NewError(InvalidGaugeValue)
+	}
+
+	// Update the gauge value.
+	if strings.HasPrefix(raw, "+") || strings.HasPrefix(raw, "-") {
+		g.Value += value
+	} else {
+		g.Value = value
+	}
+
+	// Set the gauge back on the map.
+	character.Gauges[g.Name] = g
+
+	return nil
+}
+
+func (character *Character) ApplyRuleUpgrade(rule Rule, upgrade Upgrade) error {
+
+	// Add the rule to the character's rules.
+	character.Rules[rule.Name] = rule
 
 	return nil
 }
 
 // Print the character sheet on the screen
-func (c Character) Print() {
+func (character Character) Print() {
 	// Print the name
-	fmt.Printf("%s\t%s\n", theme.Title("Name"), c.Name)
+	fmt.Printf("%s\t%s\n", theme.Title("Name"), character.Name)
 
 	// Print the backgrounds
-	types := []string{}
-	for typ, _ := range c.Backgrounds {
-		types = append(types, typ)
+	backgrounds := []Background{}
+
+	for _, background := range character.Backgrounds {
+		backgrounds = append(backgrounds, background)
 	}
 
-	slice.Sort(types, func(i, j int) bool {
-		return types[i] < types[j]
-	})
-
-	for _, typ := range types {
-		backgrounds := []string{}
-
-		for _, background := range c.Backgrounds[typ] {
-			backgrounds = append(backgrounds, background.Name)
+	slice.Sort(backgrounds, func(i, j int) bool {
+		if backgrounds[i].Type != backgrounds[j].Type {
+			return backgrounds[i].Type < backgrounds[j].Type
 		}
 
-		slice.Sort(backgrounds, func(i, j int) bool {
-			return backgrounds[i] < backgrounds[j]
-		})
+		return backgrounds[i].Name < backgrounds[j].Name
+	})
 
-		fmt.Printf("%s\t%s\n", theme.Title(strings.Title(typ)), strings.Title(strings.Join(backgrounds, ", ")))
+	for _, background := range backgrounds {
+		fmt.Printf("%s\t%s\n", theme.Title(strings.Title(background.Type)), strings.Title(background.Name))
 	}
 
 	// Print the experience
-	fmt.Printf("\n%s\t%d/%d\n", theme.Title("Experience"), c.Spent, c.Experience)
+	fmt.Printf("\n%s\t%d/%d\n", theme.Title("Experience"), character.Spent, character.Experience)
 
 	// Print the characteristics
 	fmt.Printf("\n%s\n", theme.Title("Characteristics"))
 
-	characteristics := []*Characteristic{}
-	for characteristic, _ := range c.Characteristics {
+	characteristics := []Characteristic{}
+	for _, characteristic := range character.Characteristics {
 		characteristics = append(characteristics, characteristic)
 	}
 
@@ -407,51 +335,72 @@ func (c Character) Print() {
 	})
 
 	for _, characteristic := range characteristics {
-		fmt.Printf("%s\t%s\n", characteristic.Name, theme.Value(c.Characteristics[characteristic]))
+		fmt.Printf("%s\t%s\n", characteristic.Name, theme.Value(characteristic.Value))
 	}
 
-	// Print the talents
-	fmt.Printf("\n%s\n", theme.Title("Talents"))
+	// Print the gauges
+	fmt.Printf("\n%s\n", theme.Title("Gauges"))
 
-	talents := []*Talent{}
-	for talent, _ := range c.Talents {
-		talents = append(talents, talent)
+	gauges := []Gauge{}
+	for _, gauge := range character.Gauges {
+		gauges = append(gauges, gauge)
 	}
 
-	slice.Sort(talents, func(i, j int) bool {
-		return talents[i].Name < talents[j].Name
+	slice.Sort(gauges, func(i, j int) bool {
+		return gauges[i].Name < gauges[j].Name
 	})
 
-	for _, talent := range talents {
-		if c.Talents[talent] != 1 {
-			fmt.Printf("%s (%s)\n", strings.Title(talent.Name), theme.Value(c.Talents[talent]))
-		} else {
-			fmt.Printf("%s\n", strings.Title(talent.Name))
-		}
+	for _, gauge := range gauges {
+		fmt.Printf("%s\t%s\n", gauge.Name, theme.Value(gauge.Value))
 	}
 
 	// Print the skills using a tabwriter
 	fmt.Printf("\n%s\n", theme.Title("Skills"))
 
-	skills := []*Skill{}
-	for skill, _ := range c.Skills {
+	skills := []Skill{}
+	for _, skill := range character.Skills {
 		skills = append(skills, skill)
 	}
 
 	slice.Sort(skills, func(i, j int) bool {
-		return skills[i].Name < skills[j].Name
+		return skills[i].FullName() < skills[j].FullName()
 	})
 
 	w := tabwriter.NewWriter(os.Stdout, 10, 1, 2, ' ', 0)
 	for _, skill := range skills {
-		fmt.Fprintf(w, "%s\t%s\n", strings.Title(skill.Name), theme.Value(c.Skills[skill]))
+		fmt.Fprintf(w, "%s\t+%s\n", strings.Title(skill.FullName()), theme.Value(skill.Tier*10))
 	}
 	w.Flush()
+
+	// Print the talents
+	fmt.Printf("\n%s\n", theme.Title("Talents"))
+
+	talents := []Talent{}
+	for _, talent := range character.Talents {
+		talents = append(talents, talent)
+	}
+
+	slice.Sort(talents, func(i, j int) bool {
+		return talents[i].FullName() < talents[j].FullName()
+	})
+
+	for _, talent := range talents {
+		if talent.Value != 1 {
+			fmt.Printf("%s (%s)\n", strings.Title(talent.FullName()), theme.Value(talent.Value))
+		} else {
+			fmt.Printf("%s\n", strings.Title(talent.FullName()))
+		}
+	}
 
 	// Print the special rules
 	fmt.Printf("\n%s\n", theme.Title("Rules"))
 
-	rules := c.Rules
+	rules := []Rule{}
+
+	for _, rule := range character.Rules {
+		rules = append(rules, rule)
+	}
+
 	slice.Sort(rules, func(i, j int) bool {
 		return rules[i].Name < rules[j].Name
 	})

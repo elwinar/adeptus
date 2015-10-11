@@ -1,18 +1,34 @@
 package main
 
+import (
+	"fmt"
+)
+
 // Skill is a character's trait.
 type Skill struct {
-	Name      string
-	Aptitudes []Aptitude
-	Tier      int
+	Name       string     `json:"name"`
+	Aptitudes  []Aptitude `json:"aptitudes"`
+	Tier       int        `json:"tier"`
+	Speciality string     `json:"-"`
 }
 
 // Cost returns the cost of the skill given the character's aptitudes and the current tier.
-func (s Skill) Cost(matrix CostMatrix, aptitudes []Aptitude) (int, error) {
+func (s Skill) Cost(universe Universe, character Character) (int, error) {
 
-	// Retrieve the number of matching aptitudes between the character's aptitudes and the skill's aptitudes
-	matching := countMatches(aptitudes, s.Aptitudes)
+	// If the skill isn't defined, set the current tier to 0.
+	tier := 0
+	if _, found := character.Skills[s.Name]; found {
+		tier = character.Characteristics[s.Name].Tier
+	}
 
-	// Return the price of the upgrade as determined by the cost matrix.
-	return matrix.Price("skill", matching, s.Tier)
+	// Return the price as determined by the cost matrix.
+	return universe.Costs.Price("skill", character.CountMatchingAptitudes(s.Aptitudes), tier+1)
+}
+
+// FullName return the name of the skill and it's speciality if defined.
+func (s Skill) FullName() string {
+	if len(s.Speciality) == 0 {
+		return s.Name
+	}
+	return fmt.Sprintf("%s: %s", s.Name, s.Speciality)
 }

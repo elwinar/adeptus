@@ -2,11 +2,12 @@ package main
 
 // Rule represent a special rule, which are generally home-made additions to the
 type Rule struct {
-	Name        string
-	Description string
+	Name        string `json:"name"`
+	Description string `json:"description"`
 }
 
-// Cost implements the Coster interface.
-func (r Rule) Cost(matrix CostMatrix, aptitudes []Aptitude) (int, error) {
+// Cost returns 0, a rule has no calculated cost.
+func (r Rule) Cost(u Universe, character Character) (int, error) {
+
 	return 0, nil
 }

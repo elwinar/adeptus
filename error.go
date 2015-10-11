@@ -26,6 +26,7 @@ const (
 
 	InvalidUpgrade
 	UndefinedUpgradeName
+	UndefinedUpgradeCost
 	InvalidUpgradeMark
 	InvalidUpgradeCost
 	DuplicateUpgradeCost
@@ -37,6 +38,8 @@ const (
 	UndefinedCharacteristic
 	DuplicateCharacteristic
 	MissingCharacteristic
+
+	InvalidGaugeValue
 
 	UndefinedTypeCost
 	UndefinedMatchCost
@@ -63,6 +66,7 @@ var errorMsgs = map[ErrorCode]string{
 
 	InvalidUpgrade:         `line %d: the upgrade format is invalid`,
 	UndefinedUpgradeName:   `line %d: the upgrade name is not defined`,
+	UndefinedUpgradeCost:   `line %d: the upgrade cost is not defined`,
 	InvalidUpgradeMark:     `line %d: the upgrade mark is invalid`,
 	InvalidUpgradeCost:     `line %d: the upgrade cost is invalid`,
 	DuplicateUpgradeCost:   `line %d: the upgrade cost is already set`,
@@ -74,6 +78,8 @@ var errorMsgs = map[ErrorCode]string{
 	UndefinedCharacteristic:     `line %d: the characteristic is not defined`,
 	DuplicateCharacteristic:     `line %d: the characteristic is already set`,
 	MissingCharacteristic:       `the characteristic %s is not defined for the character`,
+
+	InvalidGaugeValue: `line %d: the gauge value is invalid`,
 
 	UndefinedTypeCost:  `undefined cost for type %s`,
 	UndefinedMatchCost: `undefined cost for type %s with %d matching aptitudes`,

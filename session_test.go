@@ -244,19 +244,19 @@ func Test_parseSession(t *testing.T) {
 				Title:  "success",
 				Reward: IntP(250),
 				Upgrades: []Upgrade{
-					Upgrade{
+					{
 						Mark: "*",
 						Name: "WP +5",
 						Cost: nil,
 						Line: 2,
 					},
-					Upgrade{
+					{
 						Mark: "*",
 						Name: "WS +5",
 						Cost: nil,
 						Line: 3,
 					},
-					Upgrade{
+					{
 						Mark: "*",
 						Name: "BS +5",
 						Cost: nil,

@@ -195,18 +195,18 @@ WP 25
 					},
 				},
 				Sessions: []Session{
-					Session{
+					{
 						Date:   time.Date(2015, time.June, 01, 0, 0, 0, 0, time.UTC),
 						Title:  "Creation",
 						Reward: IntP(500),
 						Upgrades: []Upgrade{
-							Upgrade{
+							{
 								Mark: "*",
 								Name: "BULLSHIT +5",
 								Cost: IntP(250),
 								Line: 10,
 							},
-							Upgrade{
+							{
 								Mark: "-",
 								Name: "Awesomeskill",
 								Cost: nil,

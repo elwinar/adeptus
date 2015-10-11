@@ -12,7 +12,7 @@ func main() {
 
 	app.Name = "adeptus"
 	app.Usage = "Compiles character sheet for Dark Heresy 2.0 related systems."
-	app.Version = "1.0"
+	app.Version = "beta"
 	app.Authors = []cli.Author{
 		{
 			Name:  "Romain Baugue",
@@ -50,7 +50,7 @@ func Display(ctx *cli.Context) {
 	u, err := os.Open(ctx.GlobalString("universe"))
 	if err != nil {
 		fmt.Println(theme.Error("unable to open universe:"), err)
-                os.Exit(1)
+		os.Exit(1)
 	}
 	defer func() {
 		_ = u.Close()
@@ -58,14 +58,14 @@ func Display(ctx *cli.Context) {
 	universe, err := ParseUniverse(u)
 	if err != nil {
 		fmt.Println(theme.Error("corrupted universe:"), err)
-                os.Exit(1)
+		os.Exit(1)
 	}
 
 	// Open and parse character sheet.
 	c, err := os.Open(ctx.String("character"))
 	if err != nil {
 		fmt.Println(theme.Error("unable to open character sheet:"), err)
-                os.Exit(1)
+		os.Exit(1)
 	}
 	defer func() {
 		_ = c.Close()
@@ -73,14 +73,14 @@ func Display(ctx *cli.Context) {
 	sheet, err := ParseSheet(c)
 	if err != nil {
 		fmt.Println(theme.Error("corrupted character sheet:"), err)
-                os.Exit(1)
+		os.Exit(1)
 	}
 
 	// Create character with the sheet
 	character, err := NewCharacter(universe, sheet)
 	if err != nil {
 		fmt.Println(theme.Error("unable to create character:"), err)
-                os.Exit(1)
+		os.Exit(1)
 	}
 
 	// Print the character sheet on screen
