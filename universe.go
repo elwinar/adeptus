@@ -90,11 +90,14 @@ func (u Universe) FindCharacteristic(label string) (Characteristic, bool) {
 }
 
 // FindSkill returns the skill corresponding to the given label or a zero-value, and a boolean indicating if it was found.
-// TODO: search for speciality
 func (u Universe) FindSkill(label string) (Skill, bool) {
 
+	// Skills upgrades are defined by a name and eventually a speciality, separated by a colon.
+	// Examples: Psychic resistance: fear
+	name := strings.Split(label, ":")[0]
+
 	for _, skill := range u.Skills {
-		if skill.Name == label {
+		if strings.ToLower(skill.Name) == name {
 			return skill, true
 		}
 	}
@@ -103,11 +106,13 @@ func (u Universe) FindSkill(label string) (Skill, bool) {
 }
 
 // FindTalent returns the talent corresponding to the given label or a zero value, and a boolean indicating if it was found.
-// TODO: search for speciality
 func (u Universe) FindTalent(label string) (Talent, bool) {
 
+	// Talents upgrades are defined by a name and eventually a speciality, separated by a colon.
+	name := strings.Split(label, ":")[0]
+
 	for _, talent := range u.Talents {
-		if talent.Name == label {
+		if talent.Name == name {
 			return talent, true
 		}
 	}
@@ -130,8 +135,11 @@ func (u Universe) FindAptitude(label string) (Aptitude, bool) {
 // FindGauge returns the gauge corresponding to the given label or a zero value, and a boolean indicating if it was found.
 func (u Universe) FindGauge(label string) (Gauge, bool) {
 
+	// Gauges upgrades are defined by a name and a value, separated by a space.
+	name := strings.Split(label, " ")[0]
+
 	for _, gauge := range u.Gauges {
-		if gauge.Name == label {
+		if gauge.Name == name {
 			return gauge, true
 		}
 	}
