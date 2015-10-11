@@ -338,6 +338,22 @@ func (character Character) Print() {
 		fmt.Printf("%s\t%s\n", characteristic.Name, theme.Value(characteristic.Value))
 	}
 
+	// Print the gauges
+	fmt.Printf("\n%s\n", theme.Title("Gauges"))
+
+	gauges := []Gauge{}
+	for _, gauge := range character.Gauges {
+		gauges = append(gauges, gauge)
+	}
+
+	slice.Sort(gauges, func(i, j int) bool {
+		return gauges[i].Name < gauges[j].Name
+	})
+
+	for _, gauge := range gauges {
+		fmt.Printf("%s\t%s\n", gauge.Name, theme.Value(gauge.Value))
+	}
+
 	// Print the talents
 	fmt.Printf("\n%s\n", theme.Title("Talents"))
 
