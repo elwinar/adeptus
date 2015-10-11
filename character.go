@@ -130,6 +130,10 @@ func (character *Character) ApplyBackground(background Background, universe Univ
 			return err
 		}
 	}
+
+	// Add the background to the character's backgrounds
+	character.Backgrounds[background.Name] = background
+
 	return nil
 }
 
