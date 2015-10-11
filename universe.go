@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"io"
 	"io/ioutil"
-	"strings"
 )
 
 // Universe represents a set of configuration, often refered as data or database.
@@ -78,7 +77,8 @@ func (u Universe) FindCharacteristic(label string) (Characteristic, bool) {
 	// Characteristics upgrades are defined by a name and a value, separated by a space, so we need to look for the first
 	// part of the label.
 	// Examples: STR +5, FEL -1, TOU 40.
-	name := strings.Split(label, " ")[0]
+	fields := split(label, ' ')
+	name := fields[0]
 
 	for _, characteristic := range u.Characteristics {
 		if characteristic.Name == name {
@@ -93,11 +93,17 @@ func (u Universe) FindCharacteristic(label string) (Characteristic, bool) {
 func (u Universe) FindSkill(label string) (Skill, bool) {
 
 	// Skills upgrades are defined by a name and eventually a speciality, separated by a colon.
-	// Examples: Psychic resistance: fear
-	name := strings.Split(label, ":")[0]
+	// Examples: Common Lore: Dark Gods
+	fields := split(label, ':')
+	name := fields[0]
 
 	for _, skill := range u.Skills {
-		if strings.ToLower(skill.Name) == name {
+		if skill.Name == name {
+
+			if len(fields) == 2 {
+				skill.Speciality = fields[1]
+			}
+
 			return skill, true
 		}
 	}
@@ -109,10 +115,17 @@ func (u Universe) FindSkill(label string) (Skill, bool) {
 func (u Universe) FindTalent(label string) (Talent, bool) {
 
 	// Talents upgrades are defined by a name and eventually a speciality, separated by a colon.
-	name := strings.Split(label, ":")[0]
+	// Examples: Psychic Resistance: Fear
+	fields := split(label, ':')
+	name := fields[0]
 
 	for _, talent := range u.Talents {
 		if talent.Name == name {
+
+			if len(fields) == 2 {
+				talent.Speciality = fields[1]
+			}
+
 			return talent, true
 		}
 	}
@@ -136,7 +149,7 @@ func (u Universe) FindAptitude(label string) (Aptitude, bool) {
 func (u Universe) FindGauge(label string) (Gauge, bool) {
 
 	// Gauges upgrades are defined by a name and a value, separated by a space.
-	name := strings.Split(label, " ")[0]
+	name := split(label, ' ')[0]
 
 	for _, gauge := range u.Gauges {
 		if gauge.Name == name {
