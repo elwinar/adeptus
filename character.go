@@ -319,6 +319,22 @@ func (character Character) Print() {
 		fmt.Printf("%s\t%s\n", theme.Title(strings.Title(background.Type)), strings.Title(background.Name))
 	}
 
+	// Print the aptitudes
+	aptitudes := []Aptitude{}
+
+	for _, aptitude := range character.Aptitudes {
+		aptitudes = append(aptitudes, aptitude)
+	}
+
+	slice.Sort(aptitudes, func(i, j int) bool {
+		return aptitudes[i] < aptitudes[j]
+	})
+
+	fmt.Printf("\n%s\n", theme.Title("Aptitudes"))
+	for _, aptitude := range aptitudes {
+		fmt.Printf("\t%s\n", strings.Title(string(aptitude)))
+	}
+
 	// Print the experience
 	fmt.Printf("\n%s\t%d/%d\n", theme.Title("Experience"), character.Spent, character.Experience)
 
