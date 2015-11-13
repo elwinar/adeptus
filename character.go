@@ -223,10 +223,8 @@ func (character *Character) ApplySkillUpgrade(skill Skill, upgrade Upgrade) erro
 		s = skill
 	}
 
-	// Increment the tier if the mark is default.
-	if upgrade.Mark == MarkDefault {
-		s.Tier++
-	}
+	// Increment the tier
+	s.Tier++
 
 	// Put the skill back on the map.
 	character.Skills[skill.FullName()] = s
@@ -332,7 +330,7 @@ func (character Character) Print() {
 
 	fmt.Printf("\n%s\n", theme.Title("Aptitudes"))
 	for _, aptitude := range aptitudes {
-		fmt.Printf("\t%s\n", strings.Title(string(aptitude)))
+		fmt.Printf("%s\n", strings.Title(string(aptitude)))
 	}
 
 	// Print the experience
@@ -384,7 +382,7 @@ func (character Character) Print() {
 
 	w := tabwriter.NewWriter(os.Stdout, 10, 1, 2, ' ', 0)
 	for _, skill := range skills {
-		fmt.Fprintf(w, "%s\t+%s\n", strings.Title(skill.FullName()), theme.Value(skill.Tier*10))
+		fmt.Fprintf(w, "%s\t+%s\n", strings.Title(skill.FullName()), theme.Value((skill.Tier-1)*10))
 	}
 	w.Flush()
 
