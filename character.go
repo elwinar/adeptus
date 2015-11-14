@@ -22,6 +22,7 @@ type Character struct {
 	Rules           map[string]Rule
 	Experience      int
 	Spent           int
+	History         []Upgrade
 }
 
 // NewCharacter creates a new character from the given sheet and universe.
@@ -178,6 +179,11 @@ func (character *Character) ApplyUpgrade(upgrade Upgrade, universe Universe) err
 		err = character.ApplyGaugeUpgrade(attribute, upgrade)
 	case Rule:
 		err = character.ApplyRuleUpgrade(attribute, upgrade)
+	}
+
+	// If there is no error, add the upgrade to the history.
+	if err == nil {
+		character.History = append(character.History, upgrade)
 	}
 
 	return err
@@ -422,4 +428,25 @@ func (character Character) Print() {
 	for _, rule := range rules {
 		fmt.Printf("%s\t%s\n", strings.Title(rule.Name), rule.Description)
 	}
+}
+
+func (c Character) PrintHistory() {
+	// Print the name.
+	fmt.Printf("%s\t%s\n", theme.Title("Name"), character.Name)
+
+	// Print the experience
+	fmt.Printf("\n%s\t%d/%d\n", theme.Title("Experience"), character.Spent, character.Experience)
+
+	// Print the history.
+	fmt.Printf("\n%s\n", theme.Title("History"))
+
+	w := tabwriter.NewWriter(os.Stdout, 10, 1, 2, ' ', 0)
+	for _, upgrade := range character.History {
+		if upgrade.Cost != nil {
+			fmt.Printf("%s\t%d\n", strings.Title(upgrade.Name), *upgrade.Cost)
+		} else {
+			fmt.Printf("%s\t%d\n", strings.Title(upgrade.Name), 0)
+		}
+	}
+	w.Flush()
 }
