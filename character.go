@@ -69,12 +69,12 @@ func NewCharacter(universe Universe, sheet Sheet) (Character, error) {
 		for _, meta := range metas {
 
 			// Find the background corresponding to the meta
-			background, err := universe.FindBackground(typ, meta.Label)
-			if err != nil {
-				return c, err
+			background, found := universe.FindBackground(typ, meta.Label)
+			if !found {
+				return c, NewError(UndefinedBackground, meta.Line, typ, meta.Label)
 			}
 
-			err = c.ApplyBackground(background, universe)
+			err := c.ApplyBackground(background, universe)
 			if err != nil {
 				return c, err
 			}

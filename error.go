@@ -16,8 +16,7 @@ const (
 	EmptyHeaderValue
 	DuplicateHeaderLine
 	InvalidBackgroundOptions
-	UndefinedBackgroundType
-	UndefinedBackgroundValue
+	UndefinedBackground
 
 	UndefinedSessionDate
 	InvalidSessionReward
@@ -56,8 +55,7 @@ var errorMsgs = map[ErrorCode]string{
 	EmptyHeaderValue:         `line %d: the header line value is empty`,
 	DuplicateHeaderLine:      `line %d: the header line is already set`,
 	InvalidBackgroundOptions: `line %d: the background options are incorrect`,
-	UndefinedBackgroundType:  `line %d: the background %s is not defined by the universe`,
-	UndefinedBackgroundValue: `line %d: the background %s of type %s is not defined by the universe`,
+	UndefinedBackground:      `line %d: the %s %s is not defined by the universe`,
 
 	UndefinedSessionDate:     `line %d: the session date is not defined`,
 	InvalidSessionReward:     `line %d: the session reward is invalid`,

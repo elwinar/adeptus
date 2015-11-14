@@ -160,19 +160,19 @@ func (u Universe) FindGauge(label string) (Gauge, bool) {
 	return Gauge{}, false
 }
 
-// FindBackground returns the background corresponding to the given label
-func (u Universe) FindBackground(typ string, label string) (Background, error) {
+// FindBackground returns the background corresponding to the given label, and a boolean indicating if it was found.
+func (u Universe) FindBackground(typ string, label string) (Background, bool) {
 
-	histories, found := u.Backgrounds[typ]
+	backgrounds, found := u.Backgrounds[typ]
 	if !found {
-		return Background{}, NewError(UndefinedBackgroundType, typ)
+		return Background{}, false
 	}
 
-	for _, background := range histories {
+	for _, background := range backgrounds {
 		if background.Name == label {
-			return background, nil
+			return background, true
 		}
 	}
 
-	return Background{}, NewError(UndefinedBackgroundValue, typ, label)
+	return Background{}, false
 }
