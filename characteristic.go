@@ -20,3 +20,14 @@ func (c Characteristic) Cost(universe Universe, character Character) (int, error
 	// Return the price as determined by the cost matrix.
 	return universe.Costs.Price("characteristic", character.CountMatchingAptitudes(c.Aptitudes), character.Characteristics[c.Name].Tier+1)
 }
+
+// Level returns a string representing the tier of the characteristic.
+func (c Characteristic) Level() string {
+	var out string
+	var i int
+	for i < c.Tier {
+		out += "*"
+		i++
+	}
+	return out
+}

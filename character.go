@@ -328,7 +328,7 @@ func (character Character) Print() {
 		return aptitudes[i] < aptitudes[j]
 	})
 
-	fmt.Printf("\n%s\n", theme.Title("Aptitudes"))
+	fmt.Printf("\n%s (%s)\n", theme.Title("Aptitudes"), theme.Value(fmt.Sprintf("%d", len(aptitudes))))
 	for _, aptitude := range aptitudes {
 		fmt.Printf("%s\n", strings.Title(string(aptitude)))
 	}
@@ -349,7 +349,7 @@ func (character Character) Print() {
 	})
 
 	for _, characteristic := range characteristics {
-		fmt.Printf("%s\t%s\n", characteristic.Name, theme.Value(characteristic.Value))
+		fmt.Printf("%s\t%s %s\n", characteristic.Name, theme.Value(characteristic.Value), theme.Value(characteristic.Level()))
 	}
 
 	// Print the gauges
