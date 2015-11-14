@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"io"
 	"io/ioutil"
+	"strings"
 )
 
 // Universe represents a set of configuration, often refered as data or database.
@@ -32,9 +33,16 @@ func ParseUniverse(file io.Reader) (Universe, error) {
 		return Universe{}, err
 	}
 
-	// Add the type value to each history defined.
+	// Lowercase the types of background.
+	backgrounds := make(map[string][]Background)
+	for typ, b := range universe.Backgrounds {
+		backgrounds[strings.ToLower(typ)] = b
+	}
+	universe.Backgrounds = backgrounds
+
+	// Add it's type to each defined background.
 	for typ, backgrounds := range universe.Backgrounds {
-		for i := range backgrounds {
+		for i, _ := range backgrounds {
 			universe.Backgrounds[typ][i].Type = typ
 		}
 	}
@@ -98,7 +106,7 @@ func (u Universe) FindSkill(label string) (Skill, bool) {
 	name := fields[0]
 
 	for _, skill := range u.Skills {
-		if skill.Name == name {
+		if strings.EqualFold(skill.Name, name) {
 
 			if len(fields) == 2 {
 				skill.Speciality = fields[1]
@@ -120,7 +128,7 @@ func (u Universe) FindTalent(label string) (Talent, bool) {
 	name := fields[0]
 
 	for _, talent := range u.Talents {
-		if talent.Name == name {
+		if strings.EqualFold(talent.Name, name) {
 
 			if len(fields) == 2 {
 				talent.Speciality = fields[1]
@@ -137,7 +145,7 @@ func (u Universe) FindTalent(label string) (Talent, bool) {
 func (u Universe) FindAptitude(label string) (Aptitude, bool) {
 
 	for _, aptitude := range u.Aptitudes {
-		if string(aptitude) == label {
+		if strings.EqualFold(string(aptitude), label) {
 			return aptitude, true
 		}
 	}
@@ -152,7 +160,7 @@ func (u Universe) FindGauge(label string) (Gauge, bool) {
 	name := split(label, ' ')[0]
 
 	for _, gauge := range u.Gauges {
-		if gauge.Name == name {
+		if strings.EqualFold(gauge.Name, name) {
 			return gauge, true
 		}
 	}
@@ -163,13 +171,13 @@ func (u Universe) FindGauge(label string) (Gauge, bool) {
 // FindBackground returns the background corresponding to the given label, and a boolean indicating if it was found.
 func (u Universe) FindBackground(typ string, label string) (Background, bool) {
 
-	backgrounds, found := u.Backgrounds[typ]
+	backgrounds, found := u.Backgrounds[strings.ToLower(typ)]
 	if !found {
 		return Background{}, false
 	}
 
 	for _, background := range backgrounds {
-		if background.Name == label {
+		if strings.EqualFold(background.Name, label) {
 			return background, true
 		}
 	}
