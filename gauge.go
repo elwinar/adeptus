@@ -7,10 +7,11 @@ package main
 type Gauge struct {
 	Name  string `json:"name"`
 	Value int    `json:"-"`
+	XP    int    `json:"xp"`
 }
 
 // Cost returns 0, a gauge has no calculated cost.
 func (g Gauge) Cost(u Universe, character Character) (int, error) {
 
-	return 0, nil
+	return g.XP, nil
 }
