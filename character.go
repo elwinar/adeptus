@@ -443,9 +443,9 @@ func (c Character) PrintHistory() {
 	w := tabwriter.NewWriter(os.Stdout, 10, 1, 2, ' ', 0)
 	for _, upgrade := range character.History {
 		if upgrade.Cost != nil {
-			fmt.Fprintf(w, "%s\t%d\n", strings.Title(upgrade.Name), *upgrade.Cost)
+			fmt.Fprintf(w, "%d\t%s\n", *upgrade.Cost, strings.Title(upgrade.Name))
 		} else {
-			fmt.Fprintf(w, "%s\t%d\n", strings.Title(upgrade.Name), 0)
+			fmt.Fprintf(w, "%d\t%s\n", 0, strings.Title(upgrade.Name))
 		}
 	}
 	w.Flush()
