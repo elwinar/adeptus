@@ -50,6 +50,32 @@ func main() {
 				character.PrintHistory()
 			},
 		},
+		{
+			Name:  "suggest",
+			Usage: "display the list of purchasable upgrades, ordered by cost",
+			Flags: []cli.Flag{
+				cli.IntFlag{
+					Name:  "max",
+					Usage: "maximum XP cost of the upgrades to suggest",
+					Value: -1,
+				},
+				cli.BoolFlag{
+					Name:  "all",
+					Usage: "display all upgrades regardless of their costs",
+				},
+			},
+			Action: func(ctx *cli.Context) {
+
+				max := ctx.Int("max")
+				all := ctx.Bool("all")
+
+				// Override the all flag if max is > 0
+				if max > 0 {
+					all = true
+				}
+				character.Suggest(max, all)
+			},
+		},
 	}
 
 	err := app.Run(os.Args)
