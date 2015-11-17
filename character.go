@@ -249,6 +249,11 @@ func (character *Character) ApplyTalentUpgrade(talent Talent, upgrade Upgrade) e
 	// Increment the value of the talent.
 	t.Value++
 
+	// Check the talent is stackable.
+	if !t.Stackable && t.Value > 1 {
+		return NewError(DuplicateTalent, upgrade.Line)
+	}
+
 	// Put it back on the map.
 	character.Talents[talent.FullName()] = t
 
@@ -447,6 +452,136 @@ func (c Character) PrintHistory() {
 		} else {
 			fmt.Fprintf(w, "%d\t%s\n", 0, strings.Title(upgrade.Name))
 		}
+	}
+	w.Flush()
+}
+
+// Suggest the next purchasable upgrades of the character.
+func (c Character) Suggest(max int, all bool) {
+
+	available := c.Experience - c.Spent
+
+	// Put in a slice every upgrades existing in the universe.
+	var upgrades []Upgrade
+	for _, attributes := range []interface{}{
+		universe.Characteristics,
+		universe.Skills,
+		universe.Talents,
+		universe.Gauges,
+	} {
+		var costers []Coster
+
+		switch t := attributes.(type) {
+		case []Characteristic:
+			for _, coster := range t {
+				costers = append(costers, coster)
+			}
+
+		case []Skill:
+			for _, coster := range t {
+				costers = append(costers, coster)
+			}
+
+		case []Talent:
+			for _, coster := range t {
+				costers = append(costers, coster)
+			}
+
+		case []Gauge:
+			for _, coster := range t {
+				costers = append(costers, coster)
+			}
+		}
+
+		for _, attribute := range costers {
+			for {
+				var upgrade Upgrade
+
+				// Get the cost of the upgrade, break if none is available.
+				cost, err := attribute.Cost(universe, c)
+				if err != nil || cost == 0 {
+					break
+				}
+
+				// Discard upgrade if its cost is over the remaining XP.
+				if !all && available < cost {
+					break
+				}
+
+				// Discard upgrade if its cost is over the max.
+				if max > 0 && max < cost {
+					break
+				}
+
+				upgrade.Cost = &cost
+				upgrade.Mark = MarkDefault
+
+				// Change behaviour given the type.
+				var stop bool
+				switch t := attribute.(type) {
+
+				case Characteristic:
+					upgrade.Name = fmt.Sprintf("%s +%d", t.Name, 5)
+					err = c.ApplyCharacteristicUpgrade(t, upgrade)
+
+				case Skill:
+					upgrade.Name = fmt.Sprintf("%s", t.Name)
+					err = c.ApplySkillUpgrade(t, upgrade)
+
+				case Talent:
+					upgrade.Name = fmt.Sprintf("%s", t.Name)
+					err = c.ApplyTalentUpgrade(t, upgrade)
+
+					// Stop after first purchase of stackable talent.
+					if t.Stackable && upgrades[len(upgrades)-1].Name == upgrade.Name {
+						stop = true
+					}
+
+				case Gauge:
+					upgrade.Name = fmt.Sprintf("%s +%d", t.Name, 1)
+					err = c.ApplyGaugeUpgrade(t, upgrade)
+
+					// Stop after first purchase of gauge.
+					if upgrades[len(upgrades)-1].Name == upgrade.Name {
+						stop = true
+					}
+
+				default:
+					stop = true
+				}
+
+				// Stop on error or stop call
+				if err != nil || stop {
+					break
+				}
+
+				// Append the upgrade.
+				upgrades = append(upgrades, upgrade)
+			}
+		}
+	}
+
+	// Sort by cost and name.
+	slice.Sort(upgrades, func(i, j int) bool {
+		ci, cj := *upgrades[i].Cost, *upgrades[j].Cost
+		if ci == cj {
+			return upgrades[i].Name < upgrades[j].Name
+		}
+		return ci < cj
+	})
+
+	// Print the name.
+	fmt.Printf("%s\t%s\n", theme.Title("Name"), c.Name)
+
+	// Print the experience
+	fmt.Printf("\n%s\t%d/%d\n", theme.Title("Experience"), c.Spent, c.Experience)
+
+	// Print the history.
+	fmt.Printf("\n%s\n", theme.Title("Suggestions"))
+
+	w := tabwriter.NewWriter(os.Stdout, 10, 1, 2, ' ', 0)
+	for _, upgrade := range upgrades {
+		fmt.Fprintf(w, "%d\t%s\n", *upgrade.Cost, strings.Title(upgrade.Name))
 	}
 	w.Flush()
 }

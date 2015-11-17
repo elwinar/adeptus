@@ -40,6 +40,8 @@ const (
 
 	InvalidGaugeValue
 
+	DuplicateTalent
+
 	UndefinedTypeCost
 	UndefinedMatchCost
 	UndefinedTierCost
@@ -78,6 +80,8 @@ var errorMsgs = map[ErrorCode]string{
 	MissingCharacteristic:       `the characteristic %s is not defined for the character`,
 
 	InvalidGaugeValue: `line %d: the gauge value is invalid`,
+
+	DuplicateTalent: `line %d: the talent is already set`,
 
 	UndefinedTypeCost:  `undefined cost for type %s`,
 	UndefinedMatchCost: `undefined cost for type %s with %d matching aptitudes`,

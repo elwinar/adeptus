@@ -10,6 +10,7 @@ type Talent struct {
 	Requirements []Requirement `json:"requirements"`
 	Speciality   string        `json:"-"`
 	Value        int           `json:"-"`
+	Stackable    bool          `json:"stackable"`
 }
 
 // Cost returns the cost of the talent given the character's aptitudes and the current tier.
