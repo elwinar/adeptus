@@ -45,6 +45,8 @@ const (
 	UndefinedTypeCost
 	UndefinedMatchCost
 	UndefinedTierCost
+
+	UnitTest
 )
 
 // errorMsgs contains the messages associated to the error codes.
@@ -86,6 +88,8 @@ var errorMsgs = map[ErrorCode]string{
 	UndefinedTypeCost:  `undefined cost for type %s`,
 	UndefinedMatchCost: `undefined cost for type %s with %d matching aptitudes`,
 	UndefinedTierCost:  `undefined cost for type %s with %d matching aptitudes on tier %d`,
+
+	UnitTest: `should not be seen outside unit testing`,
 }
 
 // Error is an error holding a code and variadic printable data.

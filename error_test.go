@@ -6,18 +6,18 @@ import (
 )
 
 func Test_NewError(t *testing.T) {
-	err := NewError(UnusedAptitude)
+	err := NewError(UnitTest)
 
-	if err.Code != UnusedAptitude {
-		t.Logf("invalid code: expected %d, got %d", UnusedAptitude, err.Code)
+	if err.Code != UnitTest {
+		t.Logf("invalid code: expected %d, got %d", UnitTest, err.Code)
 		t.Fail()
 	}
 }
 
 func Test_Error_Error(t *testing.T) {
-	err := NewError(UnusedAptitude, "test")
+	err := NewError(UnitTest, "test")
 
-	if err.Error() != fmt.Sprintf(errorMsgs[UnusedAptitude], "test") {
+	if err.Error() != fmt.Sprintf(errorMsgs[UnitTest], "test") {
 		t.Logf("invalid output: %s", err.Error())
 		t.Fail()
 	}
