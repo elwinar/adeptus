@@ -100,7 +100,7 @@ func parseUpgrade(line line) (Upgrade, error) {
 		return Upgrade{}, NewError(UndefinedUpgradeName, line.Number)
 	}
 
-	// Handle the alias of the mark: a free mark is equivalent to a special amrk with cost 0.
+	// Handle the alias of the mark: a free mark is equivalent to a special mark with cost 0.
 	if mark == MarkFree {
 		mark = MarkSpecial
 		if cost != nil {

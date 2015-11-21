@@ -89,9 +89,9 @@ func Test_parseCharacteristics(t *testing.T) {
 			},
 			out: Characteristics{
 				Upgrade{
-					Mark: "-",
+					Mark: MarkSpecial,
 					Name: "WP 25",
-					Cost: nil,
+					Cost: IntP(0),
 					Line: 1,
 				},
 			},
@@ -105,15 +105,15 @@ func Test_parseCharacteristics(t *testing.T) {
 			},
 			out: Characteristics{
 				Upgrade{
-					Mark: "-",
+					Mark: MarkSpecial,
 					Name: "STR 25",
-					Cost: nil,
+					Cost: IntP(0),
 					Line: 1,
 				},
 				Upgrade{
-					Mark: "-",
+					Mark: MarkSpecial,
 					Name: "WP 25",
-					Cost: nil,
+					Cost: IntP(0),
 					Line: 2,
 				},
 			},

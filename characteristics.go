@@ -17,6 +17,7 @@ func parseCharacteristics(block []line) (Characteristics, error) {
 	}
 
 	// Parse each upgrade
+	cost := 0
 	upgrades := []Upgrade{}
 	for _, line := range block {
 
@@ -36,9 +37,9 @@ func parseCharacteristics(block []line) (Characteristics, error) {
 		}
 
 		u := Upgrade{
-			Mark: "-",
+			Mark: MarkSpecial,
 			Name: strings.Join(splits, " "),
-			Cost: nil,
+			Cost: &cost,
 			Line: line.Number,
 		}
 

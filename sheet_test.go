@@ -188,9 +188,9 @@ WP 25
 				},
 				Characteristics: Characteristics{
 					Upgrade{
-						Mark: "-",
+						Mark: MarkSpecial,
 						Name: "WP 25",
-						Cost: nil,
+						Cost: IntP(0),
 						Line: 7,
 					},
 				},
@@ -201,15 +201,15 @@ WP 25
 						Reward: IntP(500),
 						Upgrades: []Upgrade{
 							{
-								Mark: "*",
+								Mark: MarkDefault,
 								Name: "BULLSHIT +5",
 								Cost: IntP(250),
 								Line: 10,
 							},
 							{
-								Mark: "-",
+								Mark: MarkSpecial,
 								Name: "Awesomeskill",
-								Cost: nil,
+								Cost: IntP(0),
 								Line: 11,
 							},
 						},
