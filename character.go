@@ -412,7 +412,7 @@ func (character Character) Print() {
 	w = tabwriter.NewWriter(os.Stdout, 10, 1, 2, ' ', 0)
 	for _, talent := range talents {
 		if talent.Value != 1 {
-			fmt.Fprintf(w, "%s (%s)\t%s\n", strings.Title(talent.FullName()), theme.Value(talent.Value), talent.Description)
+			fmt.Fprintf(w, "%s (%d)\t%s\n", strings.Title(talent.FullName()), talent.Value, talent.Description)
 		} else {
 			fmt.Fprintf(w, "%s\t%s\n", strings.Title(talent.FullName()), talent.Description)
 		}
