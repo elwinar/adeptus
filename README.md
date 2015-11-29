@@ -1,2 +1,2 @@
-# adeptus
+# adeptus [![wercker status](https://app.wercker.com/status/833ce614d66e8615208b634feada66c5/s/master "wercker status")](https://app.wercker.com/project/bykey/833ce614d66e8615208b634feada66c5) [![Coverage Status](https://coveralls.io/repos/elwinar/adeptus/badge.svg?branch=master&service=github)](https://coveralls.io/github/elwinar/adeptus?branch=master) 
 Command-line character sheet tracking tool for the Dark Heresy system.
