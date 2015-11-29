@@ -5,6 +5,7 @@ import "fmt"
 // Talent is a character's trait.
 type Talent struct {
 	Name         string        `json:"name"`
+	Description  string        `json:"description"`
 	Aptitudes    []Aptitude    `json:"aptitudes"`
 	Tier         int           `json:"tier"`
 	Requirements []Requirement `json:"requirements"`

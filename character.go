@@ -409,13 +409,15 @@ func (character Character) Print() {
 		return talents[i].FullName() < talents[j].FullName()
 	})
 
+	w = tabwriter.NewWriter(os.Stdout, 10, 1, 2, ' ', 0)
 	for _, talent := range talents {
 		if talent.Value != 1 {
-			fmt.Printf("%s (%s)\n", strings.Title(talent.FullName()), theme.Value(talent.Value))
+			fmt.Fprintf(w, "%s (%s)\t%s\n", strings.Title(talent.FullName()), theme.Value(talent.Value), talent.Description)
 		} else {
-			fmt.Printf("%s\n", strings.Title(talent.FullName()))
+			fmt.Fprintf(w, "%s\t%s\n", strings.Title(talent.FullName()), talent.Description)
 		}
 	}
+	w.Flush()
 
 	// Print the special rules
 	fmt.Printf("\n%s\n", theme.Title("Rules"))
