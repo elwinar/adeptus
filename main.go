@@ -26,10 +26,6 @@ func main() {
 
 	app.Flags = []cli.Flag{
 		cli.StringFlag{
-			Name:  "character, c",
-			Usage: "The filepath to the character sheet.",
-		},
-		cli.StringFlag{
 			Name:  "universe, u",
 			Usage: "The filepath to the character universe.",
 			Value: "universe.json",

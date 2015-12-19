@@ -28,7 +28,12 @@ func Bootstrap(ctx *cli.Context) error {
 	}
 
 	// Open and parse character sheet.
-	c, err := os.Open(ctx.String("character"))
+	args := ctx.Args()
+	if len(args) == 0 {
+		return fmt.Errorf("%s undefined character", theme.Error("unable to open character sheet:"))
+	}
+	name := args[len(args)-1]
+	c, err := os.Open(name)
 	if err != nil {
 		return fmt.Errorf("%s %s", theme.Error("unable to open character sheet:"), err)
 	}
