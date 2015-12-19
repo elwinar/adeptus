@@ -482,113 +482,88 @@ func (character Character) PrintHistory() {
 // Suggest the next purchasable upgrades of the character.
 func (character Character) Suggest(max int, all bool) {
 
-	available := character.Experience - character.Spent
-
-	// Put in a slice every upgrades existing in the universe.
-	var upgrades []Upgrade
-	for _, attributes := range []interface{}{
-		universe.Characteristics,
-		universe.Skills,
-		universe.Talents,
-		universe.Gauges,
-	} {
-		var costers []Coster
-
-		switch t := attributes.(type) {
-		case []Characteristic:
-			for _, coster := range t {
-				costers = append(costers, coster)
-			}
-
-		case []Skill:
-			for _, coster := range t {
-				costers = append(costers, coster)
-			}
-
-		case []Talent:
-			for _, coster := range t {
-				costers = append(costers, coster)
-			}
-
-		case []Gauge:
-			for _, coster := range t {
-				costers = append(costers, coster)
-			}
-		}
-
-		for _, attribute := range costers {
-			for {
-				var upgrade Upgrade
-
-				// Get the cost of the upgrade, break if none is available.
-				cost, err := attribute.Cost(universe, character)
-				if err != nil || cost == 0 {
-					break
-				}
-
-				// Discard upgrade if its cost is over the remaining XP.
-				if !all && available < cost {
-					break
-				}
-
-				// Discard upgrade if its cost is over the max.
-				if max > 0 && max < cost {
-					break
-				}
-
-				upgrade.Cost = &cost
-				upgrade.Mark = MarkDefault
-
-				// Change behaviour given the type.
-				var stop bool
-				switch t := attribute.(type) {
-
-				case Characteristic:
-					upgrade.Name = fmt.Sprintf("%s +%d", t.Name, 5)
-					err = character.ApplyCharacteristicUpgrade(t, upgrade)
-
-				case Skill:
-					upgrade.Name = fmt.Sprintf("%s", t.Name)
-					err = character.ApplySkillUpgrade(t, upgrade)
-
-				case Talent:
-					upgrade.Name = fmt.Sprintf("%s", t.Name)
-					err = character.ApplyTalentUpgrade(t, upgrade)
-
-					// Stop after first purchase of stackable talent.
-					if t.Stackable && upgrades[len(upgrades)-1].Name == upgrade.Name {
-						stop = true
-					}
-
-				case Gauge:
-					upgrade.Name = fmt.Sprintf("%s +%d", t.Name, 1)
-					err = character.ApplyGaugeUpgrade(t, upgrade)
-
-					// Stop after first purchase of gauge.
-					if upgrades[len(upgrades)-1].Name == upgrade.Name {
-						stop = true
-					}
-
-				default:
-					stop = true
-				}
-
-				// Stop on error or stop call
-				if err != nil || stop {
-					break
-				}
-
-				// Append the upgrade.
-				upgrades = append(upgrades, upgrade)
-			}
-		}
+	// Aggregate each coster into a unique slice of costers.
+	costers := []Coster{}
+	for _, upgrade := range universe.Characteristics {
+		costers = append(costers, upgrade)
 	}
 
-	// Sort by cost and name.
-	slice.Sort(upgrades, func(i, j int) bool {
-		ci, cj := *upgrades[i].Cost, *upgrades[j].Cost
+	for _, upgrade := range universe.Skills {
+		costers = append(costers, upgrade)
+	}
+
+	for _, upgrade := range universe.Talents {
+		costers = append(costers, upgrade)
+	}
+
+	for _, upgrade := range universe.Gauges {
+		costers = append(costers, upgrade)
+	}
+
+	// Default max value equals to the remaining XP.
+	fmt.Println(max)
+	if max == 0 {
+		max = character.Experience - character.Spent
+		fmt.Println(max)
+	}
+
+	// The slice of appliable upgrades.
+	var appliable []Upgrade
+
+	// Attempt to apply each coster once.
+	for _, coster := range costers {
+		var upgrade Upgrade
+
+		// Don't propose the upgrade its cost cannot be defined
+		cost, err := coster.Cost(universe, character)
+		if err != nil {
+			continue
+		}
+
+		// Don't propose the upgrade if it is free.
+		if cost == 0 {
+			continue
+		}
+
+		// Don't propose the upgrade if it is too expensive.
+		if !all && max < cost {
+			continue
+		}
+
+		upgrade.Cost = &cost
+		upgrade.Mark = MarkDefault
+
+		switch t := coster.(type) {
+
+		case Characteristic:
+			upgrade.Name = fmt.Sprintf("%s +%d", t.Name, 5)
+			err = character.ApplyCharacteristicUpgrade(t, upgrade)
+
+		case Skill:
+			upgrade.Name = fmt.Sprintf("%s", t.Name)
+			err = character.ApplySkillUpgrade(t, upgrade)
+
+		case Talent:
+			upgrade.Name = fmt.Sprintf("%s", t.Name)
+			err = character.ApplyTalentUpgrade(t, upgrade)
+
+		case Gauge:
+			upgrade.Name = fmt.Sprintf("%s +%d", t.Name, 1)
+			err = character.ApplyGaugeUpgrade(t, upgrade)
+		}
+
+		if err != nil {
+			continue
+		}
+
+		appliable = append(appliable, upgrade)
+	}
+
+	// Sort by cost then name.
+	slice.Sort(appliable, func(i, j int) bool {
+		ci, cj := *appliable[i].Cost, *appliable[j].Cost
 		if ci == cj {
-			return upgrades[i].Name < upgrades[j].Name
+			return appliable[i].Name < appliable[j].Name
 		}
 		return ci < cj
 	})
@@ -603,8 +578,11 @@ func (character Character) Suggest(max int, all bool) {
 	fmt.Printf("\n%s\n", theme.Title("Suggestions"))
 
 	w := tabwriter.NewWriter(os.Stdout, 10, 1, 2, ' ', 0)
-	for _, upgrade := range upgrades {
-		fmt.Fprintf(w, "%d\t%s\n", *upgrade.Cost, strings.Title(upgrade.Name))
+	for i, upgrade := range appliable {
+		if i > 0 && *appliable[i-1].Cost != *upgrade.Cost {
+			fmt.Fprintln(w)
+		}
+		fmt.Fprintf(w, "%s\t%s\n", theme.Value(*upgrade.Cost), strings.Title(upgrade.Name))
 	}
 	w.Flush()
 }

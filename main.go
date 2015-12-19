@@ -53,7 +53,6 @@ func main() {
 				cli.IntFlag{
 					Name:  "max",
 					Usage: "maximum XP cost of the upgrades to suggest",
-					Value: -1,
 				},
 				cli.BoolFlag{
 					Name:  "all",
@@ -61,15 +60,7 @@ func main() {
 				},
 			},
 			Action: func(ctx *cli.Context) {
-
-				max := ctx.Int("max")
-				all := ctx.Bool("all")
-
-				// Override the all flag if max is > 0
-				if max > 0 {
-					all = true
-				}
-				character.Suggest(max, all)
+				character.Suggest(ctx.Int("max"), ctx.Bool("all"))
 			},
 		},
 	}
