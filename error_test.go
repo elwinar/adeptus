@@ -32,5 +32,5 @@ func Test_Error_PanicIfNotFound(t *testing.T) {
 	}()
 
 	err := NewError(ErrorCode(-1))
-	err.Error()
+	_ = err.Error()
 }

@@ -2,6 +2,7 @@ package main
 
 import "github.com/fatih/color"
 
+// Theme is the struct responsible for output theming/colors.
 type Theme struct {
 	Title func(...interface{}) string
 	Error func(...interface{}) string

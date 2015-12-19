@@ -42,7 +42,7 @@ func ParseUniverse(file io.Reader) (Universe, error) {
 
 	// Add it's type to each defined background.
 	for typ, backgrounds := range universe.Backgrounds {
-		for i, _ := range backgrounds {
+		for i := range backgrounds {
 			universe.Backgrounds[typ][i].Type = typ
 		}
 	}
@@ -50,6 +50,8 @@ func ParseUniverse(file io.Reader) (Universe, error) {
 	return universe, nil
 }
 
+// FindCoster returns the coster associated to the label,
+// and false if none is.
 func (u Universe) FindCoster(label string) (Coster, bool) {
 	characteristic, found := u.FindCharacteristic(label)
 	if found {

@@ -189,6 +189,10 @@ func (character *Character) ApplyUpgrade(upgrade Upgrade, universe Universe) err
 	return err
 }
 
+// ApplyCharacteristicUpgrade applys the upgrade on the character:
+// * affect the characteristics tier
+// * affect the characteristic value
+// * does not affect the character's XP
 func (character *Character) ApplyCharacteristicUpgrade(characteristic Characteristic, upgrade Upgrade) error {
 
 	// Get the attribute from the character's characteristic map.
@@ -221,6 +225,9 @@ func (character *Character) ApplyCharacteristicUpgrade(characteristic Characteri
 	return nil
 }
 
+// ApplySkillUpgrade applys the upgrade on the character:
+// * affect the skill tier
+// * does not affect the character's XP
 func (character *Character) ApplySkillUpgrade(skill Skill, upgrade Upgrade) error {
 
 	// Get the skill from the character's skill map.
@@ -238,6 +245,10 @@ func (character *Character) ApplySkillUpgrade(skill Skill, upgrade Upgrade) erro
 	return nil
 }
 
+// ApplyTalentUpgrade applys the upgrade on the character:
+// * affect the talent tier
+// * affect the talent value if stackable
+// * does not affect the character's XP
 func (character *Character) ApplyTalentUpgrade(talent Talent, upgrade Upgrade) error {
 
 	// Get the talent from the character.
@@ -260,6 +271,9 @@ func (character *Character) ApplyTalentUpgrade(talent Talent, upgrade Upgrade) e
 	return nil
 }
 
+// ApplyAptitudeUpgrade applys the upgrade on the character:
+// * give the aptitute to the character
+// * does not affect the character's XP
 func (character *Character) ApplyAptitudeUpgrade(aptitude Aptitude, upgrade Upgrade) error {
 
 	// Add the aptitude to the character's aptitudes.
@@ -268,6 +282,9 @@ func (character *Character) ApplyAptitudeUpgrade(aptitude Aptitude, upgrade Upgr
 	return nil
 }
 
+// ApplyGaugeUpgrade applys the upgrade on the character:
+// * affect the gauge value
+// * does not affect the character's XP
 func (character *Character) ApplyGaugeUpgrade(gauge Gauge, upgrade Upgrade) error {
 
 	// Get the gauge from the character.
@@ -296,6 +313,9 @@ func (character *Character) ApplyGaugeUpgrade(gauge Gauge, upgrade Upgrade) erro
 	return nil
 }
 
+// ApplyRuleUpgrade applys the upgrade on the character:
+// * gives the rule to the character
+// * does not affect the character's XP
 func (character *Character) ApplyRuleUpgrade(rule Rule, upgrade Upgrade) error {
 
 	// Add the rule to the character's rules.
@@ -437,7 +457,8 @@ func (character Character) Print() {
 	}
 }
 
-func (c Character) PrintHistory() {
+// PrintHistory displays the history of expences of the character.
+func (character Character) PrintHistory() {
 	// Print the name.
 	fmt.Printf("%s\t%s\n", theme.Title("Name"), character.Name)
 
@@ -459,9 +480,9 @@ func (c Character) PrintHistory() {
 }
 
 // Suggest the next purchasable upgrades of the character.
-func (c Character) Suggest(max int, all bool) {
+func (character Character) Suggest(max int, all bool) {
 
-	available := c.Experience - c.Spent
+	available := character.Experience - character.Spent
 
 	// Put in a slice every upgrades existing in the universe.
 	var upgrades []Upgrade
@@ -500,7 +521,7 @@ func (c Character) Suggest(max int, all bool) {
 				var upgrade Upgrade
 
 				// Get the cost of the upgrade, break if none is available.
-				cost, err := attribute.Cost(universe, c)
+				cost, err := attribute.Cost(universe, character)
 				if err != nil || cost == 0 {
 					break
 				}
@@ -524,15 +545,15 @@ func (c Character) Suggest(max int, all bool) {
 
 				case Characteristic:
 					upgrade.Name = fmt.Sprintf("%s +%d", t.Name, 5)
-					err = c.ApplyCharacteristicUpgrade(t, upgrade)
+					err = character.ApplyCharacteristicUpgrade(t, upgrade)
 
 				case Skill:
 					upgrade.Name = fmt.Sprintf("%s", t.Name)
-					err = c.ApplySkillUpgrade(t, upgrade)
+					err = character.ApplySkillUpgrade(t, upgrade)
 
 				case Talent:
 					upgrade.Name = fmt.Sprintf("%s", t.Name)
-					err = c.ApplyTalentUpgrade(t, upgrade)
+					err = character.ApplyTalentUpgrade(t, upgrade)
 
 					// Stop after first purchase of stackable talent.
 					if t.Stackable && upgrades[len(upgrades)-1].Name == upgrade.Name {
@@ -541,7 +562,7 @@ func (c Character) Suggest(max int, all bool) {
 
 				case Gauge:
 					upgrade.Name = fmt.Sprintf("%s +%d", t.Name, 1)
-					err = c.ApplyGaugeUpgrade(t, upgrade)
+					err = character.ApplyGaugeUpgrade(t, upgrade)
 
 					// Stop after first purchase of gauge.
 					if upgrades[len(upgrades)-1].Name == upgrade.Name {
@@ -573,10 +594,10 @@ func (c Character) Suggest(max int, all bool) {
 	})
 
 	// Print the name.
-	fmt.Printf("%s\t%s\n", theme.Title("Name"), c.Name)
+	fmt.Printf("%s\t%s\n", theme.Title("Name"), character.Name)
 
 	// Print the experience
-	fmt.Printf("\n%s\t%d/%d\n", theme.Title("Experience"), c.Spent, c.Experience)
+	fmt.Printf("\n%s\t%d/%d\n", theme.Title("Experience"), character.Spent, character.Experience)
 
 	// Print the history.
 	fmt.Printf("\n%s\n", theme.Title("Suggestions"))
