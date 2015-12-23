@@ -18,7 +18,7 @@ type Talent struct {
 func (t Talent) Cost(universe Universe, character Character) (int, error) {
 
 	// Return the price as determined by the cost matrix.
-	return universe.Costs.Price("talent", character.CountMatchingAptitudes(t.Aptitudes), t.Tier)
+	return universe.Costs.Price("talent", character.Intersect(t.Aptitudes), t.Tier)
 }
 
 // FullName return the name of the talent and it's speciality if defined.
@@ -27,4 +27,45 @@ func (t Talent) FullName() string {
 		return t.Name
 	}
 	return fmt.Sprintf("%s: %s", t.Name, t.Speciality)
+}
+
+// Apply applys the upgrade on the character:
+// * affect the talent tier
+// * affect the talent value if stackable
+// * does not affect the character's XP
+func (t Talent) Apply(character *Character, upgrade Upgrade) error {
+
+	// Get the talent from the character.
+	tmp, found := character.Talents[t.FullName()]
+	if found {
+		t = tmp
+	}
+
+	switch upgrade.Mark {
+	case MarkSpecial:
+		return NewError(ForbidenUpgradeMark, upgrade.Line)
+	case MarkRevert:
+		t.Value--
+	case MarkApply:
+		t.Value++
+	}
+
+	// Remove the talent if it is negative.
+	if t.Value <= 0 {
+		if !found {
+			return NewError(ForbidenUpgradeLoss, upgrade.Line)
+		}
+		delete(character.Talents, t.FullName())
+		return nil
+	}
+
+	// Check the talent is stackable.
+	if !t.Stackable && t.Value > 1 {
+		return NewError(DuplicateUpgrade, upgrade.Line)
+	}
+
+	// Put it back on the map.
+	character.Talents[t.FullName()] = t
+
+	return nil
 }

@@ -29,8 +29,10 @@ func ParseSheet(file io.Reader) (Sheet, error) {
 			Text:   scanner.Text(),
 		}
 
-		// If line is comment, loop.
-		if l.IsComment() {
+		// Discard commented elements from line.
+		old := l.Text
+		l.Text = l.Instruction()
+		if old != l.Text {
 			continue
 		}
 

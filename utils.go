@@ -17,3 +17,8 @@ func split(s string, c rune) []string {
 		return r == c
 	})
 }
+
+// IntP returns the pointer to the given var
+func IntP(v int) *int {
+	return &v
+}

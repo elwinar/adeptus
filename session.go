@@ -91,7 +91,7 @@ func parseSession(block []line) (Session, error) {
 
 		// Check position of the reward
 		if i != 0 && i != len(fields)-1 {
-			return Session{}, NewError(BadSessionRewardPosition, headline.Number)
+			return Session{}, NewError(ForbidenRewardPosition, headline.Number)
 		}
 
 		// Trim the field to get the raw reward

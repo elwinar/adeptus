@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"io"
 	"io/ioutil"
+	"strconv"
 	"strings"
 )
 
@@ -52,28 +53,28 @@ func ParseUniverse(file io.Reader) (Universe, error) {
 
 // FindCoster returns the coster associated to the label,
 // and false if none is.
-func (u Universe) FindCoster(label string) (Coster, bool) {
-	characteristic, found := u.FindCharacteristic(label)
+func (u Universe) FindCoster(upgrade Upgrade) (Coster, bool) {
+	characteristic, found := u.FindCharacteristic(upgrade)
 	if found {
 		return characteristic, true
 	}
 
-	skill, found := u.FindSkill(label)
+	skill, found := u.FindSkill(upgrade)
 	if found {
 		return skill, true
 	}
 
-	talent, found := u.FindTalent(label)
+	talent, found := u.FindTalent(upgrade)
 	if found {
 		return talent, true
 	}
 
-	aptitude, found := u.FindAptitude(label)
+	aptitude, found := u.FindAptitude(upgrade)
 	if found {
 		return aptitude, true
 	}
 
-	gauge, found := u.FindGauge(label)
+	gauge, found := u.FindGauge(upgrade)
 	if found {
 		return gauge, true
 	}
@@ -82,12 +83,12 @@ func (u Universe) FindCoster(label string) (Coster, bool) {
 }
 
 // FindCharacteristic returns the characteristic correponding to the given label or a zero-value, and a boolean indicating if it was found.
-func (u Universe) FindCharacteristic(label string) (Characteristic, bool) {
+func (u Universe) FindCharacteristic(upgrade Upgrade) (Characteristic, bool) {
 
 	// Characteristics upgrades are defined by a name and a value, separated by a space, so we need to look for the first
 	// part of the label.
 	// Examples: STR +5, FEL -1, TOU 40.
-	fields := split(label, ' ')
+	fields := split(upgrade.Name, ' ')
 	name := fields[0]
 
 	for _, characteristic := range u.Characteristics {
@@ -100,11 +101,11 @@ func (u Universe) FindCharacteristic(label string) (Characteristic, bool) {
 }
 
 // FindSkill returns the skill corresponding to the given label or a zero-value, and a boolean indicating if it was found.
-func (u Universe) FindSkill(label string) (Skill, bool) {
+func (u Universe) FindSkill(upgrade Upgrade) (Skill, bool) {
 
 	// Skills upgrades are defined by a name and eventually a speciality, separated by a colon.
 	// Examples: Common Lore: Dark Gods
-	fields := split(label, ':')
+	fields := split(upgrade.Name, ':')
 	name := fields[0]
 
 	for _, skill := range u.Skills {
@@ -122,11 +123,11 @@ func (u Universe) FindSkill(label string) (Skill, bool) {
 }
 
 // FindTalent returns the talent corresponding to the given label or a zero value, and a boolean indicating if it was found.
-func (u Universe) FindTalent(label string) (Talent, bool) {
+func (u Universe) FindTalent(upgrade Upgrade) (Talent, bool) {
 
 	// Talents upgrades are defined by a name and eventually a speciality, separated by a colon.
 	// Examples: Psychic Resistance: Fear
-	fields := split(label, ':')
+	fields := split(upgrade.Name, ':')
 	name := fields[0]
 
 	for _, talent := range u.Talents {
@@ -144,10 +145,10 @@ func (u Universe) FindTalent(label string) (Talent, bool) {
 }
 
 // FindAptitude returns the aptitude corresponding to the given label or a zero value, and a boolean indicating if it was found.
-func (u Universe) FindAptitude(label string) (Aptitude, bool) {
+func (u Universe) FindAptitude(upgrade Upgrade) (Aptitude, bool) {
 
 	for _, aptitude := range u.Aptitudes {
-		if strings.EqualFold(string(aptitude), label) {
+		if strings.EqualFold(string(aptitude), upgrade.Name) {
 			return aptitude, true
 		}
 	}
@@ -156,13 +157,18 @@ func (u Universe) FindAptitude(label string) (Aptitude, bool) {
 }
 
 // FindGauge returns the gauge corresponding to the given label or a zero value, and a boolean indicating if it was found.
-func (u Universe) FindGauge(label string) (Gauge, bool) {
+func (u Universe) FindGauge(upgrade Upgrade) (Gauge, bool) {
 
 	// Gauges upgrades are defined by a name and a value, separated by a space.
-	name := split(label, ' ')[0]
+	fields := split(upgrade.Name, ' ')
 
 	for _, gauge := range u.Gauges {
-		if strings.EqualFold(gauge.Name, name) {
+		if strings.EqualFold(gauge.Name, fields[0]) {
+			val, err := strconv.Atoi(fields[1])
+			if err != nil {
+				panic(err)
+			}
+			gauge.Value = val
 			return gauge, true
 		}
 	}

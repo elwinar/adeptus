@@ -9,7 +9,7 @@ import (
 
 var (
 	universe  Universe
-	character Character
+	character *Character
 )
 
 // Bootstrap open and parse universe and character sheet.

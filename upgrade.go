@@ -6,15 +6,25 @@ import (
 )
 
 const (
-	// MarkDefault denotes that the upgrade is taken into account for future upgrades
-	MarkDefault = "*"
+	// MarkApply denotes that the upgrade must be applied. It will provide the upgrade to the character,
+	// increase the value of the trait and increment its tier if able.
+	MarkApply = "+"
 
-	// MarkSpecial denotes that the upgrade isn't taken into account for future ugprades
-	MarkSpecial = "+"
+	// MarkRevert denotes that the upgrade must be reverted. It will remove the upgrade from the character,
+	// reduce the value of the trait and decrement its tier if able.
+	MarkRevert = "-"
 
-	// MarkFree is a shortcut for MarkSpecial and cost 0
-	MarkFree = "-"
+	// MarkSpecial denotes that the upgrade will benefit a special condition.
+	// On application, the tier will not be touched. This mark is only used for characteristics.
+	MarkSpecial = "*"
 )
+
+// marks holds the interpretable marks.
+var marks = []string{
+	MarkApply,
+	MarkRevert,
+	MarkSpecial,
+}
 
 // Upgrade describe one upgrade applied to the character. The mark indicate how
 // to handle the upgrade considéring future upgrades. The cost is optionnal in
@@ -38,11 +48,11 @@ func parseUpgrade(line line) (Upgrade, error) {
 
 	// The minimum number of fields is 2
 	if len(fields) < 2 {
-		return Upgrade{}, NewError(InvalidUpgrade, line.Number)
+		return Upgrade{}, NewError(InvalidUpgradeFormat, line.Number)
 	}
 
 	// Parse the mark
-	if !in(fields[0], []string{MarkDefault, MarkSpecial, MarkFree}) {
+	if !in(fields[0], marks) {
 		return Upgrade{}, NewError(InvalidUpgradeMark, line.Number)
 	}
 	mark := fields[0]
@@ -73,7 +83,7 @@ func parseUpgrade(line line) (Upgrade, error) {
 
 		// Check position of the cost
 		if i != 0 && i != len(fields)-1 {
-			return Upgrade{}, NewError(BadUpgradeCostPosition, line.Number)
+			return Upgrade{}, NewError(ForbidenCostPosition, line.Number)
 		}
 
 		// Trim the field to get the raw cost
@@ -97,21 +107,12 @@ func parseUpgrade(line line) (Upgrade, error) {
 
 	// The remaining line is the name of the upgrade
 	if len(fields) == 0 {
-		return Upgrade{}, NewError(UndefinedUpgradeName, line.Number)
+		return Upgrade{}, NewError(EmptyUpgrade, line.Number)
 	}
 
-	// Handle the alias of the mark: a free mark is equivalent to a special mark with cost 0.
-	if mark == MarkFree {
-		mark = MarkSpecial
-		if cost != nil {
-			return Upgrade{}, NewError(MismatchMarkCost, line.Number)
-		}
-		c := 0
-		cost = &c
-	}
-
-	if mark == MarkSpecial && cost == nil {
-		return Upgrade{}, NewError(UndefinedUpgradeCost, line.Number)
+	// In case of non apply mark, the default cost value is 0.
+	if mark != MarkApply && cost == nil {
+		cost = IntP(0)
 	}
 
 	return Upgrade{
@@ -128,7 +129,7 @@ func (u Upgrade) Split() (string, string, error) {
 	// Check if the skill has a speciality
 	splits := strings.Split(u.Name, ":")
 	if len(splits) > 2 {
-		return "", "", NewError(InvalidUpgrade, u.Line)
+		return "", "", NewError(InvalidUpgradeFormat, u.Line)
 	}
 
 	// Get name.

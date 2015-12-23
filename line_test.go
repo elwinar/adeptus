@@ -54,44 +54,52 @@ func Test_line_IsEmpty(t *testing.T) {
 	}
 }
 
-func Test_line_IsComment(t *testing.T) {
+func Test_line_Instruction(t *testing.T) {
 
 	cases := []struct {
 		in  string
-		out bool
+		out string
 	}{
 		{
 			in:  "Not a comment",
-			out: false,
+			out: "Not a comment",
 		},
 		{
 			in:  "* Not a comment",
-			out: false,
+			out: "* Not a comment",
 		},
 		{
 			in:  "+ Not a comment",
-			out: false,
+			out: "+ Not a comment",
 		},
 		{
 			in:  "/ / Not a comment",
-			out: false,
+			out: "/ / Not a comment",
 		},
 		{
 			in:  "// A comment",
-			out: true,
+			out: "",
+		},
+		{
+			in:  "Comment before// Comment after",
+			out: "Comment before",
 		},
 		{
 			in:  "# A comment",
-			out: true,
+			out: "",
 		},
 		{
-			in:  "; A comment",
-			out: true,
+			in:  "Comment before# Comment between // Comment after",
+			out: "Comment before",
+		},
+		{
+			in:  "Comment before// Comment between # Comment after",
+			out: "Comment before",
 		},
 	}
 
 	for i, c := range cases {
-		out := newLine(c.in, 0).IsComment()
+		out := newLine(c.in, 0).Instruction()
 
 		if out != c.out {
 			t.Logf("Unexpected output on case %d:", i+1)
