@@ -78,7 +78,7 @@ var errorMsgs = map[ErrorCode]string{
 	UndefinedTierCost:  `undefined cost for type %s with %d matching aptitudes on tier %d`,
 
 	UndefinedCharacteristic: `line %d: the characteristic is not defined`,
-	UndefinedBackground:     `line %d: the background is not defined`,
+	UndefinedBackground:     `line %d: the background %s: %s is not defined`,
 
 	UnitTest: `should not be seen outside unit testing`,
 }
