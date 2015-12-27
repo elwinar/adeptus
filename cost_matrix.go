@@ -6,9 +6,7 @@ import (
 )
 
 // CostMatrix is matrix of upgrade costs.
-type CostMatrix struct {
-	fares map[string]map[int]map[int]int
-}
+type CostMatrix map[string]map[int]map[int]int
 
 // costMatrixJSON is the Json representation of the matrix.
 type costMatrixJSON map[string]map[string]map[string]int
@@ -19,19 +17,19 @@ func (c CostMatrix) Price(typ string, matches int, tier int) (int, error) {
 	var f bool
 
 	// Check if the upgrade type is listed in the matrix.
-	_, f = c.fares[typ]
+	_, f = c[typ]
 	if !f {
 		return 0, NewError(UndefinedTypeCost, typ)
 	}
 
 	// Check if the number of matching aptitudes is in the matrix.
-	_, f = c.fares[typ][matches]
+	_, f = c[typ][matches]
 	if !f {
 		return 0, NewError(UndefinedMatchCost, typ, matches)
 	}
 
 	// Get the cost corresponding to the upgrade's tier.
-	cost, f := c.fares[typ][matches][tier]
+	cost, f := c[typ][matches][tier]
 	if !f {
 		return 0, NewError(UndefinedTierCost, typ, matches, tier)
 	}
@@ -46,7 +44,7 @@ func (c *CostMatrix) MarshalJSON() ([]byte, error) {
 	jMatrix := costMatrixJSON{}
 
 	// For each upgrade type of the matrix.
-	for typ, matches := range c.fares {
+	for typ, matches := range *c {
 
 		// Instanciate the correponding map of matching aptitudes.
 		jMatrix[typ] = make(map[string]map[string]int)
@@ -89,13 +87,13 @@ func (c *CostMatrix) UnmarshalJSON(raw []byte) error {
 	}
 
 	// Initialize the matrix map.
-	c.fares = make(map[string]map[int]map[int]int)
+	tmp := make(map[string]map[int]map[int]int)
 
 	// For each upgrade type of the matrix.
 	for typ, matches := range jMatrix {
 
 		// Initialize the map of matching aptitudes.
-		c.fares[typ] = make(map[int]map[int]int)
+		tmp[typ] = make(map[int]map[int]int)
 
 		// For each number of matching aptitudes.
 		for match, tiers := range matches {
@@ -105,7 +103,7 @@ func (c *CostMatrix) UnmarshalJSON(raw []byte) error {
 			if err != nil {
 				return err
 			}
-			c.fares[typ][m] = make(map[int]int)
+			tmp[typ][m] = make(map[int]int)
 
 			// For each cost.
 			for tier, cost := range tiers {
@@ -115,10 +113,12 @@ func (c *CostMatrix) UnmarshalJSON(raw []byte) error {
 				if err != nil {
 					return err
 				}
-				c.fares[typ][m][t] = cost
+				tmp[typ][m][t] = cost
 			}
 		}
 	}
+
+	*c = CostMatrix(tmp)
 
 	return nil
 }
