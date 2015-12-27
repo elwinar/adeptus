@@ -142,7 +142,7 @@ WP 25
 		{
 			in: strings.NewReader(`Name: Someone
 Origin: Somewhere
-Background: Something
+Background: Something,Sometime
 Role: Warmonger
 Tarot: XXI
 
@@ -150,7 +150,8 @@ WP 25
 
 2015/06/01 Creation [500]
 	* BULLSHIT +5 [250]
-	- Awesomeskill
+	+ Awesomeskill
+	- AwesomeTalent
 `),
 			out: Sheet{
 				Header: Header{
@@ -166,6 +167,11 @@ WP 25
 						"background": {
 							Meta{
 								Label:   "Something",
+								Line:    3,
+								Options: nil,
+							},
+							Meta{
+								Label:   "Sometime",
 								Line:    3,
 								Options: nil,
 							},
@@ -201,16 +207,22 @@ WP 25
 						Reward: IntP(500),
 						Upgrades: []Upgrade{
 							{
-								Mark: MarkDefault,
+								Mark: MarkSpecial,
 								Name: "BULLSHIT +5",
 								Cost: IntP(250),
 								Line: 10,
 							},
 							{
-								Mark: MarkSpecial,
+								Mark: MarkApply,
 								Name: "Awesomeskill",
-								Cost: IntP(0),
+								Cost: nil,
 								Line: 11,
+							},
+							{
+								Mark: MarkRevert,
+								Name: "AwesomeTalent",
+								Cost: IntP(0),
+								Line: 12,
 							},
 						},
 					},

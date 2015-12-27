@@ -2,6 +2,12 @@ package main
 
 import "strings"
 
+// comments holds the line separators describing a comment.
+var comments = [2]string{
+	"//",
+	"#",
+}
+
 type line struct {
 	Number int
 	Text   string
@@ -15,21 +21,21 @@ func newLine(text string, number int) line {
 	}
 }
 
-// IsComment check that the line starts with a comment indicator
-func (l line) IsComment() bool {
-	if strings.HasPrefix(l.Text, "//") {
-		return true
-	}
+// Instruction returns the usefull (non-commented) part of the line.
+func (l line) Instruction() string {
+	for _, marker := range comments {
+		pos := strings.Index(l.Text, marker)
+		if pos == -1 {
+			continue
+		}
 
-	if strings.HasPrefix(l.Text, "#") {
-		return true
-	}
+		if pos == 0 {
+			return ""
+		}
 
-	if strings.HasPrefix(l.Text, ";") {
-		return true
+		l.Text = l.Text[:pos]
 	}
-
-	return false
+	return l.Text
 }
 
 // IsEmpty check if the line contains no character or only blanks

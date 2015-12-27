@@ -235,9 +235,9 @@ func Test_parseSession(t *testing.T) {
 		{
 			in: []string{
 				"2001.04.28	success	[250]",
-				"	* WP +5",
-				"	* WS +5",
-				"	* BS +5",
+				"	+ WP +5",
+				"	+ WS +5",
+				"	+ BS +5",
 			},
 			out: Session{
 				Date:   time.Date(2001, time.April, 28, 0, 0, 0, 0, time.UTC),
@@ -245,19 +245,19 @@ func Test_parseSession(t *testing.T) {
 				Reward: IntP(250),
 				Upgrades: []Upgrade{
 					{
-						Mark: "*",
+						Mark: "+",
 						Name: "WP +5",
 						Cost: nil,
 						Line: 2,
 					},
 					{
-						Mark: "*",
+						Mark: "+",
 						Name: "WS +5",
 						Cost: nil,
 						Line: 3,
 					},
 					{
-						Mark: "*",
+						Mark: "+",
 						Name: "BS +5",
 						Cost: nil,
 						Line: 4,

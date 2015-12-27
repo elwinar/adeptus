@@ -17,29 +17,30 @@ func parseCharacteristics(block []line) (Characteristics, error) {
 	}
 
 	// Parse each upgrade
-	cost := 0
 	upgrades := []Upgrade{}
 	for _, line := range block {
 
 		// The line should be made of label and value
 		splits := strings.Fields(line.Text)
 		if len(splits) != 2 {
-			return Characteristics{}, NewError(InvalidCharacteristicFormat, line.Number)
+			return Characteristics{}, NewError(InvalidUpgradeFormat, line.Number)
 		}
 
 		// Check the value is numeric
-		if strings.ContainsAny(splits[1], "+|-") {
-			return Characteristics{}, NewError(InvalidCharacteristicValue, line.Number)
-		}
 		_, err := strconv.Atoi(splits[1])
 		if err != nil {
-			return Characteristics{}, NewError(InvalidCharacteristicValue, line.Number)
+			return Characteristics{}, NewError(InvalidUpgradeValue, line.Number)
+		}
+
+		// Check the value is absolute
+		if strings.ContainsAny(splits[1], "+|-") {
+			return Characteristics{}, NewError(ForbidenUpgradeValue, line.Number)
 		}
 
 		u := Upgrade{
 			Mark: MarkSpecial,
 			Name: strings.Join(splits, " "),
-			Cost: &cost,
+			Cost: IntP(0),
 			Line: line.Number,
 		}
 
