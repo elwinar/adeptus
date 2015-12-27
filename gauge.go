@@ -27,9 +27,10 @@ func (g Gauge) Cost(u Universe, character Character) (int, error) {
 func (g Gauge) Apply(character *Character, upgrade Upgrade) error {
 
 	// Get the gauge from the character.
-	tmp, found := character.Gauges[g.Name]
-	if found {
-		g = tmp
+	old, found := character.Gauges[g.Name]
+	if !found {
+		old = g
+		old.Value = 0
 	}
 
 	// Parse the gauge's upgrade value.
@@ -43,10 +44,10 @@ func (g Gauge) Apply(character *Character, upgrade Upgrade) error {
 	if !(strings.HasPrefix(raw, "+") || strings.HasPrefix(raw, "-")) {
 		return NewError(ForbidenUpgradeValue, upgrade.Line)
 	}
-	g.Value += value
+	old.Value += value
 
 	// Set the gauge back on the map.
-	character.Gauges[g.Name] = g
+	character.Gauges[g.Name] = old
 
 	return nil
 }

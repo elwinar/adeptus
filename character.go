@@ -325,10 +325,8 @@ func (c *Character) Suggest(max int, all bool) {
 	}
 
 	// Default max value equals to the remaining XP.
-	fmt.Println(max)
 	if max == 0 {
 		max = c.Experience - c.Spent
-		fmt.Println(max)
 	}
 
 	// The slice of appliable upgrades.
