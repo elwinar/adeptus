@@ -17,8 +17,8 @@ func (s Skill) Cost(universe Universe, character Character) (int, error) {
 
 	// If the skill isn't defined, set the current upgrade to 0.
 	tier := 0
-	if _, found := character.Skills[s.Name]; found {
-		tier = character.Skills[s.Name].Tier
+	if _, found := character.Skills[s.FullName()]; found {
+		tier = character.Skills[s.FullName()].Tier
 	}
 
 	// Return the price as determined by the cost matrix.
