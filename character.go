@@ -321,6 +321,7 @@ func (c *Character) Suggest(max int, all bool) {
 	}
 
 	for _, upgrade := range universe.Gauges {
+		upgrade.Value = 1
 		costers = append(costers, upgrade)
 	}
 
