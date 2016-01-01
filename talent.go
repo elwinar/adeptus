@@ -69,3 +69,8 @@ func (t Talent) Apply(character *Character, upgrade Upgrade) error {
 
 	return nil
 }
+
+// DefaultName returns the default upgrade name.
+func (t Talent) DefaultName() string {
+	return t.FullName()
+}

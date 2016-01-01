@@ -210,60 +210,73 @@ func (c *Character) Print() {
 	}
 
 	// Print the gauges
-	fmt.Printf("\n%s\n", theme.Title("Gauges"))
 
-	gauges := []Gauge{}
-	for _, gauge := range c.Gauges {
-		gauges = append(gauges, gauge)
-	}
+	if len(c.Gauges) != 0 {
 
-	slice.Sort(gauges, func(i, j int) bool {
-		return gauges[i].Name < gauges[j].Name
-	})
+		fmt.Printf("\n%s\n", theme.Title("Gauges"))
 
-	for _, gauge := range gauges {
-		fmt.Printf("%s\t%s\n", gauge.Name, theme.Value(gauge.Value))
-	}
+		gauges := []Gauge{}
+		for _, gauge := range c.Gauges {
+			gauges = append(gauges, gauge)
+		}
 
-	// Print the skills using a tabwriter
-	fmt.Printf("\n%s\n", theme.Title("Skills"))
+		slice.Sort(gauges, func(i, j int) bool {
+			return gauges[i].Name < gauges[j].Name
+		})
 
-	skills := []Skill{}
-	for _, skill := range c.Skills {
-		skills = append(skills, skill)
-	}
-
-	slice.Sort(skills, func(i, j int) bool {
-		return skills[i].FullName() < skills[j].FullName()
-	})
-
-	w := tabwriter.NewWriter(os.Stdout, 10, 1, 2, ' ', 0)
-	for _, skill := range skills {
-		fmt.Fprintf(w, "%s\t+%s\n", strings.Title(skill.FullName()), theme.Value((skill.Tier-1)*10))
-	}
-	w.Flush()
-
-	// Print the talents
-	fmt.Printf("\n%s\n", theme.Title("Talents"))
-
-	talents := []Talent{}
-	for _, talent := range c.Talents {
-		talents = append(talents, talent)
-	}
-
-	slice.Sort(talents, func(i, j int) bool {
-		return talents[i].FullName() < talents[j].FullName()
-	})
-
-	w = tabwriter.NewWriter(os.Stdout, 10, 1, 2, ' ', 0)
-	for _, talent := range talents {
-		if talent.Value != 1 {
-			fmt.Fprintf(w, "%s (%d)\t%s\n", strings.Title(talent.FullName()), talent.Value, talent.Description)
-		} else {
-			fmt.Fprintf(w, "%s\t%s\n", strings.Title(talent.FullName()), talent.Description)
+		for _, gauge := range gauges {
+			fmt.Printf("%s\t%s\n", gauge.Name, theme.Value(gauge.Value))
 		}
 	}
-	w.Flush()
+
+	// Print the skills
+
+	if len(c.Skills) != 0 {
+
+		// Print the skills using a tabwriter
+		fmt.Printf("\n%s\n", theme.Title("Skills"))
+
+		skills := []Skill{}
+		for _, skill := range c.Skills {
+			skills = append(skills, skill)
+		}
+
+		slice.Sort(skills, func(i, j int) bool {
+			return skills[i].FullName() < skills[j].FullName()
+		})
+
+		w := tabwriter.NewWriter(os.Stdout, 10, 1, 2, ' ', 0)
+		for _, skill := range skills {
+			fmt.Fprintf(w, "%s\t+%s\n", strings.Title(skill.FullName()), theme.Value((skill.Tier-1)*10))
+		}
+		w.Flush()
+	}
+
+	// Print the talents
+
+	if len(c.Talents) != 0 {
+
+		fmt.Printf("\n%s\n", theme.Title("Talents"))
+
+		talents := []Talent{}
+		for _, talent := range c.Talents {
+			talents = append(talents, talent)
+		}
+
+		slice.Sort(talents, func(i, j int) bool {
+			return talents[i].FullName() < talents[j].FullName()
+		})
+
+		w := tabwriter.NewWriter(os.Stdout, 10, 1, 2, ' ', 0)
+		for _, talent := range talents {
+			if talent.Value != 1 {
+				fmt.Fprintf(w, "%s (%d)\t%s\n", strings.Title(talent.FullName()), talent.Value, talent.Description)
+			} else {
+				fmt.Fprintf(w, "%s\t%s\n", strings.Title(talent.FullName()), talent.Description)
+			}
+		}
+		w.Flush()
+	}
 
 	// Print the spells
 
@@ -281,6 +294,7 @@ func (c *Character) Print() {
 			return spells[i].Name < spells[j].Name
 		})
 
+		w := tabwriter.NewWriter(os.Stdout, 10, 1, 2, ' ', 0)
 		for _, spell := range spells {
 			fmt.Fprintf(w, "%s\t%s\n", strings.Title(spell.Name), spell.Description)
 		}
@@ -302,6 +316,7 @@ func (c *Character) Print() {
 			return rules[i].Name < rules[j].Name
 		})
 
+		w := tabwriter.NewWriter(os.Stdout, 10, 1, 2, ' ', 0)
 		for _, rule := range rules {
 			fmt.Printf("%s\t%s\n", strings.Title(rule.Name), rule.Description)
 		}
@@ -332,7 +347,7 @@ func (c *Character) PrintHistory() {
 }
 
 // Suggest the next purchasable upgrades of the character.
-func (c *Character) Suggest(max int, all bool) {
+func (c *Character) Suggest(max int, all bool, allowSpells bool) {
 
 	// Aggregate each coster into a unique slice of costers.
 	costers := []Coster{}
@@ -348,13 +363,16 @@ func (c *Character) Suggest(max int, all bool) {
 		costers = append(costers, upgrade)
 	}
 
-	for _, upgrade := range universe.Spells {
-		costers = append(costers, upgrade)
-	}
-
 	for _, upgrade := range universe.Gauges {
 		upgrade.Value = 1
 		costers = append(costers, upgrade)
+	}
+
+	if allowSpells {
+
+		for _, upgrade := range universe.Spells {
+			costers = append(costers, upgrade)
+		}
 	}
 
 	// Default max value equals to the remaining XP.
@@ -387,30 +405,9 @@ func (c *Character) Suggest(max int, all bool) {
 
 		upgrade.Cost = &cost
 		upgrade.Mark = MarkApply
+		upgrade.Name = coster.DefaultName()
 
-		switch t := coster.(type) {
-
-		case Characteristic:
-			upgrade.Name = fmt.Sprintf("%s +%d", t.Name, 5)
-			err = t.Apply(c, upgrade)
-
-		case Skill:
-			upgrade.Name = fmt.Sprintf("%s", t.Name)
-			err = t.Apply(c, upgrade)
-
-		case Talent:
-			upgrade.Name = fmt.Sprintf("%s", t.Name)
-			err = t.Apply(c, upgrade)
-
-		case Spell:
-			upgrade.Name = fmt.Sprintf("%s", t.Name)
-			err = t.Apply(c, upgrade)
-
-		case Gauge:
-			upgrade.Name = fmt.Sprintf("%s +%d", t.Name, 1)
-			err = t.Apply(c, upgrade)
-		}
-
+		err = coster.Apply(c, upgrade)
 		if err != nil {
 			continue
 		}

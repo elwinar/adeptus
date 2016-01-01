@@ -29,3 +29,8 @@ func (a Aptitude) Apply(character *Character, upgrade Upgrade) error {
 	}
 	return nil
 }
+
+// DefaultName returns the default upgrade name.
+func (a Aptitude) DefaultName() string {
+	return string(a)
+}

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"strconv"
 	"strings"
 )
@@ -50,4 +51,9 @@ func (g Gauge) Apply(character *Character, upgrade Upgrade) error {
 	character.Gauges[g.Name] = old
 
 	return nil
+}
+
+// DefaultName returns the default upgrade name.
+func (g Gauge) DefaultName() string {
+	return fmt.Sprintf("%s +%d", g.Name, 1)
 }

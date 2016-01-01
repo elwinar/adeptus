@@ -51,16 +51,20 @@ func main() {
 			Usage: "display the list of purchasable upgrades, ordered by cost",
 			Flags: []cli.Flag{
 				cli.IntFlag{
-					Name:  "max",
+					Name:  "max,m",
 					Usage: "maximum XP cost of the upgrades to suggest",
 				},
 				cli.BoolFlag{
-					Name:  "all",
+					Name:  "all,a",
 					Usage: "display all upgrades regardless of their costs",
+				},
+				cli.BoolFlag{
+					Name:  "with-spells,s",
+					Usage: "display spells along with other upgrades",
 				},
 			},
 			Action: func(ctx *cli.Context) {
-				character.Suggest(ctx.Int("max"), ctx.Bool("all"))
+				character.Suggest(ctx.Int("max"), ctx.Bool("all"), ctx.Bool("with-spells"))
 			},
 		},
 	}

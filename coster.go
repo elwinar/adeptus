@@ -6,4 +6,6 @@ type Coster interface {
 
 	// TODO: rename the interface
 	Apply(*Character, Upgrade) error
+
+	DefaultName() string
 }

@@ -62,3 +62,8 @@ func (s *Spell) UnmarshalJSON(raw []byte) error {
 
 	return nil
 }
+
+// DefaultName returns the default upgrade name.
+func (s Spell) DefaultName() string {
+	return s.Name
+}
