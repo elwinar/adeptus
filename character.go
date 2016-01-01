@@ -19,6 +19,7 @@ type Character struct {
 	Talents         map[string]Talent
 	Gauges          map[string]Gauge
 	Rules           map[string]Rule
+	Spells          map[string]Spell
 	Experience      int
 	Spent           int
 	History         []Upgrade
@@ -37,6 +38,7 @@ func NewCharacter(universe Universe, sheet Sheet) (*Character, error) {
 		Talents:         make(map[string]Talent),
 		Gauges:          make(map[string]Gauge),
 		Rules:           make(map[string]Rule),
+		Spells:          make(map[string]Spell),
 		Experience:      0,
 		Spent:           0,
 	}
@@ -263,21 +265,47 @@ func (c *Character) Print() {
 	}
 	w.Flush()
 
-	// Print the special rules
-	fmt.Printf("\n%s\n", theme.Title("Rules"))
+	// Print the spells
 
-	rules := []Rule{}
+	if len(c.Spells) != 0 {
 
-	for _, rule := range c.Rules {
-		rules = append(rules, rule)
+		fmt.Printf("\n%s\n", theme.Title("Spells"))
+
+		spells := []Spell{}
+
+		for _, spell := range c.Spells {
+			spells = append(spells, spell)
+		}
+
+		slice.Sort(spells, func(i, j int) bool {
+			return spells[i].Name < spells[j].Name
+		})
+
+		for _, spell := range spells {
+			fmt.Fprintf(w, "%s\t%s\n", strings.Title(spell.Name), spell.Description)
+		}
+		w.Flush()
 	}
 
-	slice.Sort(rules, func(i, j int) bool {
-		return rules[i].Name < rules[j].Name
-	})
+	// Print the special rules
 
-	for _, rule := range rules {
-		fmt.Printf("%s\t%s\n", strings.Title(rule.Name), rule.Description)
+	if len(c.Rules) != 0 {
+		fmt.Printf("\n%s\n", theme.Title("Rules"))
+
+		rules := []Rule{}
+
+		for _, rule := range c.Rules {
+			rules = append(rules, rule)
+		}
+
+		slice.Sort(rules, func(i, j int) bool {
+			return rules[i].Name < rules[j].Name
+		})
+
+		for _, rule := range rules {
+			fmt.Printf("%s\t%s\n", strings.Title(rule.Name), rule.Description)
+		}
+		w.Flush()
 	}
 }
 
@@ -317,6 +345,10 @@ func (c *Character) Suggest(max int, all bool) {
 	}
 
 	for _, upgrade := range universe.Talents {
+		costers = append(costers, upgrade)
+	}
+
+	for _, upgrade := range universe.Spells {
 		costers = append(costers, upgrade)
 	}
 
@@ -367,6 +399,10 @@ func (c *Character) Suggest(max int, all bool) {
 			err = t.Apply(c, upgrade)
 
 		case Talent:
+			upgrade.Name = fmt.Sprintf("%s", t.Name)
+			err = t.Apply(c, upgrade)
+
+		case Spell:
 			upgrade.Name = fmt.Sprintf("%s", t.Name)
 			err = t.Apply(c, upgrade)
 
