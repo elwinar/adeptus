@@ -9,7 +9,6 @@ type ErrorCode int
 
 // Here is the list of defined error codes.
 const (
-	// Parse sheet errors
 	InvalidCharacterSheet ErrorCode = iota
 
 	InvalidHeaderLine

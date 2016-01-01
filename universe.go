@@ -16,6 +16,7 @@ type Universe struct {
 	Gauges          []Gauge                 `json:"gauges"`
 	Skills          []Skill                 `json:"skills"`
 	Talents         []Talent                `json:"talents"`
+	Spells          []Spell                 `json:"spells"`
 	Costs           CostMatrix              `json:"costs"`
 }
 
@@ -77,6 +78,11 @@ func (u Universe) FindCoster(upgrade Upgrade) (Coster, bool) {
 	gauge, found := u.FindGauge(upgrade)
 	if found {
 		return gauge, true
+	}
+
+	spell, found := u.FindSpell(upgrade)
+	if found {
+		return spell, true
 	}
 
 	return nil, false
@@ -191,4 +197,16 @@ func (u Universe) FindBackground(typ string, label string) (Background, bool) {
 	}
 
 	return Background{}, false
+}
+
+// FindSpell returns the spell corresponding to the given label or a zero value, and a boolean indicating if it was found.
+func (u Universe) FindSpell(upgrade Upgrade) (Spell, bool) {
+
+	for _, spell := range u.Spells {
+		if strings.EqualFold(spell.Name, upgrade.Name) {
+			return spell, true
+		}
+	}
+
+	return Spell{}, false
 }
