@@ -32,3 +32,8 @@ func (r Rule) Apply(character *Character, upgrade Upgrade) error {
 
 	return nil
 }
+
+// DefaultName returns the default upgrade name.
+func (r Rule) DefaultName() string {
+	return r.Name
+}

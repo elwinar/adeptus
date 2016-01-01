@@ -67,3 +67,8 @@ func (s Skill) Apply(character *Character, upgrade Upgrade) error {
 
 	return nil
 }
+
+// DefaultName returns the default upgrade name.
+func (s Skill) DefaultName() string {
+	return s.FullName()
+}

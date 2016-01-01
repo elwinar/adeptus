@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"strconv"
 	"strings"
 )
@@ -84,4 +85,9 @@ func (c Characteristic) Apply(character *Character, upgrade Upgrade) error {
 	character.Characteristics[c.Name] = c
 
 	return nil
+}
+
+// DefaultName returns the default upgrade name.
+func (c Characteristic) DefaultName() string {
+	return fmt.Sprintf("%s +%d", c.Name, 5)
 }
