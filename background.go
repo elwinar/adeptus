@@ -1,5 +1,10 @@
 package main
 
+import(
+	"fmt"
+	"strings"
+)
+
 // Background represents an element providing traits to a character.
 type Background struct {
 	Type     string   `json:"type"`
@@ -33,4 +38,9 @@ func (b Background) Apply(character *Character, universe Universe) error {
 	character.Backgrounds[b.Name] = b
 
 	return nil
+}
+
+// Print the background with theme.
+func (b Background) Print() {
+	fmt.Printf("%s\t%s\n", theme.Title(strings.Title(b.Type)), strings.Title(b.Name))
 }

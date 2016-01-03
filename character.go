@@ -150,12 +150,9 @@ func (c *Character) ApplyUpgrade(upgrade Upgrade, universe Universe) error {
 	return err
 }
 
-// Print the character sheet on the screen
-func (c *Character) Print() {
-	// Print the name
-	fmt.Printf("%s\t%s\n", theme.Title("Name"), c.Name)
+// PrintBackgrounds of the character.
+func (c *Character) PrintBackgrounds() {
 
-	// Print the backgrounds
 	backgrounds := []Background{}
 
 	for _, background := range c.Backgrounds {
@@ -171,10 +168,14 @@ func (c *Character) Print() {
 	})
 
 	for _, background := range backgrounds {
-		fmt.Printf("%s\t%s\n", theme.Title(strings.Title(background.Type)), strings.Title(background.Name))
-	}
+		background.Print()
 
-	// Print the aptitudes
+	}
+	fmt.Println()
+}
+
+// PrintAptitudes of the character.
+func (c *Character) PrintAptitudes() {
 	aptitudes := []Aptitude{}
 
 	for _, aptitude := range c.Aptitudes {
@@ -185,16 +186,32 @@ func (c *Character) Print() {
 		return aptitudes[i] < aptitudes[j]
 	})
 
-	fmt.Printf("\n%s (%s)\n", theme.Title("Aptitudes"), theme.Value(fmt.Sprintf("%d", len(aptitudes))))
+	fmt.Printf("%s (%s)\n", theme.Title("Aptitudes"), theme.Value(fmt.Sprintf("%d", len(aptitudes))))
 	for _, aptitude := range aptitudes {
-		fmt.Printf("%s\n", strings.Title(string(aptitude)))
+		aptitude.Print()
 	}
+	fmt.Println()
+}
 
-	// Print the experience
-	fmt.Printf("\n%s\t%d/%d\n", theme.Title("Experience"), c.Spent, c.Experience)
+// PrintName of the character.
+func (c *Character) PrintName() {
+	
+	fmt.Printf("%s\t%s\n", theme.Title("Name"), c.Name)
+	fmt.Println()
+}
+
+// PrintExperience of the character
+func (c *Character) PrintExperience() {
+
+	fmt.Printf("%s\t%d/%d\n", theme.Title("Experience"), c.Spent, c.Experience)
+	fmt.Println()
+}
+
+// PrintCharacteristics of the character
+func (c *Character) PrintCharacteristics() {
 
 	// Print the characteristics
-	fmt.Printf("\n%s\n", theme.Title("Characteristics"))
+	fmt.Printf("%s\n", theme.Title("Characteristics"))
 
 	characteristics := []Characteristic{}
 	for _, characteristic := range c.Characteristics {
@@ -208,129 +225,163 @@ func (c *Character) Print() {
 	for _, characteristic := range characteristics {
 		fmt.Printf("%s\t%s %s\n", characteristic.Name, theme.Value(characteristic.Value), theme.Value(characteristic.Level()))
 	}
+	fmt.Println()
+}
 
-	// Print the gauges
+// PrintGauges of the character
+func (c *Character) PrintGauges() {
 
-	if len(c.Gauges) != 0 {
-
-		fmt.Printf("\n%s\n", theme.Title("Gauges"))
-
-		gauges := []Gauge{}
-		for _, gauge := range c.Gauges {
-			gauges = append(gauges, gauge)
-		}
-
-		slice.Sort(gauges, func(i, j int) bool {
-			return gauges[i].Name < gauges[j].Name
-		})
-
-		for _, gauge := range gauges {
-			fmt.Printf("%s\t%s\n", gauge.Name, theme.Value(gauge.Value))
-		}
+	if len(c.Gauges) == 0 {
+		return
 	}
 
-	// Print the skills
+	fmt.Printf("%s\n", theme.Title("Gauges"))
 
-	if len(c.Skills) != 0 {
-
-		// Print the skills using a tabwriter
-		fmt.Printf("\n%s\n", theme.Title("Skills"))
-
-		skills := []Skill{}
-		for _, skill := range c.Skills {
-			skills = append(skills, skill)
-		}
-
-		slice.Sort(skills, func(i, j int) bool {
-			return skills[i].FullName() < skills[j].FullName()
-		})
-
-		w := tabwriter.NewWriter(os.Stdout, 10, 1, 2, ' ', 0)
-		for _, skill := range skills {
-			fmt.Fprintf(w, "%s\t+%s\n", strings.Title(skill.FullName()), theme.Value((skill.Tier-1)*10))
-		}
-		w.Flush()
+	gauges := []Gauge{}
+	for _, gauge := range c.Gauges {
+		gauges = append(gauges, gauge)
 	}
 
-	// Print the talents
+	slice.Sort(gauges, func(i, j int) bool {
+		return gauges[i].Name < gauges[j].Name
+	})
 
-	if len(c.Talents) != 0 {
+	for _, gauge := range gauges {
+		fmt.Printf("%s\t%s\n", gauge.Name, theme.Value(gauge.Value))
+	}
+	fmt.Println()
+}
 
-		fmt.Printf("\n%s\n", theme.Title("Talents"))
+// PrintSkills of the character
+func (c *Character) PrintSkills() {
 
-		talents := []Talent{}
-		for _, talent := range c.Talents {
-			talents = append(talents, talent)
-		}
-
-		slice.Sort(talents, func(i, j int) bool {
-			return talents[i].FullName() < talents[j].FullName()
-		})
-
-		w := tabwriter.NewWriter(os.Stdout, 10, 1, 2, ' ', 0)
-		for _, talent := range talents {
-			if talent.Value != 1 {
-				fmt.Fprintf(w, "%s (%d)\t%s\n", strings.Title(talent.FullName()), talent.Value, talent.Description)
-			} else {
-				fmt.Fprintf(w, "%s\t%s\n", strings.Title(talent.FullName()), talent.Description)
-			}
-		}
-		w.Flush()
+	if len(c.Skills) == 0 {
+		return
 	}
 
-	// Print the spells
+	// Print the skills using a tabwriter
+	fmt.Printf("%s\n", theme.Title("Skills"))
 
-	if len(c.Spells) != 0 {
-
-		fmt.Printf("\n%s\n", theme.Title("Spells"))
-
-		spells := []Spell{}
-
-		for _, spell := range c.Spells {
-			spells = append(spells, spell)
-		}
-
-		slice.Sort(spells, func(i, j int) bool {
-			return spells[i].Name < spells[j].Name
-		})
-
-		w := tabwriter.NewWriter(os.Stdout, 10, 1, 2, ' ', 0)
-		for _, spell := range spells {
-			fmt.Fprintf(w, "%s\t%s\n", strings.Title(spell.Name), spell.Description)
-		}
-		w.Flush()
+	skills := []Skill{}
+	for _, skill := range c.Skills {
+		skills = append(skills, skill)
 	}
 
-	// Print the special rules
+	slice.Sort(skills, func(i, j int) bool {
+		return skills[i].FullName() < skills[j].FullName()
+	})
 
-	if len(c.Rules) != 0 {
-		fmt.Printf("\n%s\n", theme.Title("Rules"))
-
-		rules := []Rule{}
-
-		for _, rule := range c.Rules {
-			rules = append(rules, rule)
-		}
-
-		slice.Sort(rules, func(i, j int) bool {
-			return rules[i].Name < rules[j].Name
-		})
-
-		w := tabwriter.NewWriter(os.Stdout, 10, 1, 2, ' ', 0)
-		for _, rule := range rules {
-			fmt.Printf("%s\t%s\n", strings.Title(rule.Name), rule.Description)
-		}
-		w.Flush()
+	w := tabwriter.NewWriter(os.Stdout, 10, 1, 2, ' ', 0)
+	for _, skill := range skills {
+		fmt.Fprintf(w, "%s\t+%s\n", strings.Title(skill.FullName()), theme.Value((skill.Tier-1)*10))
 	}
+	w.Flush()
+	fmt.Println()
+}
+
+// PrintTalents of the character
+func (c *Character) PrintTalents() {
+
+	if len(c.Talents) == 0 {
+		return
+	}
+
+	fmt.Printf("%s\n", theme.Title("Talents"))
+
+	talents := []Talent{}
+	for _, talent := range c.Talents {
+		talents = append(talents, talent)
+	}
+
+	slice.Sort(talents, func(i, j int) bool {
+		return talents[i].FullName() < talents[j].FullName()
+	})
+
+	w := tabwriter.NewWriter(os.Stdout, 10, 1, 2, ' ', 0)
+	for _, talent := range talents {
+		if talent.Value != 1 {
+			fmt.Fprintf(w, "%s (%d)\t%s\n", strings.Title(talent.FullName()), talent.Value, talent.Description)
+		} else {
+			fmt.Fprintf(w, "%s\t%s\n", strings.Title(talent.FullName()), talent.Description)
+		}
+	}
+	w.Flush()
+	fmt.Println()
+}
+
+// PrintSpells of the character
+func (c *Character) PrintSpells() {
+
+	if len(c.Spells) == 0 {
+		return
+	}
+
+	fmt.Printf("%s\n", theme.Title("Spells"))
+
+	spells := []Spell{}
+
+	for _, spell := range c.Spells {
+		spells = append(spells, spell)
+	}
+
+	slice.Sort(spells, func(i, j int) bool {
+		return spells[i].Name < spells[j].Name
+	})
+
+	w := tabwriter.NewWriter(os.Stdout, 10, 1, 2, ' ', 0)
+	for _, spell := range spells {
+		fmt.Fprintf(w, "%s\t%s\n", strings.Title(spell.Name), spell.Description)
+	}
+	w.Flush()
+	fmt.Println()
+}
+
+// PrintRules of the character
+func (c *Character) PrintRules() {
+
+	if len(c.Rules) == 0 {
+		return
+	}
+	fmt.Printf("%s\n", theme.Title("Rules"))
+
+	rules := []Rule{}
+
+	for _, rule := range c.Rules {
+		rules = append(rules, rule)
+	}
+
+	slice.Sort(rules, func(i, j int) bool {
+		return rules[i].Name < rules[j].Name
+	})
+
+	w := tabwriter.NewWriter(os.Stdout, 10, 1, 2, ' ', 0)
+	for _, rule := range rules {
+		fmt.Printf("%s\t%s\n", strings.Title(rule.Name), rule.Description)
+	}
+	w.Flush()
+	fmt.Println()
+}
+
+// Print the character sheet on the screen
+func (c *Character) Print() {
+	
+	c.PrintName()
+	c.PrintBackgrounds()
+	c.PrintAptitudes()
+	c.PrintExperience()
+	c.PrintCharacteristics()
+	c.PrintGauges()
+	c.PrintSkills()
+	c.PrintTalents()
+	c.PrintSpells()
+	c.PrintRules()
 }
 
 // PrintHistory displays the history of expences of the character.
 func (c *Character) PrintHistory() {
-	// Print the name.
-	fmt.Printf("%s\t%s\n", theme.Title("Name"), c.Name)
-
-	// Print the experience
-	fmt.Printf("\n%s\t%d/%d\n", theme.Title("Experience"), c.Spent, c.Experience)
+	
+	c.PrintName()
+	c.PrintExperience()
 
 	// Print the history.
 	fmt.Printf("\n%s\n", theme.Title("History"))
@@ -423,12 +474,9 @@ func (c *Character) Suggest(max int, all bool, allowSpells bool) {
 		}
 		return ci < cj
 	})
-
-	// Print the name.
-	fmt.Printf("%s\t%s\n", theme.Title("Name"), c.Name)
-
-	// Print the experience
-	fmt.Printf("\n%s\t%d/%d\n", theme.Title("Experience"), c.Spent, c.Experience)
+	
+	c.PrintName()
+	c.PrintExperience()
 
 	// Print the history.
 	fmt.Printf("\n%s\n", theme.Title("Suggestions"))

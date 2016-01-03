@@ -1,5 +1,10 @@
 package main
 
+import(
+	"fmt"
+	"strings"
+)
+
 // Aptitude represents an aptitude, required to purchase upgrades.
 type Aptitude string
 
@@ -33,4 +38,9 @@ func (a Aptitude) Apply(character *Character, upgrade Upgrade) error {
 // DefaultName returns the default upgrade name.
 func (a Aptitude) DefaultName() string {
 	return string(a)
+}
+
+// Print the aptitude.
+func (a Aptitude) Print() {
+	fmt.Printf("%s\n", strings.Title(string(a)))
 }
