@@ -28,7 +28,7 @@ func main() {
 		cli.StringFlag{
 			Name:  "universe, u",
 			Usage: "The filepath to the character universe.",
-			Value: "universe.json",
+			Value: "universe.yaml",
 		},
 	}
 

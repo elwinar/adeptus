@@ -1,26 +1,27 @@
 package main
 
 import (
-	"encoding/json"
 	"io"
 	"io/ioutil"
 	"strconv"
 	"strings"
+	
+	"gopkg.in/yaml.v2"
 )
 
 // Universe represents a set of configuration, often refered as data or database.
 type Universe struct {
-	Backgrounds     map[string][]Background `json:"backgrounds"`
-	Aptitudes       []Aptitude              `json:"aptitudes"`
-	Characteristics []Characteristic        `json:"characteristics"`
-	Gauges          []Gauge                 `json:"gauges"`
-	Skills          []Skill                 `json:"skills"`
-	Talents         []Talent                `json:"talents"`
-	Spells          []Spell                 `json:"spells"`
-	Costs           CostMatrix              `json:"costs"`
+	Backgrounds     map[string][]Background `yaml:"backgrounds"`
+	Aptitudes       []Aptitude              `yaml:"aptitudes"`
+	Characteristics []Characteristic        `yaml:"characteristics"`
+	Gauges          []Gauge                 `yaml:"gauges"`
+	Skills          []Skill                 `yaml:"skills"`
+	Talents         []Talent                `yaml:"talents"`
+	Spells          []Spell                 `yaml:"spells"`
+	Costs           CostMatrix              `yaml:"costs"`
 }
 
-// ParseUniverse load an from a plain JSON file.
+// ParseUniverse load an from a plain YAML file.
 // It returns a well-formed universe that describe all the components of a game setting.
 func ParseUniverse(file io.Reader) (Universe, error) {
 
@@ -30,7 +31,7 @@ func ParseUniverse(file io.Reader) (Universe, error) {
 		return Universe{}, err
 	}
 	universe := Universe{}
-	err = json.Unmarshal(raw, &universe)
+	err = yaml.Unmarshal(raw, &universe)
 	if err != nil {
 		return Universe{}, err
 	}

@@ -2,8 +2,8 @@ package main
 
 // Rule represent a special rule, which are generally home-made additions to the
 type Rule struct {
-	Name        string `json:"name"`
-	Description string `json:"description"`
+	Name        string `yaml:"name"`
+	Description string `yaml:"description"`
 }
 
 // Cost returns 0, a rule has no calculated cost.

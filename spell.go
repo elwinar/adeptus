@@ -1,14 +1,14 @@
 package main
 
-import (
-	"encoding/json"
+import (	
+	"gopkg.in/yaml.v2"
 )
 
 // Spell castable.
 type Spell struct {
-	Name        string `json:"name"`
-	Description string `json:"description"`
-	XP          int    `json:"xp"`
+	Name        string `yaml:"name"`
+	Description string `yaml:"description"`
+	XP          int    `yaml:"xp"`
 	Attributes  map[string]interface{}
 }
 
@@ -34,9 +34,9 @@ func (s Spell) Apply(character *Character, upgrade Upgrade) error {
 	return nil
 }
 
-// UnmarshalJSON implements the Unmarshaler interface
-func (s *Spell) UnmarshalJSON(raw []byte) error {
-	err := json.Unmarshal(raw, &s.Attributes)
+// UnmarshalYAML implements the Unmarshaler interface
+func (s *Spell) UnmarshalYAML(raw []byte) error {
+	err := yaml.Unmarshal(raw, &s.Attributes)
 	if err != nil {
 		return err
 	}

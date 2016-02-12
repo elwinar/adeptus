@@ -1,15 +1,16 @@
 package main
 
 import (
-	"encoding/json"
 	"strconv"
+	
+	"gopkg.in/yaml.v2"
 )
 
 // CostMatrix is matrix of upgrade costs.
 type CostMatrix map[string]map[int]map[int]int
 
-// costMatrixJSON is the Json representation of the matrix.
-type costMatrixJSON map[string]map[string]map[string]int
+// costMatrixYAML is the Json representation of the matrix.
+type costMatrixYAML map[string]map[string]map[string]int
 
 // Price returns the cost in the matrix corresponding to the given type, matches and tier.
 func (c CostMatrix) Price(typ string, matches int, tier int) (int, error) {
@@ -37,11 +38,11 @@ func (c CostMatrix) Price(typ string, matches int, tier int) (int, error) {
 	return cost, nil
 }
 
-// MarshalJSON return the JSON representation of the cost matrix.
+// MarshalYAML return the YAML representation of the cost matrix.
 // Implements the Marshaller interface.
-func (c *CostMatrix) MarshalJSON() ([]byte, error) {
+func (c *CostMatrix) MarshalYAML() ([]byte, error) {
 
-	jMatrix := costMatrixJSON{}
+	jMatrix := costMatrixYAML{}
 
 	// For each upgrade type of the matrix.
 	for typ, matches := range *c {
@@ -66,8 +67,8 @@ func (c *CostMatrix) MarshalJSON() ([]byte, error) {
 		}
 	}
 
-	// Marshal the transient structure to the returned JSON object.
-	raw, err := json.Marshal(jMatrix)
+	// Marshal the transient structure to the returned YAML object.
+	raw, err := yaml.Marshal(jMatrix)
 	if err != nil {
 		return nil, err
 	}
@@ -75,13 +76,13 @@ func (c *CostMatrix) MarshalJSON() ([]byte, error) {
 	return raw, nil
 }
 
-// UnmarshalJSON parse the JSON representation of a cost matrix.
+// UnmarshalYAML parse the YAML representation of a cost matrix.
 // Implements the Unmarshaller interface.
-func (c *CostMatrix) UnmarshalJSON(raw []byte) error {
+func (c *CostMatrix) UnmarshalYAML(raw []byte) error {
 
 	// Unmarshal to the transient structure.
-	jMatrix := costMatrixJSON{}
-	err := json.Unmarshal(raw, &jMatrix)
+	jMatrix := costMatrixYAML{}
+	err := yaml.Unmarshal(raw, &jMatrix)
 	if err != nil {
 		return err
 	}
