@@ -11,9 +11,9 @@ import (
 // and the type of attributes that generally aren't bought by spending
 // experience points.
 type Gauge struct {
-	Name  string `json:"name"`
-	Value int    `json:"-"`
-	XP    int    `json:"xp"`
+	Name  string `yaml:"name"`
+	Value int    `yaml:"-"`
+	XP    int    `yaml:"xp"`
 }
 
 // Cost returns 0, a gauge has no calculated cost.

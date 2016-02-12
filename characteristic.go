@@ -8,10 +8,10 @@ import (
 
 // Characteristic is is a character's trait which holds a value.
 type Characteristic struct {
-	Name      string     `json:"name"`
-	Aptitudes []Aptitude `json:"aptitudes"`
-	Tier      int        `json:"tier"`
-	Value     int        `json:"-"`
+	Name      string     `yaml:"name"`
+	Aptitudes []Aptitude `yaml:"aptitudes"`
+	Tier      int        `yaml:"tier"`
+	Value     int        `yaml:"-"`
 }
 
 // Cost returns the cost of a standard characteristic upgrade given the character's aptitudes and the characteristic current tier.

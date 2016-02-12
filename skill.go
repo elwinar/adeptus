@@ -6,10 +6,10 @@ import (
 
 // Skill is a character's trait.
 type Skill struct {
-	Name       string     `json:"name"`
-	Aptitudes  []Aptitude `json:"aptitudes"`
-	Tier       int        `json:"tier"`
-	Speciality string     `json:"-"`
+	Name       string     `yaml:"name"`
+	Aptitudes  []Aptitude `yaml:"aptitudes"`
+	Tier       int        `yaml:"tier"`
+	Speciality string     `yaml:"-"`
 }
 
 // Cost returns the cost of the skill given the character's aptitudes and the current tier.
