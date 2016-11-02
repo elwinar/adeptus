@@ -347,7 +347,7 @@ func (c *Character) PrintHistory() {
 }
 
 // Suggest the next purchasable upgrades of the character.
-func (c *Character) Suggest(max int, all bool, allowSpells bool) {
+func (c *Character) Suggest(universe Universe, max int, all bool, allowSpells bool) {
 
 	// Aggregate each coster into a unique slice of costers.
 	costers := []Coster{}

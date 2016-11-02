@@ -32,10 +32,13 @@ func main() {
 		},
 	}
 
-	app.Before = Bootstrap
-
 	app.Action = func(ctx *cli.Context) {
-		character.Print()
+		_, c, err := Bootstrap(ctx)
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+		c.Print()
 	}
 
 	app.Commands = []cli.Command{
@@ -43,7 +46,12 @@ func main() {
 			Name:  "history",
 			Usage: "display the history of a character sheet",
 			Action: func(ctx *cli.Context) {
-				character.PrintHistory()
+				_, c, err := Bootstrap(ctx)
+				if err != nil {
+					fmt.Println(err)
+					return
+				}
+				c.PrintHistory()
 			},
 		},
 		{
@@ -64,7 +72,12 @@ func main() {
 				},
 			},
 			Action: func(ctx *cli.Context) {
-				character.Suggest(ctx.Int("max"), ctx.Bool("all"), ctx.Bool("with-spells"))
+				u, c, err := Bootstrap(ctx)
+				if err != nil {
+					fmt.Println(err)
+					return
+				}
+				c.Suggest(u, ctx.Int("max"), ctx.Bool("all"), ctx.Bool("with-spells"))
 			},
 		},
 	}
