@@ -27,8 +27,8 @@ func main() {
 	app.Flags = []cli.Flag{
 		cli.StringFlag{
 			Name:  "universe, u",
-			Usage: "The filepath to the character universe.",
-			Value: "universe.yaml",
+			Usage: "The dir location that contains the universe files.",
+			Value: ".",
 		},
 	}
 
