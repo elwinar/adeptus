@@ -5,19 +5,24 @@ build:
     - setup-go-workspace
 
     - script:
-        name: go get
+        name: install gb
         code: |
-            go get
+            go get github.com/constabulary/gb/...
 
     - script:
-        name: go build
+        name: get dependancies
         code: |
-            go build ./...
+            gb vendor restore
 
     - script:
-        name: go test
+        name: build
         code: |
-            go test ./...
+            gb build
+
+    - script:
+        name: test
+        code: |
+            gb test
 
     - script:
         name: goveralls
@@ -35,7 +40,7 @@ build:
             go get github.com/mattn/goveralls
 
             # Export the coverage
-            go test --covermode=count -coverprofile=profile.cov .
-            goveralls -coverprofile=profile.cov -service=wercker.com -repotoken $WERCKER_SCRIPT_TOKEN
+            GOPATH=$(pwd):$(pwd)/vendor go test ./src/adeptus --covermode=count -coverprofile=../../profile.cov .
+            GOPATH=$(pwd):$(pwd)/vendor goveralls -coverprofile=profile.cov -service=wercker.com -repotoken $WERCKER_SCRIPT_TOKEN
 
         token: $COVERALLS_TOKEN
