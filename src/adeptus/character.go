@@ -194,16 +194,19 @@ func (c *Character) Print() {
 	fmt.Printf("\n%s\t%d/%d\n", theme.Title("Experience"), c.Spent, c.Experience)
 
 	// Print the characteristics
-	fmt.Printf("\n%s\n", theme.Title("Characteristics"))
 
+	var characteristicSum int
 	characteristics := []Characteristic{}
 	for _, characteristic := range c.Characteristics {
+        characteristicSum += characteristic.Value
 		characteristics = append(characteristics, characteristic)
 	}
 
 	slice.Sort(characteristics, func(i, j int) bool {
 		return characteristics[i].Name < characteristics[j].Name
 	})
+    
+	fmt.Printf("\n%s (%s)\n", theme.Title("Characteristics"), theme.Value(fmt.Sprintf("%d", characteristicSum)))
 
 	for _, characteristic := range characteristics {
 		fmt.Printf("%s\t%s %s\n", characteristic.Name, theme.Value(characteristic.Value), theme.Value(characteristic.Level()))
